@@ -1,0 +1,34 @@
+//printing
+
+print('Hello World!');
+
+//square brackets make lists
+var listo = [0, 1, 1, 2, 3, 5];
+print('List of numbers:', listo);
+
+
+//objects
+var object = {
+    foo: 'bar',
+    baz: 13,
+    stuff: ['this', 'that', 'the other']
+};
+
+print('dictionary', object);
+
+print('dictionary', object['foo']);
+print('dictionary', object.stuff)
+
+
+//functions
+var reflect = function(element) {
+  // Return the argument.
+  return element;
+};  
+
+print('A good day to you!', reflect('Get off of my lawn you crazy kids!'));
+
+//Define string and put it in the ee container
+var aString = 'to the cloud!';
+var eeString = ee.String(aString);
+print('Where to?', eeString);
