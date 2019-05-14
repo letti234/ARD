@@ -31,4 +31,29 @@ print('A good day to you!', reflect('Get off of my lawn you crazy kids!'));
 //Define string and put it in the ee container
 var aString = 'to the cloud!';
 var eeString = ee.String(aString);
-print('Where to?', eeString);
+
+
+//Visualize images and image bands ////////////////////
+
+// Instantiate an image with the Image constructor.
+var image = ee.Image('CGIAR/SRTM90_V4');
+//SRTM is an elevation raster and is from the Earth Engine data catalog. 
+
+// Zoom to a location.
+Map.setCenter(-112.8598, 36.2841, 9); // Center on the Grand Canyon.
+
+// Display the image on the map.
+Map.addLayer(image);
+
+//Find more information on the data type
+print('SRTM image', image);
+//Is number of bands number of raster layers?
+
+//customize layer visualization: note that you can define new raster layers 
+//with nice color palettes and etc. 
+Map.addLayer(image, {min: 0, max: 3000}, 'custom visualization');
+
+Map.addLayer(image, {min: 0, max: 3000, palette: ['blue', 'green', 'red']},
+    'custom palette');
+
+
