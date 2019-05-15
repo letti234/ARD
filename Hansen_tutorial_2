@@ -1,0 +1,3 @@
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+var lossImage = gfc2014.select(['loss']);
+var gainImage = gfc2014.select(['gain']);
