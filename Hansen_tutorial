@@ -1,0 +1,50 @@
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+Map.addLayer(gfc2014);
+
+//Display forst cover in 2000 as a grayscale image
+Map.addLayer(gfc2014, {bands: ['treecover2000']}, 'treecover2000');
+
+//Using Landsat bands 5, 4, 3 for 2015. Healthy vegetation as green and soil as mauve
+Map.addLayer(
+    gfc2014, {bands: ['last_b50', 'last_b40', 'last_b30']}, 'false color');
+    
+//Showing forest extent in 2000 as green, forst loss as red, and forest gain as blue
+Map.addLayer(gfc2014, {
+  bands: ['loss', 'treecover2000', 'gain'],
+  max: [1, 255, 1]
+}, 'forest cover, loss, gain');
+//Need the max command, which is a visualization parameter. This stretches the image data. 
+//basically the max values match the bands vector. The lower the parameter the brighter the
+//image shows up as.
+
+//Showing forest cover 2000 with a different palette
+Map.addLayer(gfc2014, {
+  bands: ['treecover2000'],
+  palette: ['000000', '00FF00'],
+  max: 100
+}, 'forest cover percent');
+//Need a guide to the color palettes
+
+//mask an image to itself
+Map.addLayer(gfc2014.mask(gfc2014), {
+  bands: ['treecover2000'],
+  palette: ['000000', '00FF00'],
+  max: 100
+}, 'forest cover masked');
+
+//Define separate layers and add them sequentially/////////////////////////////
+var treeCover = gfc2014.select(['treecover2000']);
+var lossImage = gfc2014.select(['loss']);
+var gainImage = gfc2014.select(['gain']);
+
+// Add the tree cover layer in green.
+Map.addLayer(treeCover.updateMask(treeCover),
+    {palette: ['000000', '00FF00'], max: 100}, 'Forest Cover');
+
+// Add the loss layer in red.
+Map.addLayer(lossImage.updateMask(lossImage),
+            {palette: ['FF0000']}, 'Loss');
+
+// Add the gain layer in blue.
+Map.addLayer(gainImage.updateMask(gainImage),
+            {palette: ['0000FF']}, 'Gain');
