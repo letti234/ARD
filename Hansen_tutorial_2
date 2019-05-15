@@ -3,3 +3,6 @@ var lossImage = gfc2014.select(['loss']);
 var gainImage = gfc2014.select(['gain']);
 
 var gainAndLoss = gainImage.and(lossImage);
+
+Map.addLayer(gainAndLoss.updateMask(gainAndLoss),
+    {palette: 'FF00FF'}, 'Gain and Loss');
