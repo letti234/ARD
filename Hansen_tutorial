@@ -48,3 +48,7 @@ Map.addLayer(lossImage.updateMask(lossImage),
 // Add the gain layer in blue.
 Map.addLayer(gainImage.updateMask(gainImage),
             {palette: ['0000FF']}, 'Gain');
+
+
+Map.addLayer(gainAndLoss.updateMask(gainAndLoss),
+    {palette: 'FF00FF'}, 'Gain and Loss');
