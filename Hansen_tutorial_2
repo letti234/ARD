@@ -2,6 +2,9 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 var lossImage = gfc2014.select(['loss']);
 var gainImage = gfc2014.select(['gain']);
 
+//and method returns an image where the variable =1 if both images =1 and 0 otherwise
+//Hence it's a measure of "replacement" vs non-replacement, which I suppose is not 
+//very useful
 var gainAndLoss = gainImage.and(lossImage);
 
 Map.addLayer(gainAndLoss.updateMask(gainAndLoss),
