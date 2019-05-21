@@ -1,2 +1,6 @@
-var camps = ee.FeatureCollection('1NHoJh8kb-UIZuKFyq8Lr61UqtdsTNkES7mWdFi85');
+
+//Load the camp data from the fusion table
+var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
 print(camps);
+
+Map.addLayer(camps)
