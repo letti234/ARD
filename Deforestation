@@ -1,8 +1,7 @@
 //Load the Hansen data and create layers
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
-Map.addLayer(gfc2014, {bands: ['treecover2000']}, 
-{palette: ['000000', '00FF00'], max: 100} 'treecover2000');
+//Map.addLayer(gfc2014, {bands: ['treecover2000']}, 'treecover2000');
 
 //Load the camp data from the fusion table
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
@@ -20,14 +19,10 @@ var buffers = camps.map(bufferPoly);
 
 Map.addLayer(buffers, {}, 'buffers');
 
-//Randomly select 1000 pixels within the buffer areas
-var points = ee.FeatureCollection.randomPoints(buffers, 1000, 0, 10);
+//Randomly select 10 pixels within the buffer areas (keep N small for training)
+var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
 
 Map.addLayer(points, {color: 'FF00FF'}, 'points');
 
-//Measure linear distance between random pixel and camp
-
-
-
-
-
+//Measure linear distance between features from different collections
+//Least cost path approach: https://developers.google.com/earth-engine/image_cumulative_cost
