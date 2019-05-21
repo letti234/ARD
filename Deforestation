@@ -3,11 +3,23 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
 Map.addLayer(gfc2014, {bands: ['treecover2000']}, 'treecover2000');
 
-
-
 //Load the camp data from the fusion table
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
 print(camps);
 
 Map.addLayer(camps, {color: 'FF0000'}, 'Camps');
 
+//Generate a 50 km  buffer around camps
+
+var bufferPoly = function(feature) {
+  return feature.buffer(50000);   
+};
+
+var buffers = camps.map(bufferPoly);
+
+Map.addLayer(buffers, {}, 'buffers');
+
+//Randomly select 1000 pixels within the buffer areas
+var points = ee.FeatureCollection.randomPoints(buffers, 1000, 0, 10);
+
+Map.addLayer(points, {}, 'points');
