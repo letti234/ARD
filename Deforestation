@@ -3,4 +3,6 @@
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
 print(camps);
 
-var point=ee.Geometry.Point[(0, 0)];
+Map.addLayer(camps, {color: 'FF0000'}, 'Camps');
+
+var buffer = camps.buffer(1000);
