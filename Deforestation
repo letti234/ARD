@@ -1,0 +1,2 @@
+var camps = ee.FeatureCollection('1NHoJh8kb-UIZuKFyq8Lr61UqtdsTNkES7mWdFi85');
+print(camps);
