@@ -25,4 +25,9 @@ var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
 Map.addLayer(points, {color: 'FF00FF'}, 'points');
 
 //Measure linear distance between features from different collections
+
+var linear = FeatureCollection.distance()
+
 //Least cost path approach: https://developers.google.com/earth-engine/image_cumulative_cost
+
+
