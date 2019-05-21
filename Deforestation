@@ -22,4 +22,11 @@ Map.addLayer(buffers, {}, 'buffers');
 //Randomly select 1000 pixels within the buffer areas
 var points = ee.FeatureCollection.randomPoints(buffers, 1000, 0, 10);
 
-Map.addLayer(points, {}, 'points');
+Map.addLayer(points, {color: 'FF00FF'}, 'points');
+
+//Measure linear distance between random pixel and camp
+
+
+
+
+
