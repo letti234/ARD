@@ -3,4 +3,4 @@
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
 print(camps);
 
-Map.addLayer(camps)
+var point=ee.Geometry.Point[(0, 0)];
