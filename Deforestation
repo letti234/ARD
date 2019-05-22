@@ -26,8 +26,39 @@ Map.addLayer(points, {color: 'FF00FF'}, 'points');
 
 //Measure linear distance between features from different collections
 
-var linear = FeatureCollection.distance()
+var spatialFilter = ee.Filter.withinDistance({
+  distance: 50000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+})
 
-//Least cost path approach: https://developers.google.com/earth-engine/image_cumulative_cost
+// Join the points to themselves.
+var joined = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: points, 
+  secondary: camps, 
+  condition: spatialFilter
+});
 
+// Get rid of points w/o neighbors.
+// Increase distance in the spatialFilter if
+// you want them all to have neighbors.
+var hasNearest = joined.map(function(f) {
+  var neighsSize = ee.List(f.get('neighbors')).size();
+  return f.set('neighsSize', neighsSize);
+}).filter(ee.Filter.gt('neighsSize', 1));
+Map.addLayer(hasNearest, {color: 'red'}, 'hasNearest');
 
+// Get distance to nearest point.
+var withNearestDist = hasNearest.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(1))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
+
+Map.addLayer(withNearestDist, {color: 'blue'}, 'withNearestDist');
+print(withNearestDist);
