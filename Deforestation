@@ -5,15 +5,16 @@ print(gfc2014)
 //Load the SSA administrative district shapefile
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
 
-Map.addLayer(SSA, {color: 'FF0000'}, 'SSA');
-
 //Crop the Hansen data we are interested in to the SSA admin shapefile
 var gfc2014_c = gfc2014.clip(SSA);
 
-//Add the tree cover and loss year layers for SSA
-Map.addLayer(gfc2014_c, {bands: ['treecover2000']}, 'treecover2000');
 
-Map.addLayer(gfc2014_c, {bands: ['lossyear']}, 'lossyear');
+//Add the tree cover and loss year layers for SSA
+var cover2000 = gfc2014_c.select(['treecover2000']);
+var lossyr = gfc2014_c.select(['lossyear']);
+
+Map.addLayer(cover2000, {}, 'treecover2000');
+Map.addLayer(lossyr, {}, 'lossyear');
 
 //Load the camp data from the fusion table
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
