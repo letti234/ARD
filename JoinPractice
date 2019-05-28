@@ -5,10 +5,7 @@ var p2 = ee.Geometry.Point([143.23974609375, -37.04640889969956])
 var pts = ee.FeatureCollection(ee.List([ee.Feature(p1),ee.Feature(p2)]))
 
 //IMPORT LANDSAT IMAGE
-var L82014pre = ee.ImageCollection('LANDSAT/LC8_SR') //Landsat 8 Surface   reflectance
-.filter(ee.Filter.eq('wrs_path', 94))
-.filter(ee.Filter.eq('wrs_row', 86)) 
-.filterDate(ee.Date.fromYMD(2013,12,13), ee.Date.fromYMD(2014,1,15))
+var L82014pre = ee.ImageCollection('TRMM/3B43V7');
 
 // Empty Collection to fill
 var ft = ee.FeatureCollection(ee.List([]))
@@ -36,6 +33,6 @@ var newft = ee.FeatureCollection(L82014pre.iterate(fill, ft))
 
 // Export
 Export.table.toDrive(newft,
-"anyDescription",
-"anyFolder",
-"anyNameYouWant")
+"Extracting_practice",
+"Deforestation",
+"Data_Extract")
