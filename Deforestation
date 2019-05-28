@@ -79,7 +79,7 @@ var withNearestDist = hasNearest.map(function(f) {
 //Create image collection of all layers to extract
 //////////////////////////////////////////////////////////////
 
-var collection = ee.ImageCollection[(cover2000, lossyr,  withNearestDist, SSA)];
+var myCollection = ee.ImageCollection[(cover2000, lossyr,  withNearestDist, SSA)];
 
 
 //////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ var fill = function(img, ini) {
 }
 
 // Iterates over the ImageCollection
-var newft = ee.FeatureCollection(collection.iterate(fill, ft))
+var newft = ee.FeatureCollection(myCollection.iterate(fill, ft))
 
 
 // Export
