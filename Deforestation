@@ -11,10 +11,10 @@ var gfc2014_c = gfc2014.clip(SSA);
 
 //Add the tree cover and loss year layers for SSA
 var cover2000 = gfc2014_c.select(['treecover2000']);
-var lossyr = gfc2014_c.select(['lossyear']);
+//var lossyr = gfc2014_c.select(['lossyear']);
 
 Map.addLayer(cover2000, {}, 'treecover2000');
-Map.addLayer(lossyr, {}, 'lossyear');
+//Map.addLayer(lossyr, {}, 'lossyear');
 
 //Load the camp data from the fusion table
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
@@ -57,8 +57,6 @@ var joined = ee.Join.saveAll({
 });
 
 // Get rid of points w/o neighbors.
-// Increase distance in the spatialFilter if
-// you want them all to have neighbors.
 var hasNearest = joined.map(function(f) {
   var neighsSize = ee.List(f.get('neighbors')).size();
   return f.set('neighsSize', neighsSize);
@@ -74,3 +72,40 @@ var withNearestDist = hasNearest.map(function(f) {
 
 Map.addLayer(withNearestDist, {color: 'blue'}, 'withNearestDist');
 print(withNearestDist);
+
+//Export tabular data
+var feature = ee.Feature(null, withNearestDist);
+
+var featureCollection = ee.FeatureCollection([feature]);
+
+// Export the FeatureCollection.
+Export.table.toDrive({
+  collection: featureCollection,
+  description: 'exportTableExample',
+  fileFormat: 'CSV'
+});
+
+
+
+
+
+var ft = ee.FeatureCollection(ee.List([]))
+
+var fill = function(img, ini) {
+  var inift = ee.FeatureCollection(ini)
+
+  // gets the values for the points in the current img
+ var ft2 = img.reduceRegions(pts, ee.Reducer.first(),30)
+ 
+}
+
+var newft = ee.FeatureCollection(L82014pre.iterate(fill, ft))
+
+// Export the FeatureCollection.
+Export.table.toDrive({
+  collection: ft2,
+  description: 'exportTableExample',
+  fileFormat: 'CSV'
+});
+
+
