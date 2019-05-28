@@ -1,14 +1,13 @@
 //Load the Hansen data and create layers
-var gfc2014 = ee.ImageCollection('UMD/hansen/global_forest_change_2015');
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+print(gfc2014)
 
+//Load the SSA administrative district shapefile
 
+//Crop the Hansen data we are interested in to the SSA admin shapefile
+//var gfc2014 = gfc2014.clip(SSA);
 
-//var Jan10Syr = Jan2010.clip(Syria);
-
-//Map.addLayer(Jan10Syr, {bands: ['precipitation']}, 'precipJan10');
-
-
-
+//Add the tree cover and loss year layers for SSA
 //Map.addLayer(gfc2014, {bands: ['treecover2000']}, 'treecover2000');
 
 //Load the camp data from the fusion table
@@ -18,7 +17,6 @@ print(camps);
 Map.addLayer(camps, {color: 'FF0000'}, 'Camps');
 
 //Generate a 50 km  buffer around camps
-
 var bufferPoly = function(feature) {
   return feature.buffer(50000);   
 };
