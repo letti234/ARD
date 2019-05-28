@@ -82,10 +82,39 @@ var withNearestDist = hasNearest.map(function(f) {
 var collection = ee.ImageCollection[(cover2000, lossyr,  withNearestDist, SSA)];
 
 
-
 //////////////////////////////////////////////////////////////
 //Extract pixel information from image collection
 //////////////////////////////////////////////////////////////
 
+
+// Empty Collection to fill
+var ft = ee.FeatureCollection(ee.List([]))
+
+var fill = function(img, ini) {
+  // type cast
+  var inift = ee.FeatureCollection(ini)
+
+  // gets the values for the points in the current img
+  var ft2 = img.reduceRegions(points, ee.Reducer.first(),30)
+
+  // gets the date of the img
+  var date = img.date().format()
+
+  // writes the date in each feature
+  var ft3 = ft2.map(function(f){return f.set("date", date)})
+
+  // merges the FeatureCollections
+  return inift.merge(ft3)
+}
+
+// Iterates over the ImageCollection
+var newft = ee.FeatureCollection(collection.iterate(fill, ft))
+
+
+// Export
+Export.table.toDrive(newft,
+"Extraction_v1",
+"Deforestation",
+"Hansen_data_etc.")
 
 
