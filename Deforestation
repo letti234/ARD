@@ -3,12 +3,17 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 print(gfc2014)
 
 //Load the SSA administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+Map.addLayer(SSA, {color: 'FF0000'}, 'SSA');
 
 //Crop the Hansen data we are interested in to the SSA admin shapefile
-//var gfc2014 = gfc2014.clip(SSA);
+var gfc2014_c = gfc2014.clip(SSA);
 
 //Add the tree cover and loss year layers for SSA
-//Map.addLayer(gfc2014, {bands: ['treecover2000']}, 'treecover2000');
+Map.addLayer(gfc2014_c, {bands: ['treecover2000']}, 'treecover2000');
+
+Map.addLayer(gfc2014_c, {bands: ['lossyear']}, 'lossyear');
 
 //Load the camp data from the fusion table
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
