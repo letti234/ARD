@@ -1,6 +1,6 @@
 //Load the Hansen data and create layers
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
-print(gfc2014)
+print(gfc2014);
 
 //Load the SSA administrative district shapefile
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
@@ -72,12 +72,20 @@ var withNearestDist = hasNearest.map(function(f) {
 });
 
 //Map.addLayer(withNearestDist, {color: 'blue'}, 'withNearestDist');
-print(withNearestDist);
+
+
 
 //////////////////////////////////////////////////////////////
 //Create image collection of all layers to extract
 //////////////////////////////////////////////////////////////
 
-var collection = ee.ImageCollection[(cover2000, lossyr,  SSA)];
+var collection = ee.ImageCollection[(cover2000, lossyr,  withNearestDist, SSA)];
 
-print(collection)
+
+
+//////////////////////////////////////////////////////////////
+//Extract pixel information from image collection
+//////////////////////////////////////////////////////////////
+
+
+
