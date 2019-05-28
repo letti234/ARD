@@ -1,10 +1,11 @@
 //Load the Hansen data and create layers
-var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+var gfc2014 = ee.ImageCollection('UMD/hansen/global_forest_change_2015');
 
 
-var Jan10Syr = Jan2010.clip(Syria);
 
-Map.addLayer(Jan10Syr, {bands: ['precipitation']}, 'precipJan10');
+//var Jan10Syr = Jan2010.clip(Syria);
+
+//Map.addLayer(Jan10Syr, {bands: ['precipitation']}, 'precipJan10');
 
 
 
