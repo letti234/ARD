@@ -13,8 +13,8 @@ var cover2000 = gfc2014_c.select(['treecover2000']);
 var lossyr = gfc2014_c.select(['lossyear']);
 
 //Load the camp data from the fusion table
-var interest = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
-print(interest);
+var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
+print(camps);
 
 //rasterize the SSA data
 var location = SSA
@@ -24,6 +24,51 @@ var location = SSA
     reducer: ee.Reducer.first()
 });
 
-Map.addLayer(location, {min: 0, max: 1000000, palette: ['0000FF', '00FF00', '00FFFF', 'FF0000']});
-    
+//Create an image collection of data
+var all = ee.ImageCollection([gfc2014, location]);
 
+print('all: ', all);
+
+
+
+
+
+
+
+
+
+var mapfunc = function(feat) {
+  // get feature id
+  var id = ee.String(feat.id())
+  // get feature geometry
+  var geom = feat.geometry()
+  // make an empty list to store the features
+  var newfc = ee.List([])
+  // function to iterate over the ImageCollection
+  var addProp = function(img, fc) {
+    // the initial value is the empty list
+    fc = ee.List(fc)
+    // get the date as string
+    var date = img.date().format()
+    // extract the value of 'waterClass'
+    var value = img.reduceRegion(ee.Reducer.first(), geom, 30).get('waterClass')
+    // If the value is null then store it as 'No data'
+    var val = ee.String(ee.Algorithms.If(value, ee.String(value), ee.String('No data')))
+    // make the name of the feature (feat_id-date)
+    var featname = ee.String("feat_").cat(id).cat(ee.String("-")).cat(date)
+    // make the Feature
+    var newfeat = ee.Feature(geom, {name:featname,
+                                    value:val})
+    // add the value to the list
+    return fc.add(newfeat)
+  }
+  var newfeat = ee.FeatureCollection(ee.List(all.iterate(addProp, newfc)))
+  return newfeat
+};
+
+var newft = interest.map(mapfunc).flatten();
+
+Export.table.toDrive(newft,
+"export_Points",
+"export_Points",
+"export_Points");
