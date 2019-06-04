@@ -1,3 +1,5 @@
+///////////////FOREST DATA CLEANING /////////////////////////////////////////
+
 //Load the Hansen data and create layers
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 print(gfc2014);
@@ -8,18 +10,14 @@ var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
 //Crop the Hansen data we are interested in to the SSA admin shapefile
 var gfc2014_c = gfc2014.clip(SSA);
 
-//Add the tree cover and loss year layers for SSA
-var cover2000 = gfc2014_c.select(['treecover2000']);
-var lossyr = gfc2014_c.select(['lossyear']);
 
-//Map.addLayer(cover2000, {}, 'treecover2000');
-//Map.addLayer(lossyr, {}, 'lossyear');
+
+
+/////////////////ARC DATA AND SAMPLE EXTRACTION ///////////////////////////////////////
 
 //Load the camp data from the fusion table
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
 print(camps);
-
-Map.addLayer(camps, {color: 'FF0000'}, 'Camps');
 
 //Generate a 50 km  buffer around camps
 var bufferPoly = function(feature) {
@@ -35,9 +33,12 @@ var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
 
 Map.addLayer(points, {color: 'FF00FF'}, 'points');
 
-//////////////////////////////////////////////////////////////
-//Distance between random points and nearest camp
-//////////////////////////////////////////////////////////////
+
+
+
+
+/////////////DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP /////////////////
+
 
 var spatialFilter = ee.Filter.withinDistance({
   distance: 50000,
@@ -71,50 +72,7 @@ var withNearestDist = hasNearest.map(function(f) {
   return f.set('nearestDist', nearestDist);
 });
 
-//Map.addLayer(withNearestDist, {color: 'blue'}, 'withNearestDist');
+print(withNearestDist)
 
 
-
-//////////////////////////////////////////////////////////////
-//Create image collection of all layers to extract
-//////////////////////////////////////////////////////////////
-
-var myCollection = ee.ImageCollection[(cover2000, lossyr)];
-
-
-//////////////////////////////////////////////////////////////
-//Extract pixel information from image collection
-//////////////////////////////////////////////////////////////
-
-
-// Empty Collection to fill
-var ft = ee.FeatureCollection(ee.List([]))
-
-var fill = function(img, ini) {
-  // type cast
-  var inift = ee.FeatureCollection(ini)
-
-  // gets the values for the points in the current img
-  var ft2 = img.reduceRegions(points, ee.Reducer.first(),30)
-
-  // gets the date of the img
-  var date = img.date().format()
-
-  // writes the date in each feature
-  var ft3 = ft2.map(function(f){return f.set("date", date)})
-
-  // merges the FeatureCollections
-  return inift.merge(ft3)
-}
-
-// Iterates over the ImageCollection
-var newft = ee.FeatureCollection(myCollection.iterate(fill, ft))
-
-
-// Export
-Export.table.toDrive(newft,
-"Extraction_v1",
-"Deforestation",
-"Hansen_data_etc.")
-
-
+//////////USE HANSEN DATA TO CREATE A NEW FEATURE COLLECTION FOR 
