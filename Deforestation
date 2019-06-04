@@ -12,109 +12,18 @@ var gfc2014_c = gfc2014.clip(SSA);
 var cover2000 = gfc2014_c.select(['treecover2000']);
 var lossyr = gfc2014_c.select(['lossyear']);
 
-//Map.addLayer(cover2000, {}, 'treecover2000');
-//Map.addLayer(lossyr, {}, 'lossyear');
-
 //Load the camp data from the fusion table
-var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
-print(camps);
+var interest = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
+print(interest);
 
-Map.addLayer(camps, {color: 'FF0000'}, 'Camps');
-
-//Generate a 50 km  buffer around camps
-var bufferPoly = function(feature) {
-  return feature.buffer(50000);   
-};
-
-var buffers = camps.map(bufferPoly);
-
-Map.addLayer(buffers, {}, 'buffers');
-
-//Randomly select 10 pixels within the buffer areas (keep N small for training)
-var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
-
-Map.addLayer(points, {color: 'FF00FF'}, 'points');
-
-//////////////////////////////////////////////////////////////
-//Distance between random points and nearest camp
-//////////////////////////////////////////////////////////////
-
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-})
-
-// Join the points
-var joined = ee.Join.saveAll({
-  matchesKey: 'neighbors', 
-  measureKey: 'distance',
-  ordering: 'distance'
-}).apply({
-  primary: points, 
-  secondary: camps, 
-  condition: spatialFilter
+//rasterize the SSA data
+var location = SSA
+  .filter(ee.Filter.neq('District & Country', null))
+  .reduceToImage({
+    properties: ['District & Country'],
+    reducer: ee.Reducer.first()
 });
 
-// Get rid of points w/o neighbors.
-var hasNearest = joined.map(function(f) {
-  var neighsSize = ee.List(f.get('neighbors')).size();
-  return f.set('neighsSize', neighsSize);
-}).filter(ee.Filter.gt('neighsSize', 1));
-Map.addLayer(hasNearest, {color: 'red'}, 'hasNearest');
-
-// Get distance to nearest point.
-var withNearestDist = hasNearest.map(function(f) {
-  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(1))
-      .get('distance');
-  return f.set('nearestDist', nearestDist);
-});
-
-//Map.addLayer(withNearestDist, {color: 'blue'}, 'withNearestDist');
-
-
-
-//////////////////////////////////////////////////////////////
-//Create image collection of all layers to extract
-//////////////////////////////////////////////////////////////
-
-var myCollection = ee.ImageCollection[(cover2000, lossyr,  withNearestDist, SSA)];
-
-
-//////////////////////////////////////////////////////////////
-//Extract pixel information from image collection
-//////////////////////////////////////////////////////////////
-
-
-// Empty Collection to fill
-var ft = ee.FeatureCollection(ee.List([]))
-
-var fill = function(img, ini) {
-  // type cast
-  var inift = ee.FeatureCollection(ini)
-
-  // gets the values for the points in the current img
-  var ft2 = img.reduceRegions(points, ee.Reducer.first(),30)
-
-  // gets the date of the img
-  var date = img.date().format()
-
-  // writes the date in each feature
-  var ft3 = ft2.map(function(f){return f.set("date", date)})
-
-  // merges the FeatureCollections
-  return inift.merge(ft3)
-}
-
-// Iterates over the ImageCollection
-var newft = ee.FeatureCollection(myCollection.iterate(fill, ft))
-
-
-// Export
-Export.table.toDrive(newft,
-"Extraction_v1",
-"Deforestation",
-"Hansen_data_etc.")
-
+Map.addLayer(location, {min: 0, max: 1000000, palette: ['0000FF', '00FF00', '00FFFF', 'FF0000']});
+    
 
