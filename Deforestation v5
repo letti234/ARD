@@ -121,6 +121,18 @@ var pointdata20 = joined20.map(function(f) {
 //zero camps within 20 km for this feature.
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 ////////EXTRACTING INFORMATION FROM THE SSA SHAPEFILE AND HANSEN DATA/////////////////////
 
 //Specify the properties that I want to copy from the SSA shapefile
