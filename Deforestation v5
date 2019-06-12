@@ -62,27 +62,21 @@ var joined = ee.Join.saveAll({
   condition: spatialFilter
 });
 
-// Get rid of points w/o neighbors.
-var hasNearest = joined.map(function(f) {
-  var neighsSize = ee.List(f.get('neighbors')).size();
-  return f.set('neighsSize', neighsSize);
-}).filter(ee.Filter.gt('neighsSize', 1));
-
 // Get distance to nearest point.
-var withNearestDist = hasNearest.map(function(f) {
-  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(1))
+var withNearestDist = joined.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
       .get('distance');
   return f.set('nearestDist', nearestDist);
 });
 
+print(withNearestDist);
 
 // Get nearest camp id.
 var pointdata = withNearestDist.map(function(f) {
-  var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(1))
+  var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
       .get('campid');
   return f.set('campid', nearestCamp);
 });
-
 
 print(pointdata);
 
@@ -90,8 +84,9 @@ print(pointdata);
 
 
 
-/////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
 
+
+/////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
 
 
 ///0-20
@@ -122,7 +117,12 @@ var pointdata20 = joined20.map(function(f) {
 
 print(pointdata20);
 
-
+///Note that with pointdata20 we are down to only five features (random points). 
+//I checked feature id 2 from the withNearestDist variable and found
+//its nearest camps within 50 km were all more than 20 km away, which 
+//is likely why it is not showing up in the pointdata20 variable. I want 
+//to re-write the program above so that it keeps feature id 2 but reports
+//zero camps within 20 km for this feature.
 
 
 ////////EXTRACTING INFORMATION FROM THE SSA SHAPEFILE AND HANSEN DATA/////////////////////
