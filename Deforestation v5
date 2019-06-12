@@ -79,46 +79,23 @@ var pointdata = withNearestDist.map(function(f) {
 
 
 
-
+print(pointdata);
 
 
 
 /////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
 
 
-///0-20
-
-var spatialFilter20 = ee.Filter.withinDistance({
-  distance: 20000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-})
-
-// Join the points
-var joined20 = ee.Join.saveAll({
-  matchesKey: 'neighbors', 
-  measureKey: 'distance',
-  ordering: 'distance'
-}).apply({
-  primary: pointdata, 
-  secondary: camps, 
-  condition: spatialFilter20
-});
-
-// Get count of how many nearby camps
-var pointdata20 = joined20.map(function(f) {
+// Get count of how many camps within 20 km
+var pointdata20 = pointdata.map(function(f) {
   var neighsSize20 = ee.List(f.get('neighbors')).size();
   return f.set('neighsSize20', neighsSize20);
 });
 
+print(joined);
 
-///Note that with pointdata20 we are down to only five features (random points). 
-//I checked feature id 2 from the withNearestDist variable and found
-//its nearest camps within 50 km were all more than 20 km away, which 
-//is likely why it is not showing up in the pointdata20 variable. I want 
-//to re-write the program above so that it keeps feature id 2 but reports
-//zero camps within 20 km for this feature.
+///Need to figure out how to restrict the count to only those camps within 
+///20 km of point
 
 
 
@@ -145,7 +122,7 @@ var spatialFilter = ee.Filter.intersects({
 });
 
 // Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(points, SSA, spatialFilter);
+var joinAll = ee.Join.saveAll('matched').apply(pointdata, SSA, spatialFilter);
 
 // since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
