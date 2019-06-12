@@ -69,7 +69,6 @@ var withNearestDist = joined.map(function(f) {
   return f.set('nearestDist', nearestDist);
 });
 
-print(withNearestDist);
 
 // Get nearest camp id.
 var pointdata = withNearestDist.map(function(f) {
@@ -77,8 +76,6 @@ var pointdata = withNearestDist.map(function(f) {
       .get('campid');
   return f.set('campid', nearestCamp);
 });
-
-print(pointdata);
 
 
 
@@ -115,7 +112,6 @@ var pointdata20 = joined20.map(function(f) {
   return f.set('neighsSize20', neighsSize20);
 });
 
-print(pointdata20);
 
 ///Note that with pointdata20 we are down to only five features (random points). 
 //I checked feature id 2 from the withNearestDist variable and found
@@ -156,7 +152,7 @@ var sampledPoints = gfc2014.sampleRegions({
   geometries:true
 })
 
-
+print(sampledPoints);
 
 //Export the distance data to Drive ///////////////////////////////////////////////////////////
 
