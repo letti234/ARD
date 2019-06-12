@@ -89,35 +89,14 @@ print('point data', pointdata);
 
 /////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
 
-var spatialFilter20 = ee.Filter.withinDistance({
-  distance: 20000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-})
+//Generate a 50 km  buffer around camps
+var bufferPoly20 = function(feature) {
+  return feature.buffer(20000);   
+};
 
+var buffers20 = points.map(bufferPoly20);
 
-
-// Get count of how many camps within 20 km
-var pointdata20 = pointdata.map(function(f) {
-  var neighsSize20 = ee.List(f.get('neighbors')).size();
-  return f.set('neighsSize20', neighsSize20);
-});
-
-
-var c = pointdata.reduceRegion({
-  reducer: ee.Reducer.count(),
-  geometry: geometry
-  });
-
-
-///Need to figure out how to restrict the count to only those camps within 
-///20 km of point
-
-
-
-
-
+map.Addlayer(buffers20);
 
 
 
