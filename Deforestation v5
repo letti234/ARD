@@ -94,7 +94,8 @@ var pointdata20 = pointdata.map(function(f) {
   return f.set('neighsSize20', neighsSize20);
 });
 
-print(joined);
+
+
 
 ///Need to figure out how to restrict the count to only those camps within 
 ///20 km of point
