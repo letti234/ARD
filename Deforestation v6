@@ -87,12 +87,14 @@ var bufferPoly20 = function(feature) {
 
 var buffers20 = points.map(bufferPoly20);
 
-map.Addlayer(buffers20);
+Map.addLayer(buffers20);
 
+print(buffers20);
 
-
-
-
+var c = camps.reduceRegion({
+  reducer: ee.Reducer.count(),
+  geometry: buffers20
+  });
 
 
 
