@@ -80,21 +80,8 @@ print('point data', pointdata);
 
 /////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
 
-//Generate a 50 km  buffer around camps
-var bufferPoly20 = function(feature) {
-  return feature.buffer(20000);   
-};
 
-var buffers20 = points.map(bufferPoly20);
 
-Map.addLayer(buffers20);
-
-print(buffers20);
-
-var c = camps.reduceRegion({
-  reducer: ee.Reducer.count(),
-  geometry: buffers20
-  });
 
 
 
@@ -121,6 +108,16 @@ var featuresWithProp = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
+print('District data', featuresWithProp);
+
+
+
+
+
+
+
+
+
 //This function will fill in the characteristics of the GFC /////////////////////////////////////////////
 
 var sampledPoints = gfc2014.sampleRegions({
@@ -130,7 +127,7 @@ var sampledPoints = gfc2014.sampleRegions({
   geometries:true
 })
 
-print(sampledPoints);
+print("Joined data", sampledPoints);
 
 //Export the distance data to Drive ///////////////////////////////////////////////////////////
 
