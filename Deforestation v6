@@ -9,16 +9,6 @@ var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
 //Crop the Hansen data we are interested in to the SSA admin shapefile
 var gfc2014_c = gfc2014.clip(SSA);
 
-
-
-
-
-
-
-
-
-/////////////////ARC DATA AND SAMPLE EXTRACTION ///////////////////////////////////////
-
 //Load the camp data from the fusion table
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
 
@@ -79,6 +69,7 @@ var pointdata = withNearestDist.map(function(f) {
 
 
 print('point data', pointdata);
+
 
 
 
