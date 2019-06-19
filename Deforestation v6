@@ -113,7 +113,7 @@ var featuresWithProp = joinAll.map(function(feature){
 print('District data', featuresWithProp);
 
 
-//NEED TO DO: COMBINE THE DISTRICT AND CAMP DATA!!///////
+//COMBINE THE DISTRICT AND CAMP DATA///////
 
 var filter = ee.Filter.equals({
   leftField: 'system:index',
@@ -129,38 +129,28 @@ var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata, filter);
 // Display the result.
 print('Simple join: ', simpleJoined);
 
-var joinedMODIS = simpleJoined.map(function(feature) {
-  return (feature.get('primary'), feature.get('secondary'));
+var newjoin=simpleJoined.map(function(pair) {
+  var f1 = ee.Feature(pair.get('primary'));
+  var f2 = ee.Feature(pair.get('secondary'));
+  return f1.set(f2.toDictionary());
 });
 
-
-print('cleanup', joinedMODIS);
-
-
-
-
-
-
-
-
-
-
-
-
-
+print("latest try", newjoin);
 
 
 //This function will fill in the characteristics of the GFC /////////////////////////////////////////////
 
+//Specify the properties that I want to copy from the SSA shapefile
+var prop2 = ["ADM0","ADM1", "ADM2", "campid", "nearestDist"];
 
-///var sampledPoints = gfc2014.sampleRegions({
- /// collection:simpleJoined,
- /// properties:prop2,
- /// scale:30,
- /// geometries:true
-///})
+var sampledPoints = gfc2014.sampleRegions({
+ collection:newjoin,
+ properties:prop2,
+ scale:30,
+ geometries:true
+});
 
-///print("All joined data", sampledPoints);
+print("All joined data", sampledPoints);
 
 //Export the distance data to Drive ///////////////////////////////////////////////////////////
 
