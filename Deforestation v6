@@ -24,11 +24,13 @@ var buffers = camps.map(bufferPoly);
 //Randomly select 10 pixels within the buffer areas (keep N small for training)
 var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
 
+print("random sample", points);
 
-
-
-
-
+///var sysID_serverObj = ee.String(points.get("system:id"));
+///var sysID_serverStr = sysID_serverObj.getInfo()
+// cut the string down for the fileName needed
+///var fileName = sysID_serverStr.slice(7,100); 
+///print("IDs", fileName);
 
 
 
@@ -39,7 +41,7 @@ var spatialFilter = ee.Filter.withinDistance({
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
-})
+});
 
 // Join the points
 var joined = ee.Join.saveAll({
@@ -89,7 +91,7 @@ print('point data', pointdata);
 ////////EXTRACTING INFORMATION FROM THE SSA SHAPEFILE AND HANSEN DATA/////////////////////
 
 //Specify the properties that I want to copy from the SSA shapefile
-var properties = ["ADM0","ADM1", "ADM2"]
+var properties = ["ADM0","ADM1", "ADM2", "campid"];
 
 // Define a spatial filter as geometries that intersect.
 var spatialFilter = ee.Filter.intersects({
@@ -111,6 +113,21 @@ var featuresWithProp = joinAll.map(function(feature){
 print('District data', featuresWithProp);
 
 
+var filter = ee.Filter.equals({
+  leftField: 'system:index',
+  rightField: 'system:index'
+});
+
+// Create the join.
+var simpleJoin = ee.Join.inner();
+
+// Apply the join.
+var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata, filter);
+
+// Display the result.
+print('Simple join: ', simpleJoined);
+
+
 
 
 
@@ -120,23 +137,26 @@ print('District data', featuresWithProp);
 
 //This function will fill in the characteristics of the GFC /////////////////////////////////////////////
 
+var prop2 = ["ADM0","ADM1", "ADM2", "campid"];
+
+
 var sampledPoints = gfc2014.sampleRegions({
-  collection:featuresWithProp,
-  properties:properties,
+  collection:simpleJoined,
+  properties:prop2,
   scale:30,
   geometries:true
 })
 
-print("Joined data", sampledPoints);
+print("All joined data", sampledPoints);
 
 //Export the distance data to Drive ///////////////////////////////////////////////////////////
 
 
-///Export.table.toDrive({
- /// collection: sampledPoints,
- /// description:'Sampledataextract',
- /// fileFormat: 'csv'
-/// });
+Export.table.toDrive({
+collection: sampledPoints,
+description:'Sampledataextract',
+fileFormat: 'csv'
+});
 
 
 
