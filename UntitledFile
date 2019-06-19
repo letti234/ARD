@@ -1,147 +1,38 @@
-///////////////FOREST DATA CLEANING /////////////////////////////////////////
+var primaryFeatures = ee.FeatureCollection([
+  ee.Feature(null, {foo: 0, ID: 'a'}),
+  ee.Feature(null, {foo: 1, ID: 'b'}),
+  ee.Feature(null, {foo: 1, ID: 'c'}),
+  ee.Feature(null, {foo: 2, ID: 'd'}),
+]);
 
-//Load the Hansen data and create layers
-var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+print("primary", primaryFeatures);
 
-//Load the SSA administrative district shapefile
-var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+// Create the secondary collection.
+var secondaryFeatures = ee.FeatureCollection([
+  ee.Feature(null, {bar: 1, ID: 'a'}),
+  ee.Feature(null, {bar: 1, ID: 'b'}),
+  ee.Feature(null, {bar: 2, ID: 'c'}),
+  ee.Feature(null, {bar: 3, ID: 'd'}),
+]);
 
-//Crop the Hansen data we are interested in to the SSA admin shapefile
-var gfc2014_c = gfc2014.clip(SSA);
-
-//Load the camp data from the fusion table
-var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
-
-//properties you will want later: campid
-
-//Generate a 50 km  buffer around camps
-var bufferPoly = function(feature) {
-  return feature.buffer(50000);   
-};
-
-var buffers = camps.map(bufferPoly);
-
-//Randomly select 10 pixels within the buffer areas (keep N small for training)
-var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
-
-
-
-
-
-
-
-
-
-/////////////DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP /////////////////
-
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-})
-
-// Join the points
-var joined = ee.Join.saveAll({
-  matchesKey: 'neighbors', 
-  measureKey: 'distance',
-  ordering: 'distance'
-}).apply({
-  primary: points, 
-  secondary: camps, 
-  condition: spatialFilter
+// Use an equals filter to specify how the collections match.
+var toyFilter = ee.Filter.equals({
+  leftField: 'ID',
+  rightField: 'ID'
 });
 
-// Get distance to nearest point.
-var withNearestDist = joined.map(function(f) {
-  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('distance');
-  return f.set('nearestDist', nearestDist);
-});
+// Define the join.
+var innerJoin = ee.Join.inner();
 
+// Apply the join.
+var toyJoin = innerJoin.apply(primaryFeatures, secondaryFeatures,  toyFilter);
 
-// Get nearest camp id.
-var pointdata = withNearestDist.map(function(f) {
-  var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
-});
+// Print the result.
+print('Inner join toy example:', toyJoin);
 
-
-print('point data', pointdata);
-
-
-
-
-
-
-
-
-
-/////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
-
-
-
-
-
-
-
-////////EXTRACTING INFORMATION FROM THE SSA SHAPEFILE AND HANSEN DATA/////////////////////
-
-//Specify the properties that I want to copy from the SSA shapefile
-var properties = ["ADM0","ADM1", "ADM2"]
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(pointdata, SSA, spatialFilter);
-
-// since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var featuresWithProp = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-
-var pew = featuresWithProp.map(pointdata);
-
-print('District data', pew);
-
-
-
-
-
-
-
-
-
-//This function will fill in the characteristics of the GFC /////////////////////////////////////////////
-
-var sampledPoints = gfc2014.sampleRegions({
-  collection:featuresWithProp,
-  properties:properties,
-  scale:30,
-  geometries:true
-})
-
-print("Joined data", sampledPoints);
-
-//Export the distance data to Drive ///////////////////////////////////////////////////////////
-
-
-///Export.table.toDrive({
- /// collection: sampledPoints,
- /// description:'Sampledataextract',
- /// fileFormat: 'csv'
-/// });
-
-
-
-
+print(toyJoin.map(function(pair) {
+  var f1 = ee.Feature(pair.get('primary'));
+  var f2 = ee.Feature(pair.get('secondary'));
+  return f1.set(f2.toDictionary());
+}));
 
