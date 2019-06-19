@@ -11,8 +11,7 @@ var gfc2014_c = gfc2014.clip(SSA);
 
 //Load the camp data from the fusion table
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
-
-//properties you will want later: campid
+Map.addLayer(camps, {color: 'red'}, 'camps');
 
 //Generate a 50 km  buffer around camps
 var bufferPoly = function(feature) {
@@ -20,12 +19,13 @@ var bufferPoly = function(feature) {
 };
 
 var buffers = camps.map(bufferPoly);
+Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
 
 //Randomly select 10 pixels within the buffer areas (keep N small for training)
 var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
 
 print("Initial draw of points", points);
-Map.addLayer(points, {color: 'FF00FF'}, 'points');
+Map.addLayer(points, {color: 'blue'}, 'points');
 
 
 
@@ -69,7 +69,7 @@ var pointdata = withNearestDist.map(function(f) {
 });
 
 
-print('point data', pointdata);
+print('Feature with camp id and distance', pointdata);
 
 
 
@@ -91,7 +91,6 @@ var spatialFilter20 = ee.Filter.withinDistance({
   maxError: 10
 })
 
-// Join the points
 var joined20 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -102,7 +101,6 @@ var joined20 = ee.Join.saveAll({
   condition: spatialFilter20
 });
 
-// Get rid of points w/o neighbors.
 var hasNearest20 = joined20.map(function(f) {
   var neighsSize20 = ee.List(f.get('neighbors')).size();
   return f.set('neighsSize20', neighsSize20);
@@ -119,7 +117,6 @@ var spatialFilter15 = ee.Filter.withinDistance({
   maxError: 10
 })
 
-// Join the points
 var joined15 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -130,7 +127,6 @@ var joined15 = ee.Join.saveAll({
   condition: spatialFilter15
 });
 
-// Get rid of points w/o neighbors.
 var hasNearest15 = joined15.map(function(f) {
   var neighsSize15 = ee.List(f.get('neighbors')).size();
   return f.set('neighsSize15', neighsSize15);
@@ -148,7 +144,6 @@ var spatialFilter10 = ee.Filter.withinDistance({
   maxError: 10
 })
 
-// Join the points
 var joined10 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -159,7 +154,6 @@ var joined10 = ee.Join.saveAll({
   condition: spatialFilter10
 });
 
-// Get rid of points w/o neighbors.
 var hasNearest10 = joined15.map(function(f) {
   var neighsSize10 = ee.List(f.get('neighbors')).size();
   return f.set('neighsSize10', neighsSize10);
@@ -177,7 +171,6 @@ var spatialFilter5 = ee.Filter.withinDistance({
   maxError: 10
 })
 
-// Join the points
 var joined5 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -188,7 +181,6 @@ var joined5 = ee.Join.saveAll({
   condition: spatialFilter5
 });
 
-// Get rid of points w/o neighbors.
 var hasNearest5 = joined5.map(function(f) {
   var neighsSize5 = ee.List(f.get('neighbors')).size();
   return f.set('neighsSize5', neighsSize5);
@@ -199,7 +191,16 @@ print("Camps within 5 km", hasNearest5);
 
 
 
+var filter = ee.Filter.equals({
+  leftField: 'system:index',
+  rightField: 'system:index'
+});
 
+var invertJoin = ee.Join.inverted();
+
+var inc20_15 = invertJoin.apply(hasNearest20, hasNearest15, filter);
+ 
+print(inc20_15);
 
 
 
@@ -225,7 +226,7 @@ var featuresWithProp = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-print('District data', featuresWithProp);
+print('District data for sample points', featuresWithProp);
 
 
 //COMBINE THE DISTRICT AND CAMP DATA///////
@@ -241,16 +242,13 @@ var simpleJoin = ee.Join.inner();
 // Apply the join.
 var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata, filter);
 
-// Display the result.
-print('Simple join: ', simpleJoined);
-
 var newjoin=simpleJoined.map(function(pair) {
   var f1 = ee.Feature(pair.get('primary'));
   var f2 = ee.Feature(pair.get('secondary'));
   return f1.set(f2.toDictionary());
 });
 
-print("latest try", newjoin);
+print("Sample points camp and district data", newjoin);
 
 
 //This function will fill in the characteristics of the GFC /////////////////////////////////////////////
@@ -265,7 +263,7 @@ var sampledPoints = gfc2014.sampleRegions({
  geometries:true
 });
 
-print("All joined data", sampledPoints);
+print("Final feature collection", sampledPoints);
 
 //Export the distance data to Drive ///////////////////////////////////////////////////////////
 
