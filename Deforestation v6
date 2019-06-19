@@ -1,4 +1,4 @@
-///////////////FOREST DATA CLEANING /////////////////////////////////////////
+///////////////DATA UPLOAD AND CLEANING /////////////////////////////////////////
 
 //Load the Hansen data and create layers
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
@@ -25,6 +25,7 @@ var buffers = camps.map(bufferPoly);
 var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
 
 print("Initial draw of points", points);
+Map.addLayer(points, {color: 'FF00FF'}, 'points');
 
 
 
