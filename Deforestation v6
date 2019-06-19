@@ -83,7 +83,7 @@ print('point data', pointdata);
 /////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
 
 
-
+//do this!!
 
 
 
@@ -113,6 +113,8 @@ var featuresWithProp = joinAll.map(function(feature){
 print('District data', featuresWithProp);
 
 
+//NEED TO DO: COMBINE THE DISTRICT AND CAMP DATA!!///////
+
 var filter = ee.Filter.equals({
   leftField: 'system:index',
   rightField: 'system:index'
@@ -127,6 +129,19 @@ var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata, filter);
 // Display the result.
 print('Simple join: ', simpleJoined);
 
+var joinedMODIS = simpleJoined.map(function(feature) {
+  return (feature.get('primary'), feature.get('secondary'));
+});
+
+
+print('cleanup', joinedMODIS);
+
+
+
+
+
+
+
 
 
 
@@ -137,26 +152,24 @@ print('Simple join: ', simpleJoined);
 
 //This function will fill in the characteristics of the GFC /////////////////////////////////////////////
 
-var prop2 = ["ADM0","ADM1", "ADM2", "campid"];
 
+///var sampledPoints = gfc2014.sampleRegions({
+ /// collection:simpleJoined,
+ /// properties:prop2,
+ /// scale:30,
+ /// geometries:true
+///})
 
-var sampledPoints = gfc2014.sampleRegions({
-  collection:simpleJoined,
-  properties:prop2,
-  scale:30,
-  geometries:true
-})
-
-print("All joined data", sampledPoints);
+///print("All joined data", sampledPoints);
 
 //Export the distance data to Drive ///////////////////////////////////////////////////////////
 
 
-Export.table.toDrive({
-collection: sampledPoints,
-description:'Sampledataextract',
-fileFormat: 'csv'
-});
+///Export.table.toDrive({
+///collection: sampledPoints,
+///description:'Sampledataextract',
+///fileFormat: 'csv'
+///});
 
 
 
