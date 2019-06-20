@@ -1,0 +1,280 @@
+///////////////DATA UPLOAD AND CLEANING /////////////////////////////////////////
+
+//Load the Hansen data and create layers
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+
+//Load the SSA administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+//Crop the Hansen data we are interested in to the SSA admin shapefile
+var gfc2014_c = gfc2014.clip(SSA);
+
+//Load the camp data from the fusion table
+var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
+Map.addLayer(camps, {color: 'red'}, 'camps');
+
+//Generate a 50 km  buffer around camps
+var bufferPoly = function(feature) {
+  return feature.buffer(50000);   
+};
+
+var buffers = camps.map(bufferPoly);
+Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+
+//Randomly select 10 pixels within the buffer areas (keep N small for training)
+var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
+
+print("Initial draw of points", points);
+Map.addLayer(points, {color: 'blue'}, 'points');
+
+
+
+
+
+
+
+/////////////DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP /////////////////
+
+var spatialFilter = ee.Filter.withinDistance({
+  distance: 50000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+});
+
+// Join the points
+var joined = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: points, 
+  secondary: camps, 
+  condition: spatialFilter
+});
+
+// Get distance to nearest point.
+var withNearestDist = joined.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
+
+
+// Get nearest camp id.
+var pointdata = withNearestDist.map(function(f) {
+  var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('campid');
+  return f.set('campid', nearestCamp);
+});
+
+
+print('Feature with camp id and distance', pointdata);
+
+
+
+
+
+
+
+
+
+/////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
+
+
+///0-20
+
+var spatialFilter20 = ee.Filter.withinDistance({
+  distance: 20000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+})
+
+var joined20 = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: points, 
+  secondary: camps, 
+  condition: spatialFilter20
+});
+
+var hasNearest20 = joined20.map(function(f) {
+  var neighsSize20 = ee.List(f.get('neighbors')).size();
+  return f.set('neighsSize20', neighsSize20);
+}).filter(ee.Filter.gt('neighsSize20', 0));
+
+print("Camps within 20 km", hasNearest20);
+
+///0-15
+
+var spatialFilter15 = ee.Filter.withinDistance({
+  distance: 15000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+})
+
+var joined15 = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: points, 
+  secondary: camps, 
+  condition: spatialFilter15
+});
+
+var hasNearest15 = joined15.map(function(f) {
+  var neighsSize15 = ee.List(f.get('neighbors')).size();
+  return f.set('neighsSize15', neighsSize15);
+}).filter(ee.Filter.gt('neighsSize15', 0));
+
+print("Camps within 15 km", hasNearest15);
+
+
+///0-10
+
+var spatialFilter10 = ee.Filter.withinDistance({
+  distance: 10000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+})
+
+var joined10 = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: points, 
+  secondary: camps, 
+  condition: spatialFilter10
+});
+
+var hasNearest10 = joined15.map(function(f) {
+  var neighsSize10 = ee.List(f.get('neighbors')).size();
+  return f.set('neighsSize10', neighsSize10);
+}).filter(ee.Filter.gt('neighsSize10', 0));
+
+print("Camps within 10 km", hasNearest10);
+
+
+///0-5
+
+var spatialFilter5 = ee.Filter.withinDistance({
+  distance: 5000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+})
+
+var joined5 = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: points, 
+  secondary: camps, 
+  condition: spatialFilter5
+});
+
+var hasNearest5 = joined5.map(function(f) {
+  var neighsSize5 = ee.List(f.get('neighbors')).size();
+  return f.set('neighsSize5', neighsSize5);
+}).filter(ee.Filter.gt('neighsSize5', 0));
+
+print("Camps within 5 km", hasNearest5);
+
+
+////////JOINING THE NUMBER OF CAMPS 20, 15, 10, 5 KM AWAY DATA FRAMES
+
+var filter = ee.Filter.equals({
+  leftField: 'system:index',
+  rightField: 'system:index'
+});
+
+var invertJoin = ee.Join.inverted();
+
+var inc20_15 = invertJoin.apply(hasNearest20, hasNearest15, filter);
+ 
+print("Attempt to join the 20 km and 15 km frames", inc20_15);
+
+
+
+
+////////EXTRACTING INFORMATION FROM THE SSA SHAPEFILE /////////////////////
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["ADM0","ADM1", "ADM2", "campid"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(pointdata, SSA, spatialFilter);
+
+// since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var featuresWithProp = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print('District data for sample points', featuresWithProp);
+
+
+//COMBINE THE DISTRICT AND CAMP DATA//////////////////
+
+var filter = ee.Filter.equals({
+  leftField: 'system:index',
+  rightField: 'system:index'
+});
+
+// Create the join.
+var simpleJoin = ee.Join.inner();
+
+// Apply the join.
+var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata, filter);
+
+var newjoin=simpleJoined.map(function(pair) {
+  var f1 = ee.Feature(pair.get('primary'));
+  var f2 = ee.Feature(pair.get('secondary'));
+  return f1.set(f2.toDictionary());
+});
+
+print("Sample points camp and district data", newjoin);
+
+
+//This function will fill in the characteristics of the GFC /////////////////////////////////////////////
+
+var prop2 = ["ADM0","ADM1", "ADM2", "campid", "nearestDist"];
+
+var sampledPoints = gfc2014.sampleRegions({
+ collection:newjoin,
+ properties:prop2,
+ scale:30,
+ geometries:true
+});
+
+print("Final feature collection", sampledPoints);
+
+//Export the distance data to Drive ///////////////////////////////////////////////////////////
+
+
+///Export.table.toDrive({
+///collection: sampledPoints,
+///description:'Sampledataextract',
+///fileFormat: 'csv'
+///});
+
+
+
+
+
