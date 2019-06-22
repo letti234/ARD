@@ -73,12 +73,6 @@ print('Feature with camp id and distance', pointdata);
 
 
 
-
-
-
-
-
-
 /////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
 
 var pointdata_withbandcounts = pointdata.map(function(pt) {
@@ -108,7 +102,7 @@ var spatialFilter = ee.Filter.intersects({
 });
 
 // Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(pointdata, SSA, spatialFilter);
+var joinAll = ee.Join.saveAll('matched').apply(pointdata_withbandcounts, SSA, spatialFilter);
 
 // since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
@@ -132,7 +126,7 @@ var filter = ee.Filter.equals({
 var simpleJoin = ee.Join.inner();
 
 // Apply the join.
-var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata, filter);
+var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata_withbandcounts, filter);
 
 var newjoin=simpleJoined.map(function(pair) {
   var f1 = ee.Feature(pair.get('primary'));
@@ -146,7 +140,7 @@ print("Sample points camp and district data", newjoin);
 //This function will fill in the characteristics of the GFC /////////////////////////////////////////////
 
 //Specify the properties that I want to copy from the SSA shapefile
-var prop2 = ["ADM0","ADM1", "ADM2", "campid", "nearestDist"];
+var prop2 = ["ADM0","ADM1", "ADM2", "campid", "nearestDist", "neighsSize5", "neighsSize10", "neighsSize15", "neighsSize20"];
 
 var sampledPoints = gfc2014.sampleRegions({
  collection:newjoin,
