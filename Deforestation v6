@@ -159,6 +159,9 @@ var sampledPoints = gfc2014.sampleRegions({
 
 print("Final feature collection", sampledPoints);
 
+
+
+
 //Export the distance data to Drive ///////////////////////////////////////////////////////////
 
 
