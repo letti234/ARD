@@ -53,30 +53,16 @@ print(cumulativeCost);
 //extract cumulative cost for each random point
 
 
-//Specify the properties that I want to copy from the SSA shapefile
-var properties = ["ADM0","ADM1", "ADM2", "campid"];
+var prop2 = [];
 
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
+var sampledPoints = cumulativeCost.sampleRegions({
+ collection:points,
+ properties:prop2,
+ scale:30,
+ geometries:true
 });
 
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(pointdata, SSA, spatialFilter);
-
-// since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var featuresWithProp = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-print('District data for sample points', featuresWithProp);
-
-
-
+print("Final feature collection", sampledPoints);
 
 
 
