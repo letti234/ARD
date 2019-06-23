@@ -49,4 +49,28 @@ var cumulativeCost = cost.cumulativeCost({
 Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
 
 //extract cumulative cost for each random point
+
+
+var filter = ee.Filter.equals({
+  leftField: 'system:index',
+  rightField: 'system:index'
+});
+
+// Create the join.
+var simpleJoin = ee.Join.inner();
+
+// Apply the join.
+var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata_withbandcounts, filter);
+
+var newjoin=simpleJoined.map(function(pair) {
+  var f1 = ee.Feature(pair.get('primary'));
+  var f2 = ee.Feature(pair.get('secondary'));
+  return f1.set(f2.toDictionary());
+});
+
+print("Sample points camp and district data", newjoin);
+
+
+
+
 Map.addLayer(geometry, {color: 'FF0000'}, 'source geometry');
