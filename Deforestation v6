@@ -1,19 +1,18 @@
 ///////////////DATA UPLOAD AND CLEANING /////////////////////////////////////////
 
-//Load the Hansen data and create layers
+//Hansen data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
-//Load the SSA administrative district shapefile
+//SSA administrative district shapefile
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
 
-//Crop the Hansen data we are interested in to the SSA admin shapefile
 var gfc2014_c = gfc2014.clip(SSA);
 
-//Load the camp data from the fusion table
+//Camp data 
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
 Map.addLayer(camps, {color: 'red'}, 'camps');
 
-//Generate a 50 km  buffer around camps
+//50 km  buffer around camps
 var bufferPoly = function(feature) {
   return feature.buffer(50000);   
 };
@@ -73,6 +72,9 @@ print('Feature with camp id and distance', pointdata);
 
 
 
+
+
+
 /////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
 
 var pointdata_withbandcounts = pointdata.map(function(pt) {
@@ -90,6 +92,12 @@ var pointdata_withbandcounts = pointdata.map(function(pt) {
 
 print("with band counts", pointdata_withbandcounts);
 
+
+
+
+
+
+
 ////////EXTRACTING INFORMATION FROM THE SSA SHAPEFILE AND HANSEN DATA/////////////////////
 
 //Specify the properties that I want to copy from the SSA shapefile
@@ -104,7 +112,7 @@ var spatialFilter = ee.Filter.intersects({
 // Join the points and polygons and apply the spatial filter to keep only intersecting ones
 var joinAll = ee.Join.saveAll('matched').apply(pointdata_withbandcounts, SSA, spatialFilter);
 
-// since the join adds intersecting polygons to a new property 'matched'
+// Since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
 var featuresWithProp = joinAll.map(function(feature){
   var joinedFeat =  ee.List(feature.get('matched'));
@@ -115,7 +123,7 @@ var featuresWithProp = joinAll.map(function(feature){
 print('District data for sample points', featuresWithProp);
 
 
-//COMBINE THE DISTRICT AND CAMP DATA///////
+//COMBINE THE DISTRICT AND CAMP DATA/////////////////////////////////////////
 
 var filter = ee.Filter.equals({
   leftField: 'system:index',
