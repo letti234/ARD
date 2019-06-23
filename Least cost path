@@ -50,7 +50,6 @@ Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
 print(cumulativeCost);
 
 
-//extract cumulative cost for each random point
 
 
 var prop2 = [];
@@ -62,8 +61,9 @@ var sampledPoints = cumulativeCost.sampleRegions({
  geometries:true
 });
 
-print("Final feature collection", sampledPoints);
+print("Final feature collection", cumulativeCost);
 
-
+var properties = sampledPoints.propertyNames();
+print('Metadata properties: ', properties);
 
 Map.addLayer(geometry, {color: 'FF0000'}, 'source geometry');
