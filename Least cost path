@@ -19,10 +19,9 @@ Map.addLayer(points, {color: 'blue'}, 'points');
 
 
 
-// Create a source image where the geometry is 1, everything else is 0.
+
 var sources = ee.Image().toByte().paint(camps, 1);
 
-// Mask the sources image with itself.
 sources = sources.updateMask(sources);
 
 // The cost data is generated from classes in ESA/GLOBCOVER.
@@ -47,8 +46,6 @@ var cumulativeCost = cost.cumulativeCost({
 });
 
 // Display the results
-Map.setCenter(18.71, 4.2, 9);
-Map.addLayer(cover, {}, 'Globcover');
 Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
 
 //extract cumulative cost for each random point
