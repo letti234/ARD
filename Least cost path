@@ -1,8 +1,26 @@
-// A rectangle representing Bangui, Central African Republic.
-var geometry = ee.Geometry.Rectangle([18.5229, 4.3491, 18.5833, 4.4066]);
+//Load the camp data from the fusion table
+var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
+Map.addLayer(camps, {color: 'red'}, 'camps');
+
+//Generate a 50 km  buffer around camps
+var bufferPoly = function(feature) {
+  return feature.buffer(50000);   
+};
+
+var buffers = camps.map(bufferPoly);
+Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+
+//Randomly select 10 pixels within the buffer areas (keep N small for training)
+var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
+
+print("Initial draw of points", points);
+Map.addLayer(points, {color: 'blue'}, 'points');
+
+
+
 
 // Create a source image where the geometry is 1, everything else is 0.
-var sources = ee.Image().toByte().paint(geometry, 1);
+var sources = ee.Image().toByte().paint(camps, 1);
 
 // Mask the sources image with itself.
 sources = sources.updateMask(sources);
@@ -25,11 +43,13 @@ var cost =
 // Compute the cumulative cost to traverse the land cover.
 var cumulativeCost = cost.cumulativeCost({
   source: sources,
-  maxDistance: 80 * 1000 // 80 kilometers
+  maxDistance: 50 * 1000 // 50 kilometers
 });
 
 // Display the results
 Map.setCenter(18.71, 4.2, 9);
 Map.addLayer(cover, {}, 'Globcover');
 Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
+
+//extract cumulative cost for each random point
 Map.addLayer(geometry, {color: 'FF0000'}, 'source geometry');
