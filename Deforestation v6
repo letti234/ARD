@@ -1,4 +1,4 @@
-///////////////DATA UPLOAD AND CLEANING /////////////////////////////////////////
+///-----DATA UPLOAD AND CLEANING 
 
 //Hansen data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
@@ -20,8 +20,8 @@ var bufferPoly = function(feature) {
 var buffers = camps.map(bufferPoly);
 Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
 
-//Randomly select 10 pixels within the buffer areas (keep N small for training)
-var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
+//Randomly select 1 million pixels within the buffer areas (keep N small for training)
+var points = ee.FeatureCollection.randomPoints(buffers, 1000000, 0, 10);
 
 print("Initial draw of points", points);
 Map.addLayer(points, {color: 'blue'}, 'points');
@@ -160,16 +160,56 @@ var sampledPoints = gfc2014.sampleRegions({
 print("Final feature collection", sampledPoints);
 
 
+//Least cost path ///////////////////////////////////////////////////////////
+
+var sources = ee.Image().toByte().paint(camps, 1);
+
+sources = sources.updateMask(sources);
+
+// The cost data is generated from classes in ESA/GLOBCOVER.
+var cover = ee.Image('ESA/GLOBCOVER_L4_200901_200912_V2_3').select(0);
+
+// Classes 60, 80, 110, 140 have cost 1.
+// Classes 40, 90, 120, 130, 170 have cost 2.
+// Classes 50, 70, 150, 160 have cost 3.
+var cost =
+  cover.eq(60).or(cover.eq(80)).or(cover.eq(110)).or(cover.eq(140))
+      .multiply(1).add(
+  cover.eq(40).or(cover.eq(90)).or(cover.eq(120)).or(cover.eq(130))
+    .or(cover.eq(170))
+      .multiply(2).add(
+  cover.eq(50).or(cover.eq(70)).or(cover.eq(150)).or(cover.eq(160))
+      .multiply(3)));
+
+// Compute the cumulative cost to traverse the land cover.
+var cumulativeCost = cost.cumulativeCost({
+  source: sources,
+  maxDistance: 50 * 1000 // 50 kilometers
+});
+
+// Display the results
+Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
 
 
+
+var prop2 = ["ADM0", "ADM1", "ADM2", "campid", "nearestDist", "neighsSize5", "neighsSize10", "neighsSize15", "neighsSize20", "lossyear", "treecover2000"];
+
+var sampledPoints2 = cumulativeCost.sampleRegions({
+ collection:sampledPoints,
+ properties:prop2,
+ scale:30,
+ geometries:true
+});
+
+print("Final sample with least cost path", sampledPoints2)
 //Export the distance data to Drive ///////////////////////////////////////////////////////////
 
 
-///Export.table.toDrive({
-///collection: sampledPoints,
-///description:'Sampledataextract',
-///fileFormat: 'csv'
-///});
+Export.table.toDrive({
+collection: sampledPoints,
+description:'Sampledataextract_total_v1',
+fileFormat: 'csv'
+});
 
 
 
