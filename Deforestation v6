@@ -18,13 +18,13 @@ var bufferPoly = function(feature) {
 };
 
 var buffers = camps.map(bufferPoly);
-Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+//Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
 
 //Randomly select 1 million pixels within the buffer areas (keep N small for training)
 var points = ee.FeatureCollection.randomPoints(buffers, 1000000, 0, 10);
 
-print("Initial draw of points", points);
-Map.addLayer(points, {color: 'blue'}, 'points');
+//print("Initial draw of points", points);
+//Map.addLayer(points, {color: 'blue'}, 'points');
 
 
 
@@ -68,7 +68,7 @@ var pointdata = withNearestDist.map(function(f) {
 });
 
 
-print('Feature with camp id and distance', pointdata);
+//print('Feature with camp id and distance', pointdata);
 
 
 
@@ -90,7 +90,7 @@ var pointdata_withbandcounts = pointdata.map(function(pt) {
   return(pt);
 });
 
-print("with band counts", pointdata_withbandcounts);
+//print("with band counts", pointdata_withbandcounts);
 
 
 
@@ -120,7 +120,7 @@ var featuresWithProp = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-print('District data for sample points', featuresWithProp);
+//print('District data for sample points', featuresWithProp);
 
 
 //COMBINE THE DISTRICT AND CAMP DATA/////////////////////////////////////////
@@ -142,7 +142,7 @@ var newjoin=simpleJoined.map(function(pair) {
   return f1.set(f2.toDictionary());
 });
 
-print("Sample points camp and district data", newjoin);
+//print("Sample points camp and district data", newjoin);
 
 
 //This function will fill in the characteristics of the GFC /////////////////////////////////////////////
@@ -157,7 +157,7 @@ var sampledPoints = gfc2014.sampleRegions({
  geometries:true
 });
 
-print("Final feature collection", sampledPoints);
+//print("Final feature collection", sampledPoints);
 
 
 //Least cost path ///////////////////////////////////////////////////////////
@@ -188,7 +188,7 @@ var cumulativeCost = cost.cumulativeCost({
 });
 
 // Display the results
-Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
+//Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
 
 
 
@@ -201,7 +201,7 @@ var sampledPoints2 = cumulativeCost.sampleRegions({
  geometries:true
 });
 
-print("Final sample with least cost path", sampledPoints2)
+//print("Final sample with least cost path", sampledPoints2)
 //Export the distance data to Drive ///////////////////////////////////////////////////////////
 
 
@@ -210,8 +210,6 @@ collection: sampledPoints,
 description:'Sampledataextract_total_v1',
 fileFormat: 'csv'
 });
-
-
 
 
 
