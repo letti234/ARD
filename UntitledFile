@@ -1,0 +1,22 @@
+///-----DATA UPLOAD AND CLEANING 
+
+//Camp data 
+var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
+//Map.addLayer(camps, {color: 'red'}, 'camps');
+
+//50 km  buffer around camps
+var bufferPoly = function(feature) {
+return feature.buffer(50000);   
+  };
+  
+var buffers = camps.map(bufferPoly);
+
+//Randomly select 100 pixels within the buffer areas (keep N small for training)
+var points = ee.FeatureCollection.randomPoints(buffers, 10, 0, 10);
+print(points);
+
+// split based on automatic feature id, which GEE refers to as system:index
+var points_chunk1 = points.filter(ee.Filter.rangeContains('system:index', 0, 5));
+
+print(points_chunk1);
+
