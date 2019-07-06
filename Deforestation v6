@@ -209,7 +209,7 @@ var sampledPoints2 = cumulativeCost.sampleRegions({
 var chunk = 100000;
 var collectionSize = 1000000;
 for (var i = 0; i<collectionSize;i=i+chunk){
-  var subset = ee.FeatureCollection(newFC.toList(chunk, i));
+  var subset = ee.FeatureCollection(sampledPoints2.toList(chunk, i));
   Export.table.toDrive(subset, "Chunk_", "Deforestation");
 }
 
