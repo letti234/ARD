@@ -13,7 +13,42 @@ var buffers = camps.map(bufferPoly);
 
 //Randomly select 100 pixels within the buffer areas (keep N small for training)
 var points = ee.FeatureCollection.randomPoints(buffers, 100, 0, 10);
-print(points);
+
+
+
+var spatialFilter = ee.Filter.withinDistance({
+  distance: 50000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+});
+
+// Join the points
+var joined = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: points, 
+  secondary: camps, 
+  condition: spatialFilter
+});
+
+// Get distance to nearest point.
+var withNearestDist = joined.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
+
+
+// Get nearest camp id.
+var pointdata = withNearestDist.map(function(f) {
+  var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('campid');
+  return f.set('campid', nearestCamp);
+});
+
 
 
 
