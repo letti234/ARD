@@ -50,12 +50,12 @@ var pointdata = withNearestDist.map(function(f) {
 });
 
 
+print("Sample extract", pointdata);
 
-
-var chunk = 50;
-var collectionSize = 100
+var chunk = 25;
+var collectionSize = 100;
 for (var i = 0; i<collectionSize;i=i+chunk){
-  var subset = ee.FeatureCollection(points.toList(chunk, i));
-  Export.table.toAsset(subset, "description", "/asset/id")
+  var subset = ee.FeatureCollection(pointdata.toList(chunk, i));
+  Export.table.toAsset(subset, "Test_chunk", "/asset");
 }
 
