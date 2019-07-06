@@ -52,10 +52,25 @@ var pointdata = withNearestDist.map(function(f) {
 
 print("Sample extract", pointdata);
 
+
+var prop2 = ["campid", "nearestDist"];
+
+var removeProperty = function(feat, property) {
+  var properties = feat.propertyNames()
+  var selectProperties = properties.filter(ee.Filter.neq('item', property))
+  return feat.select(selectProperties)
+}
+
+var newFC = pointdata.map(function(feat) {
+  return removeProperty(feat, 'neighbors')
+})
+
+print("updated collection", newFC);
+
 var chunk = 25;
 var collectionSize = 100;
 for (var i = 0; i<collectionSize;i=i+chunk){
-  var subset = ee.FeatureCollection(pointdata.toList(chunk, i));
-  Export.table.toAsset(subset, "Test_chunk", "/asset");
+  var subset = ee.FeatureCollection(newFC.toList(chunk, i));
+  Export.table.toDrive(subset, "Test_chunk", "Data1");
 }
 
