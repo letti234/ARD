@@ -205,11 +205,13 @@ var sampledPoints2 = cumulativeCost.sampleRegions({
 //Export the distance data to Drive ///////////////////////////////////////////////////////////
 
 
-Export.table.toDrive({
-collection: sampledPoints,
-description:'Sampledataextract_total_v1',
-fileFormat: 'csv'
-});
+
+var chunk = 100000;
+var collectionSize = 1000000;
+for (var i = 0; i<collectionSize;i=i+chunk){
+  var subset = ee.FeatureCollection(newFC.toList(chunk, i));
+  Export.table.toDrive(subset, "Chunk_", "Deforestation");
+}
 
 
 
