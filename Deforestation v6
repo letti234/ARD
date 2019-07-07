@@ -1,4 +1,6 @@
-///-----DATA UPLOAD AND CLEANING 
+//-------------------------------------------------------------
+//-DATA UPLOAD AND CLEANING------------------------------------
+//-------------------------------------------------------------
 
 //Hansen data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
@@ -27,12 +29,9 @@ var points = ee.FeatureCollection.randomPoints(buffers, 1000000, 0, 10);
 //Map.addLayer(points, {color: 'blue'}, 'points');
 
 
-
-
-
-
-
-/////////////DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP /////////////////
+//-------------------------------------------------------------
+//MEASURE DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP -----
+//-------------------------------------------------------------
 
 var spatialFilter = ee.Filter.withinDistance({
   distance: 50000,
@@ -72,10 +71,10 @@ var pointdata = withNearestDist.map(function(f) {
 
 
 
+//-------------------------------------------------------------
+//OBTAIN COUNT OF NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY--------
+//-------------------------------------------------------------
 
-
-
-/////////////NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY ///////////////////////////////////////
 
 var pointdata_withbandcounts = pointdata.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -93,12 +92,8 @@ var pointdata_withbandcounts = pointdata.map(function(pt) {
 //print("with band counts", pointdata_withbandcounts);
 
 
-
-
-
-
-
-////////EXTRACTING INFORMATION FROM THE SSA SHAPEFILE AND HANSEN DATA/////////////////////
+//-------------------------------------------------------------
+//EXTRACTING INFORMATION FROM THE SSA SHAPEFILE AND HANSEN DATA
 
 //Specify the properties that I want to copy from the SSA shapefile
 var properties = ["ADM0","ADM1", "ADM2", "campid"];
@@ -123,7 +118,9 @@ var featuresWithProp = joinAll.map(function(feature){
 //print('District data for sample points', featuresWithProp);
 
 
-//COMBINE THE DISTRICT AND CAMP DATA/////////////////////////////////////////
+//-------------------------------------------------------------
+//JOIN HANSEN AND DISTRICT DATA TO CAMP DATA-------------------
+//-------------------------------------------------------------
 
 var filter = ee.Filter.equals({
   leftField: 'system:index',
@@ -160,7 +157,9 @@ var sampledPoints = gfc2014.sampleRegions({
 //print("Final feature collection", sampledPoints);
 
 
-//Least cost path ///////////////////////////////////////////////////////////
+//-------------------------------------------------------------
+//CREATE LEAST COST PATH VARIABLE, ADD TO DATA-----------------
+//-------------------------------------------------------------
 
 var sources = ee.Image().toByte().paint(camps, 1);
 
@@ -191,7 +190,6 @@ var cumulativeCost = cost.cumulativeCost({
 //Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
 
 
-
 var prop2 = ["ADM0", "ADM1", "ADM2", "campid", "nearestDist", "neighsSize5", "neighsSize10", "neighsSize15", "neighsSize20", "lossyear", "treecover2000"];
 
 var sampledPoints2 = cumulativeCost.sampleRegions({
@@ -202,8 +200,10 @@ var sampledPoints2 = cumulativeCost.sampleRegions({
 });
 
 //print("Final sample with least cost path", sampledPoints2)
-//Export the distance data to Drive ///////////////////////////////////////////////////////////
 
+//-------------------------------------------------------------
+//EXPORT DATA IN CHUNKS----------------------------------------
+//-------------------------------------------------------------
 
 
 var chunk = 100000;
