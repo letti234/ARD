@@ -34,4 +34,5 @@ print("EVI data collection", collection);
 //var reference = collection.filterDate('start-date', 'end-date')
 //.sort('system:time_start', false);
 
+
 //This is cool - http://www.earthstat.org/
