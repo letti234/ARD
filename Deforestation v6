@@ -10,7 +10,7 @@ var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
 
 var gfc2014_c = gfc2014.clip(SSA);
 
-//Camp data 
+//Camp data sa
 var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
 Map.addLayer(camps, {color: 'red'}, 'camps');
 
@@ -150,7 +150,6 @@ var prop2 = ["ADM0","ADM1", "ADM2", "campid", "nearestDist", "neighsSize5", "nei
 var sampledPoints = gfc2014.sampleRegions({
  collection:newjoin,
  properties:prop2,
- scale:30,
  geometries:true
 });
 
@@ -195,7 +194,6 @@ var prop2 = ["ADM0", "ADM1", "ADM2", "campid", "nearestDist", "neighsSize5", "ne
 var sampledPoints2 = cumulativeCost.sampleRegions({
  collection:sampledPoints,
  properties:prop2,
- scale:30,
  geometries:true
 });
 
