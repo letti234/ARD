@@ -1,0 +1,37 @@
+//https://developers.google.com/earth-engine/image_math
+
+var image = ee.Image('LANDSAT/LC08/C01/T1_TOA/LC08_044034_20140318');
+
+print("Landsat information", image);
+
+//There are 12 bands - are these for 12 months?
+
+var evi = image.expression(
+    '2.5 * ((NIR - RED) / (NIR + 6 * RED - 7.5 * BLUE + 1))', {
+      'NIR': image.select('B5'),
+      'RED': image.select('B4'),
+      'BLUE': image.select('B2')
+});
+
+Map.centerObject(image, 9);
+//Map.addLayer(evi, {min: -1, max: 1, palette: ['FF0000', '00FF00']});
+
+//the function above applies the EVI calculation for three bands, B2, B4, and B5
+
+
+
+//--------------------------------------------------------------------------------
+
+//https://developers.google.com/earth-engine/ic_iterating
+var collection = ee.ImageCollection('MODIS/006/MYD13A1').select('EVI');
+
+print("EVI data collection", collection);
+
+//Data set is 2002-2019, so we want to restrict to 2002-2016. We also want to 
+//average over the growing season dates.
+
+//Will be something like this - need another raster to derive start-date and end-date from
+//var reference = collection.filterDate('start-date', 'end-date')
+//.sort('system:time_start', false);
+
+//This is cool - http://www.earthstat.org/
