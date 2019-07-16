@@ -23,7 +23,7 @@ var buffers = camps.map(bufferPoly);
 //Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
 
 //Randomly select 1 million pixels within the buffer areas (keep N small for training)
-var points = ee.FeatureCollection.randomPoints(buffers, 1000000, 0, 10);
+var points = ee.FeatureCollection.randomPoints(buffers, 1000000);
 
 //print("Initial draw of points", points);
 //Map.addLayer(points, {color: 'blue'}, 'points');
@@ -202,6 +202,7 @@ var sampledPoints2 = cumulativeCost.sampleRegions({
 //-------------------------------------------------------------
 //EXPORT DATA IN CHUNKS----------------------------------------
 //-------------------------------------------------------------
+
 
 
 //Current chunk size is 100,000. Change "chunk" below if need 
