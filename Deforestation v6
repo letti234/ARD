@@ -206,7 +206,7 @@ var sampledPoints2 = cumulativeCost.sampleRegions({
 
 //Current chunk size is 100,000. Change "chunk" below if need 
 //to make smaller.
-var chunk = 100000;
+var chunk = 50000;
 var collectionSize = 1000000;
 for (var i = 0; i<collectionSize;i=i+chunk){
   var subset = ee.FeatureCollection(sampledPoints2.toList(chunk, i));
