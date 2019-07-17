@@ -1,0 +1,21 @@
+
+//Camp data sa
+var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
+Map.addLayer(camps, {color: 'red'}, 'camps');
+
+//50 km  buffer around camps
+var bufferPoly = function(feature) {
+  return feature.buffer(50000);   
+};
+
+var buffers = camps.map(bufferPoly);
+//Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+
+//Randomly select 1 million pixels within the buffer areas (keep N small for training)
+var points = ee.FeatureCollection.randomPoints(buffers, 10000);
+
+///City accessibility
+var dataset = ee.Image('Oxford/MAP/accessibility_to_cities_2015_v1_0');
+print("Access", dataset);
+
+
