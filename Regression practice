@@ -11,11 +11,23 @@ var bufferPoly = function(feature) {
 var buffers = camps.map(bufferPoly);
 //Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
 
-//Randomly select 1 million pixels within the buffer areas (keep N small for training)
-var points = ee.FeatureCollection.randomPoints(buffers, 10000);
+//Randomly select 1000 pixels within the buffer areas (keep N small for training)
+var points = ee.FeatureCollection.randomPoints(buffers, 1000);
+
+//Distance between pixel and camp
 
 ///City accessibility
 var dataset = ee.Image('Oxford/MAP/accessibility_to_cities_2015_v1_0');
 print("Access", dataset);
+
+///
+var prop2 = ["ADM0","ADM1", "ADM2", "campid", "nearestDist", "neighsSize5", "neighsSize10", "neighsSize15", "neighsSize20"];
+
+var sampledPoints = gfc2014.sampleRegions({
+ collection:newjoin,
+ properties:prop2,
+ geometries:true
+});
+
 
 
