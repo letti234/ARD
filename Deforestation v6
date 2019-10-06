@@ -141,7 +141,6 @@ var filter = ee.Filter.equals({
 // Create the join.
 var simpleJoin = ee.Join.inner();
 
-// Apply the join.
 var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata_withbandcounts, filter);
 
 var newjoin=simpleJoined.map(function(pair) {
