@@ -60,6 +60,7 @@ var withNearestDist = joined.map(function(f) {
   return f.set('nearestDist', nearestDist);
 });
 
+print('DF with nearest camp', withNearestDist);
 
 // Add the id number of the nearest camp (for later data merging)
 var pointdata = withNearestDist.map(function(f) {
@@ -68,6 +69,7 @@ var pointdata = withNearestDist.map(function(f) {
   return f.set('campid', nearestCamp);
 });
 
+print('DF with nearest camp ID', withNearestDist);
 
 //print('Feature with camp id and distance', pointdata);
 
@@ -219,12 +221,12 @@ var sampledPoints2 = cumulativeCost.sampleRegions({
 
 //Current chunk size is 100,000. Change "chunk" below if need 
 //to make smaller.
-var chunk = 50000;
-var collectionSize = 1000000;
-for (var i = 0; i<collectionSize;i=i+chunk){
-  var subset = ee.FeatureCollection(sampledPoints2.toList(chunk, i));
-  Export.table.toDrive(subset, "Chunk_", "Deforestation");
-}
+//var chunk = 50000;
+//var collectionSize = 1000000;
+//for (var i = 0; i<collectionSize;i=i+chunk){
+//  var subset = ee.FeatureCollection(sampledPoints2.toList(chunk, i));
+ // Export.table.toDrive(subset, "Chunk_", "Deforestation");
+//}
 
 
 
