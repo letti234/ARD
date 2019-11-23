@@ -7,7 +7,7 @@
 
 //-------------------------------------------------------------
 // 
-//DATA UPLOAD AND CLEANING
+//    DATA UPLOAD AND CLEANING
 //  
 //-------------------------------------------------------------
 
@@ -39,7 +39,9 @@ var points = ee.FeatureCollection.randomPoints(buffers, 20);
 
 
 //-------------------------------------------------------------
-//CREATE LEAST COST PATH VARIABLE, ADD TO DATA-----------------
+//
+//    CREATE LEAST COST PATH VARIABLE, ADD TO DATA
+//
 //-------------------------------------------------------------
 
 //Distance set very high here due to large size of grids during testing
@@ -113,7 +115,9 @@ print('point data with nearest camp (lc)', nearest_ID_LC);
 
 
 //-------------------------------------------------------------
-//MEASURE DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP -----
+//
+//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP 
+//
 //-------------------------------------------------------------
 
 //These commands identify the "nearest neighbor" camps and then determine
@@ -160,7 +164,9 @@ print('DF with nearest camp ID', withNearestDist);
 
 
 //-------------------------------------------------------------
-//OBTAIN COUNT OF NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY--------
+//
+//    OBTAIN COUNT OF NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY
+//
 //-------------------------------------------------------------
 
 //These functions count how many camps are within a 5, 10, 15, and 
@@ -185,7 +191,7 @@ print('linear data', pointdata_withbandcounts);
 
 //-------------------------------------------------------------
 //
-//MERGE LEAST COST PATH AND LINEAR MEASURE DATAFRAMES----------
+//    MERGE LEAST COST PATH AND LINEAR MEASURE DATAFRAMES
 //
 //-------------------------------------------------------------
 
@@ -214,9 +220,6 @@ print("distances to camps", pixelneighbordata);
 //
 //-------------------------------------------------------------
 
-//The SSA shapefile includes information on country, district, and
-//sub-district. These functions extract that information such that
-//each pixel's admin. data is identified
 
 //Specify the properties needed from the SSA shapefile
 var properties = ["ADM0","ADM1", "ADM2"];
@@ -228,17 +231,29 @@ var spatialFilter2 = ee.Filter.intersects({
 });
 
 // Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(pixel, SSA, spatialFilter2);
+var joinAll = ee.Join.saveAll('matched').apply(points, SSA, spatialFilter2);
+
 
 // Since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
-var featuresWithProp = joinAll.map(function(feature){
+var SSApoints = joinAll.map(function(feature){
   var joinedFeat =  ee.List(feature.get('matched'));
   var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-print('District data for sample points', featuresWithProp);
+print('District data for sample points', SSApoints);
 
 
+var simpleJ = ee.Join.inner();
+
+var simpleJo2 = simpleJ.apply(SSApoints, pixelneighbordata, filter);
+
+var dfcampsSSA=simpleJo2.map(function(pair) {
+  var f1 = ee.Feature(pair.get('primary'));
+  var f2 = ee.Feature(pair.get('secondary'));
+  return f1.set(f2.toDictionary());
+});
+
+print("Updated dataframe", dfcampsSSA);
 
