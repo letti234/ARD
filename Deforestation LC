@@ -1,0 +1,102 @@
+//-------------------------------------------------------------
+//-DATA UPLOAD AND CLEANING------------------------------------
+//-------------------------------------------------------------
+
+//Hansen Global Forest Change data
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+var gfc2014_c = gfc2014.clip(SSA);
+
+//Camp dataset
+var camps = ee.FeatureCollection('ft:1DCL5m_EO8kKMis2BWTdzfg-i9uc4uAZ2xNLQuhf7');
+Map.addLayer(camps, {color: 'red'}, 'camps');
+
+//50 km  buffer around camps
+var bufferPoly = function(feature) {
+  return feature.buffer(50000);   
+};
+
+var buffers = camps.map(bufferPoly);
+//Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+
+//Randomly select 1 million pixels within the buffer areas (you can reduce the N to test the code)
+var points = ee.FeatureCollection.randomPoints(buffers, 100);
+
+//print("Initial draw of points", points);
+//Map.addLayer(points, {color: 'blue'}, 'points');
+
+//-------------------------------------------------------------
+//MEASURE DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP -----
+//-------------------------------------------------------------
+
+//-------------------------------------------------------------
+//CREATE LEAST COST PATH VARIABLE, ADD TO DATA-----------------
+//-------------------------------------------------------------
+
+//Distance set very high here due to large size of grids during testing
+var spatialFilter = ee.Filter.withinDistance({
+  distance: 500000,
+  leftField: '.geo',
+  rightField: '.geo',
+});
+
+//Least cost path is an alternative distance measure that accounts
+//for topography.
+var sources = ee.Image().toByte().paint(camps, 1);
+
+sources = sources.updateMask(sources);
+
+// The cost data is generated from classes in ESA/GLOBCOVER.
+var cover = ee.Image('ESA/GLOBCOVER_L4_200901_200912_V2_3').select(0);
+
+// Classes 60, 80, 110, 140 have cost 1.
+// Classes 40, 90, 120, 130, 170 have cost 2.
+// Classes 50, 70, 150, 160 have cost 3.
+var cost =
+  cover.eq(60).or(cover.eq(80)).or(cover.eq(110)).or(cover.eq(140))
+      .multiply(1).add(
+  cover.eq(40).or(cover.eq(90)).or(cover.eq(120)).or(cover.eq(130))
+    .or(cover.eq(170))
+      .multiply(2).add(
+  cover.eq(50).or(cover.eq(70)).or(cover.eq(150)).or(cover.eq(160))
+      .multiply(3)));
+
+// Compute the cumulative cost to traverse the land cover.
+var cumulativeCost = cost.cumulativeCost({
+  source: sources,
+  maxDistance: 50 * 1000 // 50 kilometers
+});
+
+// Display the results
+//Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
+
+
+
+var joined_leastcost = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'cumulativeCost'
+}).apply({
+  primary: points, 
+  secondary: camps, 
+  condition: spatialFilter
+});
+
+// Minimize the cost path to find "nearest" urban grid
+
+var nearest_UR_LC = joined_leastcost.map(function(f) {
+  var nearestDist_LC = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist_LC', nearestDist_LC);
+});
+
+print("Step 1 of LC", nearest_UR_LC);
+
+
+
+
+
+
