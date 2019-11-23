@@ -1,5 +1,14 @@
+//REFUGEE CAMPS AND DEFORESTATION V 7
+//COLETTE SALEMI
+//23 NOV 2019
+
+//Trainer version,N=20
+
+
 //-------------------------------------------------------------
-//-DATA UPLOAD AND CLEANING------------------------------------
+// 
+//DATA UPLOAD AND CLEANING
+//  
 //-------------------------------------------------------------
 
 //Hansen Global Forest Change data
@@ -22,15 +31,12 @@ var bufferPoly = function(feature) {
 var buffers = camps.map(bufferPoly);
 //Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
 
-//Randomly select 1 million pixels within the buffer areas (you can reduce the N to test the code)
-var points = ee.FeatureCollection.randomPoints(buffers, 100);
+//Randomly select 100 pixels
+var points = ee.FeatureCollection.randomPoints(buffers, 20);
 
 //print("Initial draw of points", points);
 //Map.addLayer(points, {color: 'blue'}, 'points');
 
-//-------------------------------------------------------------
-//MEASURE DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP -----
-//-------------------------------------------------------------
 
 //-------------------------------------------------------------
 //CREATE LEAST COST PATH VARIABLE, ADD TO DATA-----------------
@@ -74,7 +80,6 @@ var cumulativeCost = cost.cumulativeCost({
 //Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
 
 
-
 var joined_leastcost = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -96,6 +101,91 @@ var nearest_UR_LC = joined_leastcost.map(function(f) {
 print("Step 1 of LC", nearest_UR_LC);
 
 
+// Add the ID number of the nearest camp 
+var nearest_ID_LC = nearest_UR_LC.map(function(f) {
+  var nearestcamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('campid');
+  return f.set('campid_lc', nearestcamp);
+});
+
+print('point data with nearest camp (lc)', nearest_ID_LC);
+
+
+
+//-------------------------------------------------------------
+//MEASURE DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP -----
+//-------------------------------------------------------------
+
+//These commands identify the "nearest neighbor" camps and then determine
+//the closest one and the distace between pixel and camps
+
+var spatialFilter = ee.Filter.withinDistance({
+  distance: 50000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+});
+
+// Join the points
+var joined = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: points, 
+  secondary: camps, 
+  condition: spatialFilter
+});
+
+// Get distance to nearest point.
+var withNearestDist = joined.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
+
+print('DF with nearest camp', withNearestDist);
+
+// Add the id number of the nearest camp (for later data merging)
+var pointdata = withNearestDist.map(function(f) {
+  var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('campid');
+  return f.set('campid', nearestCamp);
+});
+
+print('DF with nearest camp ID', withNearestDist);
+
+//print('Feature with camp id and distance', pointdata);
+
+
+
+//-------------------------------------------------------------
+//OBTAIN COUNT OF NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY--------
+//-------------------------------------------------------------
+
+//These functions count how many camps are within a 5, 10, 15, and 
+//20 km buffer from each pixel, respectively
+
+var pointdata_withbandcounts = pointdata.map(function(pt) {
+  var neighs = ee.List(pt.get('neighbors'));
+  var filt = ee.Filter.lt('distance', 20000);
+  pt=pt.set('neighsSize20', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 15000);
+  pt=pt.set('neighsSize15', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 10000);
+  pt=pt.set('neighsSize10', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 5000);
+  pt=pt.set('neighsSize5', neighs.filter(filt).size());
+  return(pt);
+});
+
+
+print('linear data', pointdata_withbandcounts);
+
+
+//-------------------------------------------------------------
+//MERGE LEAST COST PATH AND LINEAR MEASURE DATAFRAMES----------
+//-------------------------------------------------------------
 
 
 
