@@ -136,7 +136,7 @@ var joined = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: points, 
+  primary: nearest_ID_LC, 
   secondary: camps, 
   condition: spatialFilter
 });
@@ -157,10 +157,9 @@ var pointdata = withNearestDist.map(function(f) {
   return f.set('campid', nearestCamp);
 });
 
-print('DF with nearest camp ID', withNearestDist);
+print('DF with nearest camp ID', pointdata);
 
 //print('Feature with camp id and distance', pointdata);
-
 
 
 //-------------------------------------------------------------
@@ -196,23 +195,6 @@ print('linear data', pointdata_withbandcounts);
 //-------------------------------------------------------------
 
 
-var filter = ee.Filter.equals({
-  leftField: 'system:index',
-  rightField: 'system:index'
-});
-
-// Create the join.
-var simpleJ = ee.Join.inner();
-
-var simpleJo = simpleJ.apply(nearest_ID_LC, pointdata_withbandcounts, filter);
-
-var pixelneighbordata=simpleJo.map(function(pair) {
-  var f1 = ee.Feature(pair.get('primary'));
-  var f2 = ee.Feature(pair.get('secondary'));
-  return f1.set(f2.toDictionary());
-});
-
-print("distances to camps", pixelneighbordata);
 
 //-------------------------------------------------------------
 //
@@ -220,40 +202,4 @@ print("distances to camps", pixelneighbordata);
 //
 //-------------------------------------------------------------
 
-
-//Specify the properties needed from the SSA shapefile
-var properties = ["ADM0","ADM1", "ADM2"];
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter2 = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(points, SSA, spatialFilter2);
-
-
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var SSApoints = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-print('District data for sample points', SSApoints);
-
-
-var simpleJ = ee.Join.inner();
-
-var simpleJo2 = simpleJ.apply(SSApoints, pixelneighbordata, filter);
-
-var dfcampsSSA=simpleJo2.map(function(pair) {
-  var f1 = ee.Feature(pair.get('primary'));
-  var f2 = ee.Feature(pair.get('secondary'));
-  return f1.set(f2.toDictionary());
-});
-
-print("Updated dataframe", dfcampsSSA);
 
