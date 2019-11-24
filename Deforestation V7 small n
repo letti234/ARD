@@ -2,7 +2,7 @@
 //COLETTE SALEMI
 //23 NOV 2019
 
-//Trainer version,N=20
+//Trainer version, N=10
 
 
 //-------------------------------------------------------------
@@ -32,7 +32,7 @@ var buffers = camps.map(bufferPoly);
 //Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
 
 //Randomly select 100 pixels
-var points = ee.FeatureCollection.randomPoints(buffers, 20);
+var points = ee.FeatureCollection.randomPoints(buffers, 10);
 
 //print("Initial draw of points", points);
 //Map.addLayer(points, {color: 'blue'}, 'points');
@@ -40,7 +40,7 @@ var points = ee.FeatureCollection.randomPoints(buffers, 20);
 
 //-------------------------------------------------------------
 //
-//    CREATE LEAST COST PATH VARIABLE, ADD TO DATA
+//    CREATE LEAST COST PATH VARIABLEs & ADD TO DATA
 //
 //-------------------------------------------------------------
 
@@ -100,7 +100,7 @@ var nearest_UR_LC = joined_leastcost.map(function(f) {
   return f.set('nearestDist_LC', nearestDist_LC);
 });
 
-print("Step 1 of LC", nearest_UR_LC);
+//print("Step 1 of LC", nearest_UR_LC);
 
 
 // Add the ID number of the nearest camp 
@@ -110,7 +110,7 @@ var nearest_ID_LC = nearest_UR_LC.map(function(f) {
   return f.set('campid_lc', nearestcamp);
 });
 
-print('point data with nearest camp (lc)', nearest_ID_LC);
+//print('point data with nearest camp (lc)', nearest_ID_LC);
 
 
 
@@ -148,7 +148,7 @@ var withNearestDist = joined.map(function(f) {
   return f.set('nearestDist', nearestDist);
 });
 
-print('DF with nearest camp', withNearestDist);
+//print('DF with nearest camp', withNearestDist);
 
 // Add the id number of the nearest camp (for later data merging)
 var pointdata = withNearestDist.map(function(f) {
@@ -157,7 +157,7 @@ var pointdata = withNearestDist.map(function(f) {
   return f.set('campid', nearestCamp);
 });
 
-print('DF with nearest camp ID', pointdata);
+//print('DF with nearest camp ID', pointdata);
 
 //print('Feature with camp id and distance', pointdata);
 
@@ -185,18 +185,18 @@ var pointdata_withbandcounts = pointdata.map(function(pt) {
 });
 
 
-print('linear data', pointdata_withbandcounts);
+print('camp distance data', pointdata_withbandcounts);
 
 
 //-------------------------------------------------------------
 //
-//EXTRACTING INFORMATION FROM THE SSA SHAPEFILE AND HANSEN DATA
+//EXTRACTING INFORMATION FROM THE SSA SHAPEFILE 
 //
 //-------------------------------------------------------------
 
 
 //Specify the properties that I want to copy from the SSA shapefile
-var properties = ["ADM0","ADM1", "ADM2", "campid"];
+var properties = ["ADM0","ADM1", "ADM2"];
 
 // Define a spatial filter as geometries that intersect.
 var spatialFilter = ee.Filter.intersects({
@@ -215,8 +215,6 @@ var featuresWithProp = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-print('District data for sample points', featuresWithProp);
-
 
 //-------------------------------------------------------------
 //
@@ -224,45 +222,44 @@ print('District data for sample points', featuresWithProp);
 //
 //-------------------------------------------------------------
 
-//Adding the deforestation data to our data frame
-
 var filter = ee.Filter.equals({
   leftField: 'system:index',
   rightField: 'system:index'
 });
 
 // Create the join.
-var simpleJoin = ee.Join.inner();
+var simpleJoin2 = ee.Join.inner();
 
-var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata_withbandcounts, filter);
+var simpleJoined2 = simpleJoin2.apply(pointdata_withbandcounts, featuresWithProp,  filter);
 
-var newjoin=simpleJoined.map(function(pair) {
+print(simpleJoined2);
+
+var newjoin2=simpleJoined2.map(function(pair) {
   var f1 = ee.Feature(pair.get('primary'));
   var f2 = ee.Feature(pair.get('secondary'));
   return f1.set(f2.toDictionary());
 });
 
-print("Sample points camp and district data", newjoin);
+print("Sample points camp and district data", newjoin2);
 
 //-------------------------------------------------------------
 //
-//JOIN HANSEN DATA TO THE MAIN DATAFRAME
+//OBTAIN GFC DATA FOR THE MAIN FEATURE COLLECTION
 //
 //-------------------------------------------------------------
 
-
-
-
-//Specify the properties that I want to copy from the SSA shapefile
-var prop2 = ["ADM0","ADM1", "ADM2", "campid",
-              "campid_LC", "nearestDist", "nearestDist_LC",
-              "neighsSize5", "neighsSize10", "neighsSize15", 
-              "neighsSize20"];
+var props2 = ["ADM0","ADM1", "ADM2", "campid", "campid_lc",
+              "nearestDist", "nearestDist_LC", "neighsSize10",
+              "neighsSize15", "neighsSize20", "neighsSize5"];
 
 var sampledPoints = gfc2014.sampleRegions({
- collection:newjoin,
- properties:prop2,
- geometries:true
-});
+  collection:newjoin2,
+  properties:props2,
+  scale:30,
+  geometries:true
+})
 
-print("Final feature collection", sampledPoints);
+print("Hansen and SSA data", sampledPoints);
+
+
+
