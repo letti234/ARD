@@ -322,7 +322,7 @@ var finalFC = newFC10.map(function(feat) {
 });
 
 
-print(finalFC);
+print("Final dataframe", finalFC);
 //-------------------------------------------------------------
 //
 //EXPORT
@@ -331,8 +331,8 @@ print(finalFC);
 
 
 Export.table.toDrive({
- collection: sampledPoints2,
- description:'Sampledataextract',
+ collection: finalFC,
+ description:'Mini_final_FC',
 fileFormat: 'csv'
  });
 
