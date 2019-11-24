@@ -252,14 +252,26 @@ var props2 = ["ADM0","ADM1", "ADM2", "campid", "campid_lc",
               "nearestDist", "nearestDist_LC", "neighsSize10",
               "neighsSize15", "neighsSize20", "neighsSize5"];
 
-var sampledPoints = gfc2014.sampleRegions({
+var sampledPoints2 = gfc2014.sampleRegions({
   collection:newjoin2,
   properties:props2,
   scale:30,
   geometries:true
-})
+});
 
-print("Hansen and SSA data", sampledPoints);
+print("Hansen and SSA data", sampledPoints2);
 
+//-------------------------------------------------------------
+//
+//EXPORT
+//
+//-------------------------------------------------------------
+
+
+Export.table.toDrive({
+ collection: sampledPoints2,
+ description:'Sampledataextract',
+fileFormat: 'csv'
+ });
 
 
