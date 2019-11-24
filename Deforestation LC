@@ -190,16 +190,76 @@ print('linear data', pointdata_withbandcounts);
 
 //-------------------------------------------------------------
 //
-//    MERGE LEAST COST PATH AND LINEAR MEASURE DATAFRAMES
-//
-//-------------------------------------------------------------
-
-
-
-//-------------------------------------------------------------
-//
 //EXTRACTING INFORMATION FROM THE SSA SHAPEFILE AND HANSEN DATA
 //
 //-------------------------------------------------------------
 
 
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["ADM0","ADM1", "ADM2", "campid"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(pointdata_withbandcounts, SSA, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var featuresWithProp = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print('District data for sample points', featuresWithProp);
+
+
+//-------------------------------------------------------------
+//
+//JOIN DISTRICT DATA TO PIXEL CAMP DISTANCE DF
+//
+//-------------------------------------------------------------
+
+//Adding the deforestation data to our data frame
+
+var filter = ee.Filter.equals({
+  leftField: 'system:index',
+  rightField: 'system:index'
+});
+
+// Create the join.
+var simpleJoin = ee.Join.inner();
+
+var simpleJoined = simpleJoin.apply(featuresWithProp, pointdata_withbandcounts, filter);
+
+var newjoin=simpleJoined.map(function(pair) {
+  var f1 = ee.Feature(pair.get('primary'));
+  var f2 = ee.Feature(pair.get('secondary'));
+  return f1.set(f2.toDictionary());
+});
+
+print("Sample points camp and district data", newjoin);
+
+//-------------------------------------------------------------
+//
+//JOIN HANSEN DATA TO THE MAIN DATAFRAME
+//
+//-------------------------------------------------------------
+
+//Specify the properties that I want to copy from the SSA shapefile
+var prop2 = ["ADM0","ADM1", "ADM2", "campid",
+              "campid_LC", "nearestDist", "nearestDist_LC",
+              "neighsSize5", "neighsSize10", "neighsSize15", 
+              "neighsSize20"];
+
+var sampledPoints = gfc2014.sampleRegions({
+ collection:newjoin,
+ properties:prop2,
+ geometries:true
+});
+
+print("Final feature collection", sampledPoints);
