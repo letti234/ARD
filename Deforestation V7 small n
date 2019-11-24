@@ -259,8 +259,70 @@ var sampledPoints2 = gfc2014.sampleRegions({
   geometries:true
 });
 
+
+
 print("Hansen and SSA data", sampledPoints2);
 
+//-------------------------------------------------------------
+//
+//REMOVE HANSEN VARIABLES I DONT NEED FOR ANALYSIS
+//
+//-------------------------------------------------------------
+
+var removeProperty = function(feat, property) {
+  var properties = feat.propertyNames()
+  var selectProperties = properties.filter(ee.Filter.neq('item', property))
+  return feat.select(selectProperties)
+};
+
+var newFC = sampledPoints2.map(function(feat) {
+  return removeProperty(feat, 'gain', 'datamask')
+});
+
+var newFC2 = newFC.map(function(feat) {
+  return removeProperty(feat, 'datamask')
+});
+
+var newFC3 = newFC2.map(function(feat) {
+  return removeProperty(feat, 'first_b30')
+});
+
+var newFC4 = newFC3.map(function(feat) {
+  return removeProperty(feat, 'first_b40')
+});
+
+var newFC5 = newFC4.map(function(feat) {
+  return removeProperty(feat, 'first_b50')
+});
+
+
+var newFC6 = newFC5.map(function(feat) {
+  return removeProperty(feat, 'first_b70')
+});
+
+var newFC7 = newFC6.map(function(feat) {
+  return removeProperty(feat, 'last_b30')
+});
+
+var newFC8 = newFC7.map(function(feat) {
+  return removeProperty(feat, 'last_b40')
+});
+
+var newFC9 = newFC8.map(function(feat) {
+  return removeProperty(feat, 'last_b50')
+});
+
+var newFC10 = newFC9.map(function(feat) {
+  return removeProperty(feat, 'last_b70')
+});
+
+
+var finalFC = newFC10.map(function(feat) {
+  return removeProperty(feat, 'loss')
+});
+
+
+print(finalFC);
 //-------------------------------------------------------------
 //
 //EXPORT
