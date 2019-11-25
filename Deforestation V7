@@ -32,7 +32,7 @@ var buffers = camps.map(bufferPoly);
 //Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
 
 //Randomly select 100 pixels
-var points = ee.FeatureCollection.randomPoints(buffers, 10);
+var points = ee.FeatureCollection.randomPoints(buffers, 1000000);
 
 //print("Initial draw of points", points);
 //Map.addLayer(points, {color: 'blue'}, 'points');
@@ -185,7 +185,7 @@ var pointdata_withbandcounts = pointdata.map(function(pt) {
 });
 
 
-print('camp distance data', pointdata_withbandcounts);
+//print('camp distance data', pointdata_withbandcounts);
 
 
 //-------------------------------------------------------------
@@ -240,7 +240,7 @@ var newjoin2=simpleJoined2.map(function(pair) {
   return f1.set(f2.toDictionary());
 });
 
-print("Sample points camp and district data", newjoin2);
+//print("Sample points camp and district data", newjoin2);
 
 //-------------------------------------------------------------
 //
@@ -255,13 +255,12 @@ var props2 = ["ADM0","ADM1", "ADM2", "campid", "campid_lc",
 var sampledPoints2 = gfc2014.sampleRegions({
   collection:newjoin2,
   properties:props2,
-  scale:30,
   geometries:true
 });
 
 
 
-print("Hansen and SSA data", sampledPoints2);
+//print("Hansen and SSA data", sampledPoints2);
 
 //-------------------------------------------------------------
 //
@@ -322,19 +321,13 @@ var finalFC = newFC10.map(function(feat) {
 });
 
 
-print("Final dataframe", finalFC);
+//print("Final dataframe", finalFC);
 //-------------------------------------------------------------
 //
 //EXPORT
 //
 //-------------------------------------------------------------
 
-
-Export.table.toDrive({
- collection: finalFC,
- description:'Mini_final_FC',
-fileFormat: 'csv'
- });
 
 //Current chunk size is 100,000. Change "chunk" below if need 
 //to make smaller.
