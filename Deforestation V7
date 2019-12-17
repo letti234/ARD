@@ -2,7 +2,7 @@
 //COLETTE SALEMI
 //23 NOV 2019
 
-//Trainer version, N=10
+
 
 
 //-------------------------------------------------------------
@@ -331,7 +331,7 @@ var finalFC = newFC10.map(function(feat) {
 
 //Current chunk size is 100,000. Change "chunk" below if need 
 //to make smaller.
-var chunk = 100000;
+var chunk = 50000;
 var collectionSize = 1000000;
 for (var i = 0; i<collectionSize;i=i+chunk){
   var subset = ee.FeatureCollection(finalFC.toList(chunk, i));
