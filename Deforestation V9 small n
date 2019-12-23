@@ -43,17 +43,16 @@ Map.addLayer(points, {color: 'blue'}, 'points');
 //OBTAIN GFC DATA FOR THE MAIN FEATURE COLLECTION
 //
 //-------------------------------------------------------------
-
-var properties = ["datamask", "first_b30", "first_b40",
-                  "first_b50", "first_b60", "first_b70", 
-                  "gain", "last_b30", "last_b40", "last_b50",
-                  "last_b70", "loss"];
-              
-var sampledPoints = gfc2014.reduceRegion({
+ 
+var sampledPoints = gfc2014.reduceRegions({
   collection:points,
-  properties:properties,
-  scale:30,
-  geometries:true
+  reducer: ee.Reducer.mean()
 });
 
 print(sampledPoints);
+
+var sample = sampledPoints.select(
+    ['lossyear', 'treecover2000']           
+);
+
+print(sample);
