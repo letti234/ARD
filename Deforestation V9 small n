@@ -149,11 +149,6 @@ print("Updated DF", sample2);
 //-------------------------------------------------------------
 
 
-//Specify the properties that I want to copy from the SSA shapefile
-var prop2 = ["ADM0","ADM1", "ADM2", "lossyear", 'treecover2000', 'campid', 'nearestDist',
-    'neighsSize10', 'neighsSize15', 'neighsSize20', 
-    'neighsSize5'];
-
 // Define a spatial filter as geometries that intersect.
 var spatialFilter = ee.Filter.intersects({
   leftField: '.geo',
@@ -165,5 +160,27 @@ var finalDF = ee.Join.saveAll('matched').apply(sample2, SSA, spatialFilter);
 
 
 print(finalDF);
+
+var exportversion = finalDF.select(
+    ["ADM0","ADM1", "ADM2", "lossyear", 'treecover2000', 'campid', 'nearestDist',
+    'neighsSize10', 'neighsSize15', 'neighsSize20', 
+    'neighsSize5']           
+);
+
+print(exportversion);
+
+//-------------------------------------------------------------
+//
+//EXPORT
+//
+//-------------------------------------------------------------
+
+
+Export.table.toDrive({
+ collection: finalFC,
+ description:'Mini_final',
+fileFormat: 'csv'
+ });
+
 
 
