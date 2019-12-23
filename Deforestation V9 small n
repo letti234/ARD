@@ -177,7 +177,7 @@ print(exportversion);
 
 
 Export.table.toDrive({
- collection: finalFC,
+ collection: exportversion,
  description:'Mini_final',
 fileFormat: 'csv'
  });
