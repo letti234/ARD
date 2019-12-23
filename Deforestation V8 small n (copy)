@@ -46,7 +46,7 @@ var points = ee.FeatureCollection.randomPoints(buffers, 10);
 
 //Distance set very high here due to large size of grids during testing
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 500000,
+  distance: 50000,
   leftField: '.geo',
   rightField: '.geo',
 });
