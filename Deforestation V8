@@ -329,10 +329,13 @@ var finalFC = newFC10.map(function(feat) {
 //-------------------------------------------------------------
 
 
-Export.table.toDrive({
- collection: finalFC,
- description:'Mini_final_FC',
-fileFormat: 'csv'
- });
+//Current chunk size is 100,000. Change "chunk" below if need 
+//to make smaller.
+var chunk = 20000;
+var collectionSize = 1000000;
+for (var i = 0; i<collectionSize;i=i+chunk){
+  var subset = ee.FeatureCollection(finalFC.toList(chunk, i));
+  Export.table.toDrive(subset, "Chunk_", "Deforestation");
+}
 
 
