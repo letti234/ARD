@@ -1,4 +1,4 @@
-//REFUGEE CAMPS AND DEFORESTATION V 8
+//REFUGEE CAMPS AND DEFORESTATION V9
 //COLETTE SALEMI
 //23 NOV 2019
 
@@ -44,6 +44,7 @@ Map.addLayer(points, {color: 'blue'}, 'points');
 //
 //-------------------------------------------------------------
  
+
 var sampledPoints = gfc2014.reduceRegions({
   collection:points,
   reducer: ee.Reducer.mean()
