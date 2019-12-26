@@ -1,0 +1,49 @@
+//REFUGEE CAMPS AND DEFORESTATION V9
+//COLETTE SALEMI
+//26th DEC 2019
+
+//Trainer version, N=10
+
+
+//-------------------------------------------------------------
+// 
+//    DATA UPLOAD AND CLEANING
+//  
+//-------------------------------------------------------------
+
+//Hansen Global Forest Change data
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+var gfc2014_c = gfc2014.clip(SSA);
+
+//Camp dataset
+var camps = ee.FeatureCollection('users/salem043/camp');
+Map.addLayer(camps, {color: 'red'}, 'camps');
+
+//50 km  buffer around camps
+var bufferPoly = function(feature) {
+  return feature.buffer(50000);   
+};
+
+var buffers = camps.map(bufferPoly);
+//Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+
+//Randomly select 100 pixels
+var points = ee.FeatureCollection.randomPoints(buffers, 10);
+
+print("Initial draw of points", points);
+Map.addLayer(points, {color: 'blue'}, 'points');
+
+
+var gfc = gfc2014_c.select(
+    ['lossyear', 'treecover2000']           
+);
+
+Export.image.toDrive({
+  image: gfc,
+  description: 'GFC_Data',
+});
+
