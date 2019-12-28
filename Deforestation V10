@@ -133,7 +133,7 @@ var pointdata_withbandcounts = pointdata.map(function(pt) {
 });
 
 
-print('camp distance data', pointdata_withbandcounts);
+//print('camp distance data', pointdata_withbandcounts);
 
 var sample2 = pointdata_withbandcounts.select(
     ['lossyear', 'treecover2000', 'campid', 'nearestDist',
@@ -141,7 +141,7 @@ var sample2 = pointdata_withbandcounts.select(
     'neighsSize5']           
 );
 
-print("Updated DF", sample2);
+//print("Updated DF", sample2);
 
 
 
@@ -162,7 +162,7 @@ var spatialFilter = ee.Filter.intersects({
 var finalDF = ee.Join.saveAll('matched').apply(sample2, SSA, spatialFilter);
 
 
-print(finalDF);
+//print(finalDF);
 
 var exportversion = finalDF.select(
     ["ADM0","ADM1", "ADM2", "lossyear", 'treecover2000', 'campid', 'nearestDist',
@@ -170,7 +170,7 @@ var exportversion = finalDF.select(
     'neighsSize5']           
 );
 
-print(exportversion);
+//print(exportversion);
 
 //-------------------------------------------------------------
 //
