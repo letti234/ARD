@@ -44,13 +44,15 @@ Map.addLayer(points, {color: 'blue'}, 'points');
 //
 //-------------------------------------------------------------
  
-
-var sampledPoints = gfc2014.reduceRegions({
-  collection:points,
-  reducer: ee.Reducer.mean()
+var sampledPoints = points.map(function(feature) {
+  return feature.set(gfc2014.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
 });
 
-print(sampledPoints);
+print("reduction", sampledPoints);
 
 var sample = sampledPoints.select(
     ['lossyear', 'treecover2000']           
