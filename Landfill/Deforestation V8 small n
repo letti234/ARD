@@ -1,0 +1,339 @@
+//REFUGEE CAMPS AND DEFORESTATION V 8
+//COLETTE SALEMI
+//23 NOV 2019
+
+//Trainer version, N=10
+
+
+//-------------------------------------------------------------
+// 
+//    DATA UPLOAD AND CLEANING
+//  
+//-------------------------------------------------------------
+
+//Hansen Global Forest Change data
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+var gfc2014_c = gfc2014.clip(SSA);
+
+//Camp dataset
+var camps = ee.FeatureCollection('users/salem043/camp');
+Map.addLayer(camps, {color: 'red'}, 'camps');
+
+//50 km  buffer around camps
+var bufferPoly = function(feature) {
+  return feature.buffer(50000);   
+};
+
+var buffers = camps.map(bufferPoly);
+//Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+
+//Randomly select 100 pixels
+var points = ee.FeatureCollection.randomPoints(buffers, 10);
+
+//print("Initial draw of points", points);
+//Map.addLayer(points, {color: 'blue'}, 'points');
+
+
+//-------------------------------------------------------------
+//
+//    CREATE LEAST COST PATH VARIABLEs & ADD TO DATA
+//
+//-------------------------------------------------------------
+
+//Distance set very high here due to large size of grids during testing
+var spatialFilter = ee.Filter.withinDistance({
+  distance: 50000,
+  leftField: '.geo',
+  rightField: '.geo',
+});
+
+//Least cost path is an alternative distance measure that accounts
+//for topography.
+var sources = ee.Image().toByte().paint(camps, 1);
+
+sources = sources.updateMask(sources);
+
+// The cost data is generated from classes in ESA/GLOBCOVER.
+var cover = ee.Image('ESA/GLOBCOVER_L4_200901_200912_V2_3').select(0);
+
+// Classes 60, 80, 110, 140 have cost 1.
+// Classes 40, 90, 120, 130, 170 have cost 2.
+// Classes 50, 70, 150, 160 have cost 3.
+var cost =
+  cover.eq(60).or(cover.eq(80)).or(cover.eq(110)).or(cover.eq(140))
+      .multiply(1).add(
+  cover.eq(40).or(cover.eq(90)).or(cover.eq(120)).or(cover.eq(130))
+    .or(cover.eq(170))
+      .multiply(2).add(
+  cover.eq(50).or(cover.eq(70)).or(cover.eq(150)).or(cover.eq(160))
+      .multiply(3)));
+
+// Compute the cumulative cost to traverse the land cover.
+var cumulativeCost = cost.cumulativeCost({
+  source: sources,
+  maxDistance: 50 * 1000 // 50 kilometers
+});
+
+// Display the results
+//Map.addLayer(cumulativeCost, {min: 0, max: 5e4}, 'accumulated cost');
+
+
+var joined_leastcost = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'cumulativeCost'
+}).apply({
+  primary: points, 
+  secondary: camps, 
+  condition: spatialFilter
+});
+
+// Minimize the cost path to find "nearest" urban grid
+
+var nearest_UR_LC = joined_leastcost.map(function(f) {
+  var nearestDist_LC = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist_LC', nearestDist_LC);
+});
+
+//print("Step 1 of LC", nearest_UR_LC);
+
+
+// Add the ID number of the nearest camp 
+var nearest_ID_LC = nearest_UR_LC.map(function(f) {
+  var nearestcamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('campid');
+  return f.set('campid_lc', nearestcamp);
+});
+
+//print('point data with nearest camp (lc)', nearest_ID_LC);
+
+
+
+//-------------------------------------------------------------
+//
+//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP 
+//
+//-------------------------------------------------------------
+
+//These commands identify the "nearest neighbor" camps and then determine
+//the closest one and the distace between pixel and camps
+
+var spatialFilter = ee.Filter.withinDistance({
+  distance: 50000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+});
+
+// Join the points
+var joined = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: nearest_ID_LC, 
+  secondary: camps, 
+  condition: spatialFilter
+});
+
+// Get distance to nearest point.
+var withNearestDist = joined.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
+
+//print('DF with nearest camp', withNearestDist);
+
+// Add the id number of the nearest camp (for later data merging)
+var pointdata = withNearestDist.map(function(f) {
+  var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('campid');
+  return f.set('campid', nearestCamp);
+});
+
+//print('DF with nearest camp ID', pointdata);
+
+//print('Feature with camp id and distance', pointdata);
+
+
+//-------------------------------------------------------------
+//
+//    OBTAIN COUNT OF NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY
+//
+//-------------------------------------------------------------
+
+//These functions count how many camps are within a 5, 10, 15, and 
+//20 km buffer from each pixel, respectively
+
+var pointdata_withbandcounts = pointdata.map(function(pt) {
+  var neighs = ee.List(pt.get('neighbors'));
+  var filt = ee.Filter.lt('distance', 20000);
+  pt=pt.set('neighsSize20', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 15000);
+  pt=pt.set('neighsSize15', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 10000);
+  pt=pt.set('neighsSize10', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 5000);
+  pt=pt.set('neighsSize5', neighs.filter(filt).size());
+  return(pt);
+});
+
+
+print('camp distance data', pointdata_withbandcounts);
+
+
+//-------------------------------------------------------------
+//
+//EXTRACTING INFORMATION FROM THE SSA SHAPEFILE 
+//
+//-------------------------------------------------------------
+
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["ADM0","ADM1", "ADM2"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(pointdata_withbandcounts, SSA, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var featuresWithProp = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+
+//-------------------------------------------------------------
+//
+//JOIN DISTRICT DATA TO PIXEL CAMP DISTANCE DF
+//
+//-------------------------------------------------------------
+
+var filter = ee.Filter.equals({
+  leftField: 'system:index',
+  rightField: 'system:index'
+});
+
+// Create the join.
+var simpleJoin2 = ee.Join.inner();
+
+var simpleJoined2 = simpleJoin2.apply(pointdata_withbandcounts, featuresWithProp,  filter);
+
+print(simpleJoined2);
+
+var newjoin2=simpleJoined2.map(function(pair) {
+  var f1 = ee.Feature(pair.get('primary'));
+  var f2 = ee.Feature(pair.get('secondary'));
+  return f1.set(f2.toDictionary());
+});
+
+print("Sample points camp and district data", newjoin2);
+
+//-------------------------------------------------------------
+//
+//OBTAIN GFC DATA FOR THE MAIN FEATURE COLLECTION
+//
+//-------------------------------------------------------------
+
+var props2 = ["ADM0","ADM1", "ADM2", "campid", "campid_lc",
+              "nearestDist", "nearestDist_LC", "neighsSize10",
+              "neighsSize15", "neighsSize20", "neighsSize5"];
+
+var sampledPoints2 = gfc2014.sampleRegions({
+  collection:newjoin2,
+  properties:props2,
+  scale:30,
+  geometries:true
+});
+
+
+
+print("Hansen and SSA data", sampledPoints2);
+
+//-------------------------------------------------------------
+//
+//REMOVE HANSEN VARIABLES I DONT NEED FOR ANALYSIS
+//
+//-------------------------------------------------------------
+
+var removeProperty = function(feat, property) {
+  var properties = feat.propertyNames()
+  var selectProperties = properties.filter(ee.Filter.neq('item', property))
+  return feat.select(selectProperties)
+};
+
+var newFC = sampledPoints2.map(function(feat) {
+  return removeProperty(feat, 'gain', 'datamask')
+});
+
+var newFC2 = newFC.map(function(feat) {
+  return removeProperty(feat, 'datamask')
+});
+
+var newFC3 = newFC2.map(function(feat) {
+  return removeProperty(feat, 'first_b30')
+});
+
+var newFC4 = newFC3.map(function(feat) {
+  return removeProperty(feat, 'first_b40')
+});
+
+var newFC5 = newFC4.map(function(feat) {
+  return removeProperty(feat, 'first_b50')
+});
+
+
+var newFC6 = newFC5.map(function(feat) {
+  return removeProperty(feat, 'first_b70')
+});
+
+var newFC7 = newFC6.map(function(feat) {
+  return removeProperty(feat, 'last_b30')
+});
+
+var newFC8 = newFC7.map(function(feat) {
+  return removeProperty(feat, 'last_b40')
+});
+
+var newFC9 = newFC8.map(function(feat) {
+  return removeProperty(feat, 'last_b50')
+});
+
+var newFC10 = newFC9.map(function(feat) {
+  return removeProperty(feat, 'last_b70')
+});
+
+
+var finalFC = newFC10.map(function(feat) {
+  return removeProperty(feat, 'loss')
+});
+
+
+print("Final dataframe", finalFC);
+//-------------------------------------------------------------
+//
+//EXPORT
+//
+//-------------------------------------------------------------
+
+
+///Export.table.toDrive({
+ ///collection: finalFC,
+ ///description:'Mini_final_FC',
+///fileFormat: 'csv'
+/// });
+
+
