@@ -34,7 +34,7 @@ var buffers = camps.map(bufferPoly);
 //Randomly select 100 pixels
 var points = ee.FeatureCollection.randomPoints(buffers, 1000000);
 
-print("Initial draw of points", points);
+
 Map.addLayer(points, {color: 'blue'}, 'points');
 
 
@@ -52,13 +52,10 @@ var sampledPoints = points.map(function(feature) {
   }));
 });
 
-print("reduction", sampledPoints);
 
 var sample = sampledPoints.select(
     ['lossyear', 'treecover2000']           
 );
-
-print(sample);
 
 
 
@@ -96,7 +93,6 @@ var withNearestDist = joined.map(function(f) {
   return f.set('nearestDist', nearestDist);
 });
 
-//print('DF with nearest camp', withNearestDist);
 
 // Add the id number of the nearest camp (for later data merging)
 var pointdata = withNearestDist.map(function(f) {
@@ -104,10 +100,6 @@ var pointdata = withNearestDist.map(function(f) {
       .get('campid');
   return f.set('campid', nearestCamp);
 });
-
-print('DF with nearest camp ID', pointdata);
-
-//print('Feature with camp id and distance', pointdata);
 
 
 //-------------------------------------------------------------
@@ -133,15 +125,11 @@ var pointdata_withbandcounts = pointdata.map(function(pt) {
 });
 
 
-print('camp distance data', pointdata_withbandcounts);
-
 var sample2 = pointdata_withbandcounts.select(
     ['lossyear', 'treecover2000', 'campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
-
-print("Updated DF", sample2);
 
 
 
@@ -175,7 +163,7 @@ var featuresWithProp = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-print(featuresWithProp);
+
 //-------------------------------------------------------------
 //
 //JOIN DISTRICT DATA TO OVERALL DF
@@ -192,7 +180,6 @@ var simpleJoin2 = ee.Join.inner();
 
 var simpleJoined2 = simpleJoin2.apply(pointdata_withbandcounts, featuresWithProp,  filter);
 
-print(simpleJoined2);
 
 var newjoin2=simpleJoined2.map(function(pair) {
   var f1 = ee.Feature(pair.get('primary'));
@@ -200,9 +187,8 @@ var newjoin2=simpleJoined2.map(function(pair) {
   return f1.set(f2.toDictionary());
 });
 
-print("Sample points camp and district data", newjoin2);
 
-var finalsample = pointdata_withbandcounts.select(
+var finalsample = newjoin2.select(
     ['lossyear', 'treecover2000', 'campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5', 'ADM0', 'ADM1', 'ADM2']           
