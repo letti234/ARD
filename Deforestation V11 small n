@@ -208,7 +208,7 @@ var finalsample = newjoin2.select(
     'neighsSize5', 'ADM0', 'ADM1', 'ADM2']           
 );
 
-print("final sample")
+print("final sample", finalsample);
 
 //-------------------------------------------------------------
 //
