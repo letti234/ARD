@@ -174,7 +174,7 @@ var SSAdata = joinAll.map(function(feature){
 var chunk = 100000;
 var collectionSize = 1000000;
 for (var i = 0; i<collectionSize;i=i+chunk){
-  var subset = ee.FeatureCollection(finalsample.toList(chunk, i));
+  var subset = ee.FeatureCollection(sample2.toList(chunk, i));
   Export.table.toDrive(subset, "Chunk_", "Deforestation");
 }
 
