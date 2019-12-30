@@ -153,47 +153,15 @@ var spatialFilter = ee.Filter.intersects({
 });
 
 // Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(sample2, SSA, spatialFilter);
+var joinAll = ee.Join.saveAll('matched').apply(points, SSA, spatialFilter);
 
 // Since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
-var featuresWithProp = joinAll.map(function(feature){
+var SSAdata = joinAll.map(function(feature){
   var joinedFeat =  ee.List(feature.get('matched'));
   var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
-
-
-//-------------------------------------------------------------
-//
-//JOIN DISTRICT DATA TO OVERALL DF
-//
-//-------------------------------------------------------------
-
-var filter = ee.Filter.equals({
-  leftField: 'system:index',
-  rightField: 'system:index'
-});
-
-// Create the join.
-var simpleJoin2 = ee.Join.inner();
-
-var simpleJoined2 = simpleJoin2.apply(pointdata_withbandcounts, featuresWithProp,  filter);
-
-
-var newjoin2=simpleJoined2.map(function(pair) {
-  var f1 = ee.Feature(pair.get('primary'));
-  var f2 = ee.Feature(pair.get('secondary'));
-  return f1.set(f2.toDictionary());
-});
-
-
-var finalsample = newjoin2.select(
-    ['lossyear', 'treecover2000', 'campid', 'nearestDist',
-    'neighsSize10', 'neighsSize15', 'neighsSize20', 
-    'neighsSize5', 'ADM0', 'ADM1', 'ADM2']           
-);
-
 
 
 //-------------------------------------------------------------
@@ -209,6 +177,13 @@ for (var i = 0; i<collectionSize;i=i+chunk){
   var subset = ee.FeatureCollection(finalsample.toList(chunk, i));
   Export.table.toDrive(subset, "Chunk_", "Deforestation");
 }
+
+
+Export.table.toDrive({
+ collection: SSAdata,
+ description:'SSA_point_data',
+fileFormat: 'csv'
+ });
 
 
 
