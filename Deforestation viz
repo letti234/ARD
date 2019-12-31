@@ -12,12 +12,12 @@
 //-------------------------------------------------------------
 
 //Hansen Global Forest Change data
-var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+var gfc_loss = ee.Image('UMD/hansen/global_forest_change_2015').select('lossyear);
+
+var gfc_treecover=ee.Image('UMD/hansen/global_forest_change_2015').select('treecover2000');
 
 //Sub-Saharan Africa administrative district shapefile
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
-
-var gfc2014_c = gfc2014.clip(SSA);
 
 //Camp dataset
 var camps = ee.FeatureCollection('users/salem043/camp');
