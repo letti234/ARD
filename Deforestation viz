@@ -23,7 +23,7 @@ var SSAborder=SSA.geometry().bounds()
 
 Export.image.toDrive({
 image: gfc.select('treecover'),
-description: 'loss',
+description: 'treecover',
 crs: 'EPSG:3857',
 scale: 30,
 maxPixels: 30000000000,
