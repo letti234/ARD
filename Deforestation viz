@@ -18,14 +18,13 @@ var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
 var gfc = ee.Image('UMD/hansen/global_forest_change_2015')
 .clipToCollection(SSA);
 
-
-
+print(gfc)
 
 
 
 Export.image.toDrive({
-image: gfc.select('lossyear').first(),
-description: 'GFC_tree',
+image: gfc.select('lossyear'),
+description: 'loss',
 crs: 'EPSG:3857',
 scale: 30,
 maxPixels: 30000000000
