@@ -2,7 +2,7 @@
 //COLETTE SALEMI
 //26th DEC 2019
 
-//Trainer version, N=10
+//Data visulalization prop
 
 
 //-------------------------------------------------------------
@@ -38,18 +38,20 @@ print("Initial draw of points", points);
 Map.addLayer(points, {color: 'blue'}, 'points');
 
 
-var gfc_loss = gfc2014_c.select(
+var gfc_loss = gfc2014.select(
     ['lossyear']           
 );
 
-var gfc_treecover = gfc2014_c.select(
+var gfc_treecover = gfc2014.select(
     ['treecover2000']           
 );
 
+var loss = gfc_loss.gt(0);
 
 
 //Tramsform the loss variable into a binary variable
-print(gfc_loss),
+print(gfc_loss);
+Map.addLayer(loss)
 
 
 //Export.image.toDrive({
@@ -57,6 +59,6 @@ print(gfc_loss),
 //description: 'GFC_loss',
 //crs: 'EPSG:3857',
 //scale: 30,
-maxPixels: 20000000000
-});
+//maxPixels: 20000000000
+//});
 
