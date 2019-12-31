@@ -1,0 +1,77 @@
+//REFUGEE CAMPS AND DEFORESTATION V9
+//COLETTE SALEMI
+//26th DEC 2019
+
+//Data visulalization prop
+
+
+//-------------------------------------------------------------
+// 
+//    DATA UPLOAD AND CLEANING
+//  
+//-------------------------------------------------------------
+
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+
+//Hansen Global Forest Change data
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
+.clipToCollection(SSA);
+
+
+var countries = SSA.select(['ADM0']);
+
+print("Country dataframe", countries.first());
+
+var gfc2014_c = gfc2014.clip(countries);
+
+//Camp dataset
+var camps = ee.FeatureCollection('users/salem043/camp');
+//Map.addLayer(camps, {color: 'red'}, 'camps');
+
+//50 km  buffer around camps
+var bufferPoly = function(feature) {
+  return feature.buffer(50000);   
+};
+
+var buffers = camps.map(bufferPoly);
+//Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+
+
+var gfc_loss = gfc2014_c.select(
+    ['lossyear']           
+);
+
+var gfc_treecover = gfc2014.select(
+    ['treecover2000']           
+);
+
+var loss = gfc_loss.gt(0);
+print("Loss data", loss);
+
+//Tramsform the loss variable into a binary variable
+print(gfc_loss);
+Map.addLayer(loss)
+
+//Reduce the forst cover variable for easier exporting
+
+var cover = gfc_treecover
+    .reduceResolution({
+      reducer: ee.Reducer.mean(),
+      maxPixels: 1024
+    })
+    
+print(cover);
+Map.addLayer(cover);
+
+
+//Export.image.toDrive({
+//image: gfc_loss,
+//description: 'GFC_loss',
+//crs: 'EPSG:3857',
+//scale: 30,
+//maxPixels: 20000000000
+//});
+
