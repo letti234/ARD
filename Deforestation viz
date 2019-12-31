@@ -33,6 +33,14 @@ scale: 30,
 maxPixels: 20000000000
 });
 
+Export.image.toDrive({
+image: gfc_treecover,
+description: 'GFC_loss',
+crs: 'EPSG:3857',
+scale: 30,
+maxPixels: 20000000000
+});
+
 
 
 
