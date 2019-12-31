@@ -11,47 +11,18 @@
 //  
 //-------------------------------------------------------------
 
-//Hansen Global Forest Change data
-var gfc_loss = ee.Image('UMD/hansen/global_forest_change_2015').select('lossyear);
-
-var gfc_treecover=ee.Image('UMD/hansen/global_forest_change_2015').select('treecover2000');
-
 //Sub-Saharan Africa administrative district shapefile
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
 
-//Camp dataset
-var camps = ee.FeatureCollection('users/salem043/camp');
-Map.addLayer(camps, {color: 'red'}, 'camps');
+//Hansen Global Forest Change data
+var gfc_loss = ee.Image('UMD/hansen/global_forest_change_2015')
+.select('lossyear').clipToCollection(SSA);
 
-//50 km  buffer around camps
-var bufferPoly = function(feature) {
-  return feature.buffer(50000);   
-};
-
-var buffers = camps.map(bufferPoly);
-//Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
-
-//Randomly select 100 pixels
-var points = ee.FeatureCollection.randomPoints(buffers, 10);
-
-print("Initial draw of points", points);
-Map.addLayer(points, {color: 'blue'}, 'points');
+var gfc_treecover=ee.Image('UMD/hansen/global_forest_change_2015')
+.select('treecover2000').clipToCollection(SSA);
+print('CRS:', gfc_treecover.projection().crs());
 
 
-var gfc_loss = gfc2014.select(
-    ['lossyear']           
-);
-
-var gfc_treecover = gfc2014.select(
-    ['treecover2000']           
-);
-
-var loss = gfc_loss.gt(0);
-
-
-//Tramsform the loss variable into a binary variable
-print(gfc_loss);
-Map.addLayer(loss)
 
 
 //Export.image.toDrive({
