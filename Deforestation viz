@@ -15,31 +15,22 @@
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
 
 //Hansen Global Forest Change data
-var gfc_loss = ee.Image('UMD/hansen/global_forest_change_2015')
-.select('lossyear').clipToCollection(SSA);
+var gfc = ee.Image('UMD/hansen/global_forest_change_2015')
+.clipToCollection(SSA);
 
-var gfc_treecover=ee.Image('UMD/hansen/global_forest_change_2015')
-.select('treecover2000').clipToCollection(SSA);
-print('CRS:', gfc_treecover.projection().crs());
+
 
 
 
 
 Export.image.toDrive({
-image: gfc_loss,
-description: 'GFC_loss',
+image: gfc.select('lossyear').first(),
+description: 'GFC_tree',
 crs: 'EPSG:3857',
 scale: 30,
-maxPixels: 20000000000
+maxPixels: 30000000000
 });
 
-Export.image.toDrive({
-image: gfc_treecover,
-description: 'GFC_loss',
-crs: 'EPSG:3857',
-scale: 30,
-maxPixels: 20000000000
-});
 
 
 
