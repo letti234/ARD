@@ -38,12 +38,19 @@ print("Initial draw of points", points);
 Map.addLayer(points, {color: 'blue'}, 'points');
 
 
-var gfc = gfc2014_c.select(
-    ['lossyear', 'treecover2000']           
+var gfc_loss = gfc2014_c.select(
+    ['lossyear']           
 );
 
+var gfc_treecover = gfc2014_c.select(
+    ['treecover2000']           
+);
+
+
 Export.image.toDrive({
-  image: gfc,
-  description: 'GFC_Data',
+image: gfc_loss,
+description: 'GFC_loss',
+crs: 'EPSG:3857',
+scale: 30
 });
 
