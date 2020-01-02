@@ -1,3 +1,5 @@
 var dataset = ee.FeatureCollection('EPA/Ecoregions/2013/L4')
 
+Map.addLayer(dataset)
+
 var sample = ee.FeatureCollection('users/salem043/samplelatlong')
