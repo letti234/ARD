@@ -19,7 +19,7 @@ var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
 
 //Ecoregions data
 var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017')
-print('ecoregions', dataset.first());
+print('ecoregions', ecodata.first());
 
 
 var gfc2014_c = gfc2014.clip(SSA);
