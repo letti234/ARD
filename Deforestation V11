@@ -18,7 +18,7 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
 
 //Ecoregions data
-var dataset = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017')
+var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017')
 print('ecoregions', dataset.first());
 
 
@@ -174,6 +174,28 @@ var SSAdata = joinAll.map(function(feature){
 //
 //-------------------------------------------------------------
 
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["BIOME_NAME","ECO_NAME", "systemindex"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(points, ecodata, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var ecosample = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print('sample extract', ecosample.first());
+
 
 
 //-------------------------------------------------------------
@@ -183,20 +205,23 @@ var SSAdata = joinAll.map(function(feature){
 //-------------------------------------------------------------
 
 
-var chunk = 100000;
-var collectionSize = 1000000;
-for (var i = 0; i<collectionSize;i=i+chunk){
-  var subset = ee.FeatureCollection(sample2.toList(chunk, i));
-  Export.table.toDrive(subset, "Chunk_", "Deforestation");
-}
-
-
 Export.table.toDrive({
- collection: SSAdata,
- description:'SSA_point_data',
+ collection: sample2,
+ description:'GFC_data',
 fileFormat: 'csv'
  });
 
 
+Export.table.toDrive({
+ collection: SSAdata,
+ description:'SSA_data',
+fileFormat: 'csv'
+ });
 
 
+Export.table.toDrive({
+ collection: ecosample,
+ description:'ecoregion_sample',
+fileFormat: 'csv'
+ });
+ 
