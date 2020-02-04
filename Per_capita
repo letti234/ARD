@@ -1,0 +1,24 @@
+//Per capita deforestation rates
+//Colette Salemi
+//Extension of Refugee Camps and Deforestation project
+
+//Rwanda
+
+//Hansen Global Forest Change data
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+
+//Sub-Saharan Africa administrative district shapefile
+var Rwanda = ee.FeatureCollection('users/salem043/Africa_Districts')
+          .filterMetadata('ADM0', 'equals', 'Rwanda');
+print(Rwanda.limit(5));
+
+
+//Camp dataset
+var camps = ee.FeatureCollection('users/salem043/camp');
+Map.addLayer(camps, {color: 'red'}, 'camps');
+print(camps);
+
+//Population data
+var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
+  .filterDate('2000', '2012')
+
