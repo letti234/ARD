@@ -4,21 +4,26 @@
 
 //Rwanda
 
-//Hansen Global Forest Change data
-var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
-
-//Sub-Saharan Africa administrative district shapefile
+//Rwanda admin shapefile
 var Rwanda = ee.FeatureCollection('users/salem043/Africa_Districts')
           .filterMetadata('ADM0', 'equals', 'Rwanda');
-print(Rwanda.limit(5));
+print("Rwanda shapefile", Rwanda.limit(5));
 
+//Hansen Global Forest Change data
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
+var gfc = gfc2014.clip(Rwanda);
 
 //Camp dataset
-var camps = ee.FeatureCollection('users/salem043/camp');
+var camps = ee.FeatureCollection('users/salem043/camp')
+.filterMetadata('Country', 'equals', 'Rwanda');;
 Map.addLayer(camps, {color: 'red'}, 'camps');
-print(camps);
+print("Rwandese camps", camps);
 
 //Population data
 var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
   .filterDate('2000', '2012')
+  .filterBounds(Rwanda)
+  .map(function(image){return image.clip(Rwanda)}) ;
+
+//Annual forest loss in Rwanda using the GFC dataset
 
