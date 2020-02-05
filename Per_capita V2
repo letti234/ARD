@@ -1,0 +1,87 @@
+//Per capita deforestation rates
+//Colette Salemi
+//Extension of Refugee Camps and Deforestation project
+
+//Rwanda
+
+//Rwanda admin shapefile
+var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
+
+var Rwanda = countries.filter(ee.Filter.eq('country_co', 'RW'));
+Map.addLayer(Rwanda);
+print(Rwanda);
+
+//Hansen Global Forest Change data
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
+
+//Population data
+var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
+  .filterDate('2000', '2012');
+
+var pop = Allpop.filterMetadata('country', 'equals', 'RWA');
+
+
+//////////////////////////////////////////////////////////////////
+//Annual forest loss in Rwanda using the GFC dataset
+//////////////////////////////////////////////////////////////////
+
+var lossImage = gfc2014.select(['loss']);
+var lossAreaImage = lossImage.multiply(ee.Image.pixelArea());
+
+var lossYear = gfc2014.select(['lossyear']);
+var lossByYear = lossAreaImage.addBands(lossYear).reduceRegion({
+  reducer: ee.Reducer.sum().group({
+    groupField: 1
+    }),
+  geometry: Rwanda,
+  scale: 30,
+  maxPixels: 1e9
+});
+
+var statsFormatted = ee.List(lossByYear.get('groups'))
+  .map(function(el) {
+    var d = ee.Dictionary(el);
+    return [ee.Number(d.get('group')).format("20%02d"), d.get('sum')];
+  });
+var statsDictionary = ee.Dictionary(statsFormatted.flatten());
+print("Annual forest loss", statsDictionary);
+
+var statsFormatted = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
+  .map(function(el) {
+    var d = ee.Dictionary(el);
+    return ee.Feature(null, { yearString: ee.Number(d.get('group')).format("20%02d"), 
+                              lossArea: d.get('sum'),
+                              yearNumber: ee.Number(d.get('group')).add(2000)
+    });
+  }));
+print(statsFormatted)  
+
+//////////////////////////////////////////////////////////////////
+//Annual population in Rwanda using the WorldPop data
+//////////////////////////////////////////////////////////////////
+
+function newCollectionToImage(collection){
+var stack = ee.Image(collection.iterate(function(img, prev) {
+return ee.Image(prev).addBands(img);
+}, ee.Image(1)));
+ 
+stack = stack.select(ee.List.sequence(1, stack.bandNames().size().subtract(1)));
+return stack;
+}
+
+
+var tch = pop.map(function(img){
+var y = ee.String(ee.Date(img.get('system:time_start')).get("year"));
+return img.set("year",y).rename(y);
+});
+
+var tchImg = newCollectionToImage(tch).clip(Rwanda);
+var pop_Rwanda=tchImg;
+
+var Rwanda_annualpop = pop_Rwanda.reduceRegions(Rwanda, ee.Reducer.sum());
+
+print("population", Rwanda_annualpop);
+
+
+
+
