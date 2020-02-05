@@ -20,14 +20,18 @@ var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
 ///////////////////////////////////////////////////////////////////////////
 
 var lossImage = gfc2014.select(['loss']); //Raster of pixels lost 2000-2014
-//loss quantified in terms of sq. km lost
+//loss quantified in terms of square meters lost
 var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); 
 
+//Identifies the year in which the pixel transitioned
 var lossYear = gfc2014.select(['lossyear']);
 
-var lossByYear = lossAreaImage.addBands(lossYear).reduceRegion({
-  reducer: ee.Reducer.sum().group({groupField: 1}),
-  geometry: Africa.geometry(),
+
+var lossByYear = lossAreaImage.addBands(lossYear) //Combine the sq. meters lost
+//with the loss year band. Now we have an image with 2 bands.
+  .reduceRegion({ //reducer function
+  reducer: ee.Reducer.sum().group({groupField: 1}), //?
+  geometry: Africa.geometry(), //Polygons to reduce
   maxPixels: 1e11
 });
 
