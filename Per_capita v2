@@ -14,6 +14,7 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
 //Population data image collection
 var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
   .filterDate('2000', '2012');
+  print(Allpop);
 
 ///////////////////////////////////////////////////////////////////////////
 //Build a forest loss panel
@@ -69,15 +70,16 @@ return img.set("year",y).rename(y);
 
 
 var tchImg = newCollectionToImage(tch).clip(Africa);
-print(tchImg)
 var pop_img=tchImg;
 
 var pop_yr_co = pop_img.reduceRegions({
   collection: Africa,
-  reducer: ee.Reducer.sum(),
+  reducer: ee.Reducer.sum().group({groupField: 0}),
 });
 
-print("Population dataframe", pop_yr_co);
+var countrypop = pop_img.reduceRegions(Africa,ee.Reducer.sum());
+
+print("Population dataframe", countrypop);
 
 //Exporting
 //Export.table.toDrive(pop_yr_co, "Annual_pop");
