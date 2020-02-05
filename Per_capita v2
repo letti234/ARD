@@ -8,19 +8,20 @@
 var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
 var Africa = countries.filter(ee.Filter.eq('wld_rgn', 'Africa'));
 
-//Hansen Global Forest Change data
+//Hansen Global Forest Change image with multiple bands
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
 
-//Population data
+//Population data image collection
 var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
   .filterDate('2000', '2012');
 
 ///////////////////////////////////////////////////////////////////////////
-//Forest loss panel
+//Build a forest loss panel
 ///////////////////////////////////////////////////////////////////////////
 
 var lossImage = gfc2014.select(['loss']); //Raster of pixels lost 2000-2014
-var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); //
+//loss quantified in terms of sq. km lost
+var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); 
 
 var lossYear = gfc2014.select(['lossyear']);
 
