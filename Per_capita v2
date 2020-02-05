@@ -1,0 +1,86 @@
+//Per capita deforestation rates
+//Colette Salemi
+//Extension of Refugee Camps and Deforestation project
+
+//Rwanda
+
+//Country shapefiles
+var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
+
+//Hansen Global Forest Change data
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
+
+//Population data
+var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
+  .filterDate('2000', '2012');
+
+//////////////////////////////////////////////////////////////////
+//Rwanda
+//////////////////////////////////////////////////////////////////
+
+var Rwanda = countries.filter(ee.Filter.eq('country_co', 'RW'));
+var pop = Allpop.filterMetadata('country', 'equals', 'RWA');
+
+print(Rwanda);
+var Africa = countries.filter(ee.Filter.eq('wld_rgn', 'Africa'));
+
+var Tanzania= countries.filter(ee.Filter.eq('country_co', 'TZ'));
+
+//Forest loss panel
+
+var lossImage = gfc2014.select(['loss']); //Raster of pixels lost 2000-2014
+var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); //
+
+var lossYear = gfc2014.select(['lossyear']);
+
+
+//??????
+var lossByYear = lossAreaImage.addBands(lossYear).reduceRegion({
+  reducer: ee.Reducer.sum().group({groupField: 1}),
+  geometry: Africa.geometry(),
+  maxPixels: 1e11
+});
+
+print(lossByYear);
+
+var loss_RWA = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
+  .map(function(el) {
+    var d = ee.Dictionary(el);
+    return ee.Feature(null, { yearString: ee.Number(d.get('group')).format("20%02d"), 
+                              lossArea: d.get('sum'),
+                              yearNumber: ee.Number(d.get('group')).add(2000)
+    });
+  }));
+print(loss_RWA)  
+
+//Worldpop data
+
+function newCollectionToImage(collection){
+var stack = ee.Image(collection.iterate(function(img, prev) {
+return ee.Image(prev).addBands(img);
+}, ee.Image(1)));
+ 
+stack = stack.select(ee.List.sequence(1, stack.bandNames().size().subtract(1)));
+return stack;
+}
+
+
+var tch = pop.map(function(img){
+var y = ee.String(ee.Date(img.get('system:time_start')).get("year"));
+return img.set("year",y).rename(y);
+});
+
+var tchImg = newCollectionToImage(tch).clip(Rwanda);
+var pop_Rwanda=tchImg;
+
+var Rwanda_annualpop = pop_Rwanda.reduceRegions(Rwanda, ee.Reducer.sum());
+
+print("population", Rwanda_annualpop);
+
+//Exporting
+//Export.table.toDrive(Rwanda_annualpop, "Pop_Rwanda");
+//Export.table.toDrive(loss_RWA, "Forestloss_Rwanda");
+
+//////////////////////////////////////////////////////////////////
+//Angola
+//////////////////////////////////////////////////////////////////
