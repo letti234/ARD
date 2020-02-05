@@ -6,6 +6,7 @@
 
 //Country shapefiles
 var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
+var Africa = countries.filter(ee.Filter.eq('wld_rgn', 'Africa'));
 
 //Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
@@ -14,17 +15,6 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
 var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
   .filterDate('2000', '2012');
 
-//////////////////////////////////////////////////////////////////
-//Rwanda
-//////////////////////////////////////////////////////////////////
-
-var Rwanda = countries.filter(ee.Filter.eq('country_co', 'RW'));
-var pop = Allpop.filterMetadata('country', 'equals', 'RWA');
-
-print(Rwanda);
-var Africa = countries.filter(ee.Filter.eq('wld_rgn', 'Africa'));
-
-var Tanzania= countries.filter(ee.Filter.eq('country_co', 'TZ'));
 
 //Forest loss panel
 
@@ -33,17 +23,15 @@ var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); //
 
 var lossYear = gfc2014.select(['lossyear']);
 
-
-//??????
 var lossByYear = lossAreaImage.addBands(lossYear).reduceRegion({
   reducer: ee.Reducer.sum().group({groupField: 1}),
   geometry: Africa.geometry(),
   maxPixels: 1e11
 });
 
-print(lossByYear);
+print("Annual loss by country object", lossByYear);
 
-var loss_RWA = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
+var loss_df = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
   .map(function(el) {
     var d = ee.Dictionary(el);
     return ee.Feature(null, { yearString: ee.Number(d.get('group')).format("20%02d"), 
@@ -51,7 +39,7 @@ var loss_RWA = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
                               yearNumber: ee.Number(d.get('group')).add(2000)
     });
   }));
-print(loss_RWA)  
+print("Annual loss by country df", loss_df.limit(10))  
 
 //Worldpop data
 
@@ -65,17 +53,23 @@ return stack;
 }
 
 
-var tch = pop.map(function(img){
+var tch = Allpop.map(function(img){
 var y = ee.String(ee.Date(img.get('system:time_start')).get("year"));
 return img.set("year",y).rename(y);
 });
 
-var tchImg = newCollectionToImage(tch).clip(Rwanda);
-var pop_Rwanda=tchImg;
 
-var Rwanda_annualpop = pop_Rwanda.reduceRegions(Rwanda, ee.Reducer.sum());
 
-print("population", Rwanda_annualpop);
+var tchImg = newCollectionToImage(tch).clip(Africa);
+print(tchImg)
+var pop_img=tchImg;
+
+var pop_yr_co = pop_img.reduceRegions({
+  collection: Africa,
+  reducer: ee.Reducer.sum(),
+});
+
+print("Population dataframe", pop_yr_co);
 
 //Exporting
 //Export.table.toDrive(Rwanda_annualpop, "Pop_Rwanda");
