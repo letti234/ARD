@@ -7,9 +7,6 @@
 //Rwanda admin shapefile
 var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
 
-var Rwanda = countries.filter(ee.Filter.eq('country_co', 'RW'));
-Map.addLayer(Rwanda);
-
 //Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
 
@@ -17,12 +14,14 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
 var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
   .filterDate('2000', '2012');
 
+//////////////////////////////////////////////////////////////////
+//Rwanda
+//////////////////////////////////////////////////////////////////
+
+var Rwanda = countries.filter(ee.Filter.eq('country_co', 'RW'));
 var pop = Allpop.filterMetadata('country', 'equals', 'RWA');
 
-
-//////////////////////////////////////////////////////////////////
-//Annual forest loss in Rwanda using the GFC dataset
-//////////////////////////////////////////////////////////////////
+//Forest loss panel
 
 var lossImage = gfc2014.select(['loss']);
 var lossAreaImage = lossImage.multiply(ee.Image.pixelArea());
@@ -37,17 +36,17 @@ var lossByYear = lossAreaImage.addBands(lossYear).reduceRegion({
   maxPixels: 1e9
 });
 
-var statsFormatted = ee.List(lossByYear.get('groups'))
+var loss_RWA = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
   .map(function(el) {
     var d = ee.Dictionary(el);
-    return [ee.Number(d.get('group')).format("20%02d"), d.get('sum')];
-  });
-var statsDictionary = ee.Dictionary(statsFormatted.flatten());
-print("Annual forest loss", statsDictionary);
+    return ee.Feature(null, { yearString: ee.Number(d.get('group')).format("20%02d"), 
+                              lossArea: d.get('sum'),
+                              yearNumber: ee.Number(d.get('group')).add(2000)
+    });
+  }));
+print(loss_RWA)  
 
-//////////////////////////////////////////////////////////////////
-//Annual population in Rwanda using the WorldPop data
-//////////////////////////////////////////////////////////////////
+//Worldpop data
 
 function newCollectionToImage(collection){
 var stack = ee.Image(collection.iterate(function(img, prev) {
@@ -71,6 +70,6 @@ var Rwanda_annualpop = pop_Rwanda.reduceRegions(Rwanda, ee.Reducer.sum());
 
 print("population", Rwanda_annualpop);
 
-
+//Exporting
 
 
