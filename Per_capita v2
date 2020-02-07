@@ -11,6 +11,7 @@ Map.addLayer(Africa);
 print("African continent", Africa);
 //Hansen Global Forest Change image with multiple bands
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+print("Hansen data", gfc2014);
 
 //Population data image collection
 var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
@@ -28,13 +29,11 @@ var lossAreaImage = lossImage.multiply(ee.Image.pixelArea());
 //Identifies the year in which the pixel transitioned
 var lossYear = gfc2014.select(['lossyear']);
 
-var lossByYear = lossAreaImage.addBands(lossYear) //Combine the sq. meters lost
-//with the loss year band. Now we have an image with 2 bands.
-  .reduceRegion({ //reducer function
-  reducer: ee.Reducer.sum().group({groupField: 1}), //Group function to designate
-  //which band the reducer is using
-  geometry: Africa, //Polygons to reduce
-  maxPixels: 1e11
+var lossByYear = lossAreaImage.addBands(lossYear) 
+  .reduceRegions({ 
+  reducer: ee.Reducer.sum().group({groupField: 1}),
+  collection: Africa, 
+  scale: 30
 });
 
 print("Annual loss by country object", lossByYear);
@@ -48,7 +47,7 @@ var loss_df = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
                               yearNumber: ee.Number(d.get('group')).add(2000)
     });
   }));
-print("Annual loss by country df", loss_df)  
+print("Annual loss by country df", loss_df.first); 
 
 ///////////////////////////////////////////////////////////////////////////
 //Population estimate panel
