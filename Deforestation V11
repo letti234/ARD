@@ -145,9 +145,6 @@ var sample2 = pointdata_withbandcounts.select(
 //-------------------------------------------------------------
 
 
-
-
-
 //Specify the properties that I want to copy from the SSA shapefile
 var properties = ["ADM0","ADM1", "ADM2"];
 
