@@ -76,7 +76,7 @@ var countrypop = pop_img.reduceRegions(Africa,ee.Reducer.sum());
 print("Population dataframe", countrypop.limit(10));
 
 //Exporting
-//Export.table.toDrive(countrypop, "Annual_pop");
-//Export.table.toDrive(loss_df, "Annual_forest_loss");
+Export.table.toDrive(countrypop, "Annual_pop");
+Export.table.toDrive(loss_df, "Annual_forest_loss");
 
 
