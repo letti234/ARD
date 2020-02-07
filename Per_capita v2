@@ -8,8 +8,9 @@
 var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
 var Africa = countries.filter(ee.Filter.eq('wld_rgn', 'Africa'));
 Map.addLayer(Africa);
+print("African continent", Africa);
 //Hansen Global Forest Change image with multiple bands
-var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015')
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
 //Population data image collection
 var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
@@ -47,7 +48,7 @@ var loss_df = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
                               yearNumber: ee.Number(d.get('group')).add(2000)
     });
   }));
-print("Annual loss by country df", loss_df.limit(10))  
+print("Annual loss by country df", loss_df)  
 
 ///////////////////////////////////////////////////////////////////////////
 //Population estimate panel
@@ -72,10 +73,10 @@ var pop_img=tchImg;
 
 var countrypop = pop_img.reduceRegions(Africa,ee.Reducer.sum());
 
-print("Population dataframe", countrypop);
+print("Population dataframe", countrypop.limit(10));
 
 //Exporting
-//Export.table.toDrive(pop_yr_co, "Annual_pop");
+//Export.table.toDrive(countrypop, "Annual_pop");
 //Export.table.toDrive(loss_df, "Annual_forest_loss");
 
 
