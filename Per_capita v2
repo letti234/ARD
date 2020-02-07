@@ -38,16 +38,8 @@ var lossByYear = lossAreaImage.addBands(lossYear)
 });
 
 
+print("loss by country and year", lossByYear);
 
-//This cleans up our object so it's not a huge mess
-var loss_df = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
-  .map(function(el) {
-    var d = ee.Dictionary(el);
-    return ee.Feature(null, { yearString: ee.Number(d.get('group')).format("20%02d"), 
-                              lossArea: d.get('sum'),
-                              yearNumber: ee.Number(d.get('group')).add(2000)
-    });
-  }));
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -73,10 +65,11 @@ var pop_img=tchImg;
 
 var countrypop = pop_img.reduceRegions(Africa,ee.Reducer.sum());
 
-print("Population dataframe", countrypop.limit(10));
+print("Population dataframe", countrypop);
+
 
 //Exporting
 Export.table.toDrive(countrypop, "Annual_pop");
-Export.table.toDrive(loss_df, "Annual_forest_loss");
+Export.table.toDrive(lossByYear, "Annual_forest_loss");
 
 
