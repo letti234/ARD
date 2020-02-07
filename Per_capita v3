@@ -1,0 +1,110 @@
+//Per capita deforestation rates
+//Colette Salemi
+//Extension of Refugee Camps and Deforestation project
+
+
+//Country shapefiles
+var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
+var Africa = countries.filter(ee.Filter.eq('wld_rgn', 'Africa'));
+Map.addLayer(Africa);
+
+print("African continent", Africa);
+//Hansen Global Forest Change image with multiple bands
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015').clip(Africa);
+print("Hansen data", gfc2014);
+
+//Population data image collection
+var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
+  .filterDate('2000', '2012')
+  .filterBounds(Africa)
+  .map(function(image){return image.clip(Africa)}) ;
+
+Map.addLayer(Allpop);
+  
+print(Allpop);
+  
+  
+///////////////////////////////////////////////////////////////////////////
+//Build a forest loss panel
+///////////////////////////////////////////////////////////////////////////
+
+var lossImage = gfc2014.select(['loss']); //Raster of pixels lost 2000-2014
+//loss quantified in terms of square meters lost
+var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); 
+Map.addLayer(lossAreaImage);
+
+//Identifies the year in which the pixel transitioned
+var lossYear = gfc2014.select(['lossyear']);
+
+var lossByYear = lossAreaImage.addBands(lossYear) 
+
+
+var gfc =  lossByYear.map(function(feature) {
+    return feature.set(gfc2014.reduceRegions({
+  reducer: ee.Reducer.sum().group({groupField: 1}),
+  collection: Africa, 
+  scale: 30
+}));
+});
+
+
+print(gfc.first);
+
+
+
+
+//This cleans up our object so it's not a huge mess
+var loss_df = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
+  .map(function(el) {
+    var d = ee.Dictionary(el);
+    return ee.Feature(null, { yearString: ee.Number(d.get('group')).format("20%02d"), 
+                              lossArea: d.get('sum'),
+                              yearNumber: ee.Number(d.get('group')).add(2000)
+    });
+  }));
+
+
+///////////////////////////////////////////////////////////////////////////
+//Population estimate panel
+///////////////////////////////////////////////////////////////////////////
+
+
+//This function converts our image collection into a stack of bands
+function newCollectionToImage(collection){
+var stack = ee.Image(collection.iterate(function(img, prev) {
+return ee.Image(prev).addBands(img);
+}, ee.Image(1)));
+ 
+stack = stack.select(ee.List.sequence(1, stack.bandNames().size().subtract(1)));
+return stack;
+}
+
+//Apply the function
+var tch = Allpop.map(function(img){
+var y = ee.String(ee.Date(img.get('system:time_start')).get("year"));
+return img.set("year",y).rename(y);
+});
+
+var tchImg = newCollectionToImage(tch).clip(Africa);
+var pop_t=tchImg;
+
+var totalpop = 
+pop_t.select(['2000', '2001', '2002', '2003', '2004', '2005', '2006',
+'2007', '2008', '2009', '2010', '2011'],
+['pop_00', 'pop_01', 'pop_02', 'pop_03', 'pop_04', 'pop_05', 'pop_06',
+'pop_07', 'pop_08', 'pop_09', 'pop_10', 'pop_11']);
+
+
+//Sum population counts in the pixels to the grid
+var countrypop = totalpop.reduceRegions(Africa,ee.Reducer.sum());
+
+print("population counts by year and country", countrypop);
+
+
+
+
+//Exporting
+Export.table.toDrive(countrypop, "Annual_pop");
+Export.table.toDrive(loss_df, "Annual_forest_loss");
+
+
