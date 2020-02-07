@@ -6,7 +6,6 @@
 //Country shapefiles
 var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
 var Africa = countries.filter(ee.Filter.eq('wld_rgn', 'Africa'));
-Map.addLayer(Africa);
 
 print("African continent", Africa);
 //Hansen Global Forest Change image with multiple bands
@@ -19,10 +18,6 @@ var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
   .filterBounds(Africa)
   .map(function(image){return image.clip(Africa)}) ;
 
-Map.addLayer(Allpop);
-  
-print(Allpop);
-  
   
 ///////////////////////////////////////////////////////////////////////////
 //Build a forest loss panel
@@ -31,16 +26,17 @@ print(Allpop);
 var lossImage = gfc2014.select(['loss']); //Raster of pixels lost 2000-2014
 //loss quantified in terms of square meters lost
 var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); 
-Map.addLayer(lossAreaImage);
+
 
 //Identifies the year in which the pixel transitioned
 var lossYear = gfc2014.select(['lossyear']);
 
 var lossByYear = lossAreaImage.addBands(lossYear) 
+print(lossByYear)
 
 
-var gfc =  lossByYear.map(function(feature) {
-    return feature.set(gfc2014.reduceRegions({
+var gfc =  Africa.map(function(feature) {
+    return feature.set(lossByYear.reduceRegions({
   reducer: ee.Reducer.sum().group({groupField: 1}),
   collection: Africa, 
   scale: 30
@@ -50,18 +46,6 @@ var gfc =  lossByYear.map(function(feature) {
 
 print(gfc.first);
 
-
-
-
-//This cleans up our object so it's not a huge mess
-var loss_df = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
-  .map(function(el) {
-    var d = ee.Dictionary(el);
-    return ee.Feature(null, { yearString: ee.Number(d.get('group')).format("20%02d"), 
-                              lossArea: d.get('sum'),
-                              yearNumber: ee.Number(d.get('group')).add(2000)
-    });
-  }));
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -105,6 +89,6 @@ print("population counts by year and country", countrypop);
 
 //Exporting
 Export.table.toDrive(countrypop, "Annual_pop");
-Export.table.toDrive(loss_df, "Annual_forest_loss");
+//Export.table.toDrive(loss_df, "Annual_forest_loss");
 
 
