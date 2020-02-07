@@ -38,6 +38,7 @@ var lossByYear = lossAreaImage.addBands(lossYear) //Combine the sq. meters lost
 
 print("Annual loss by country object", lossByYear);
 
+//This cleans up our object so it's not a huge mess
 var loss_df = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
   .map(function(el) {
     var d = ee.Dictionary(el);
@@ -61,21 +62,13 @@ stack = stack.select(ee.List.sequence(1, stack.bandNames().size().subtract(1)));
 return stack;
 }
 
-
 var tch = Allpop.map(function(img){
 var y = ee.String(ee.Date(img.get('system:time_start')).get("year"));
 return img.set("year",y).rename(y);
 });
 
-
-
 var tchImg = newCollectionToImage(tch).clip(Africa);
 var pop_img=tchImg;
-
-var pop_yr_co = pop_img.reduceRegions({
-  collection: Africa,
-  reducer: ee.Reducer.sum().group({groupField: 0}),
-});
 
 var countrypop = pop_img.reduceRegions(Africa,ee.Reducer.sum());
 
