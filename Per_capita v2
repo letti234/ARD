@@ -2,15 +2,15 @@
 //Colette Salemi
 //Extension of Refugee Camps and Deforestation project
 
-//Rwanda
 
 //Country shapefiles
 var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
 var Africa = countries.filter(ee.Filter.eq('wld_rgn', 'Africa'));
 Map.addLayer(Africa);
+
 print("African continent", Africa);
 //Hansen Global Forest Change image with multiple bands
-var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015').clip(Africa);
 print("Hansen data", gfc2014);
 
 //Population data image collection
@@ -25,6 +25,7 @@ var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
 var lossImage = gfc2014.select(['loss']); //Raster of pixels lost 2000-2014
 //loss quantified in terms of square meters lost
 var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); 
+Map.addLayer(lossAreaImage);
 
 //Identifies the year in which the pixel transitioned
 var lossYear = gfc2014.select(['lossyear']);
@@ -36,7 +37,7 @@ var lossByYear = lossAreaImage.addBands(lossYear)
   scale: 30
 });
 
-print("Annual loss by country object", lossByYear);
+
 
 //This cleans up our object so it's not a huge mess
 var loss_df = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
@@ -47,7 +48,7 @@ var loss_df = ee.FeatureCollection(ee.List(lossByYear.get('groups'))
                               yearNumber: ee.Number(d.get('group')).add(2000)
     });
   }));
-print("Annual loss by country df", loss_df.first); 
+
 
 ///////////////////////////////////////////////////////////////////////////
 //Population estimate panel
