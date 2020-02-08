@@ -11,12 +11,10 @@ Map.addLayer(Africa);
 print("African continent", Africa);
 //Hansen Global Forest Change image with multiple bands
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015').clip(Africa);
-print("Hansen data", gfc2014);
 
 //Population data image collection
 var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
   .filterDate('2000', '2012');
-  print(Allpop);
 
 ///////////////////////////////////////////////////////////////////////////
 //Build a forest loss panel
@@ -37,13 +35,21 @@ var lossByYear = lossAreaImage.addBands(lossYear)
   scale: 30
 });
 
-
 print("loss by country and year", lossByYear);
 
+var addGroups = function(feature) {
+  var statsFormatted = ee.List(feature.get('groups'))
+  .map(function(el) {
+    var d = ee.Dictionary(el);
+    return [ee.Number(d.get('group')).format("20%02d"), d.get('sum')];
+  });
+  var statsDictionary = ee.Dictionary(statsFormatted.flatten());
 
+  return feature.set(statsDictionary);
+};
 
-
-
+print(lossByYear.map(addGroups))
+lossByYear = lossByYear.map(addGroups)
 ///////////////////////////////////////////////////////////////////////////
 //Population estimate panel
 ///////////////////////////////////////////////////////////////////////////
