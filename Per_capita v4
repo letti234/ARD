@@ -52,9 +52,9 @@ lossByYear = lossByYear.map(addGroups)
 ///////////////////////////////////////////////////////////////////////////
 
 
-var popz = Allpop.reduceRegions({
+var popz = Allpop.reduce(ee.Reducer.sum(), collection: Africa)
   collection: Africa,
-  reducer: ee.Reducer.mean(),
+  reducer: 
   scale: 100
 });
 
