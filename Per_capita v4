@@ -52,12 +52,6 @@ lossByYear = lossByYear.map(addGroups)
 ///////////////////////////////////////////////////////////////////////////
 
 
-var popz = Allpop.reduce(ee.Reducer.sum(), collection: Africa)
-  collection: Africa,
-  reducer: 
-  scale: 100
-});
-
 function newCollectionToImage(collection){
 var stack = ee.Image(collection.iterate(function(img, prev) {
 return ee.Image(prev).addBands(img);
@@ -75,11 +69,6 @@ return img.set("year",y).rename(y);
 var tchImg = newCollectionToImage(tch).clip(Africa);
 var pop_img=tchImg;
 
-var countrypop = pop_img.reduceRegions(Africa,ee.Reducer.sum());
-
-
-print("Population dataframe", countrypop);
-
 
 var popbyyear = pop_img
   .reduceRegions({ 
@@ -90,7 +79,7 @@ var popbyyear = pop_img
 print("pop dataframe 2", popbyyear)
 
 //Exporting
-Export.table.toDrive(countrypop, "Annual_pop");
+Export.table.toDrive(popbyyear, "Annual_pop");
 Export.table.toDrive(lossByYear, "Annual_forest_loss");
 
 
