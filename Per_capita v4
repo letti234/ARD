@@ -6,9 +6,7 @@
 //Country shapefiles
 var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
 var Africa = countries.filter(ee.Filter.eq('wld_rgn', 'Africa'));
-Map.addLayer(Africa);
 
-print("African continent", Africa);
 //Hansen Global Forest Change image with multiple bands
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015').clip(Africa);
 
@@ -23,7 +21,7 @@ var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
 var lossImage = gfc2014.select(['loss']); //Raster of pixels lost 2000-2014
 //loss quantified in terms of square meters lost
 var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); 
-Map.addLayer(lossAreaImage);
+
 
 //Identifies the year in which the pixel transitioned
 var lossYear = gfc2014.select(['lossyear']);
@@ -35,7 +33,6 @@ var lossByYear = lossAreaImage.addBands(lossYear)
   scale: 30
 });
 
-print("loss by country and year", lossByYear);
 
 var addGroups = function(feature) {
   var statsFormatted = ee.List(feature.get('groups'))
@@ -73,23 +70,14 @@ var pop_img=tchImg;
 
 var countrypop = pop_img.reduceRegions(Africa,ee.Reducer.sum());
 
-print("Population dataframe", countrypop);
-
-
-var sampledPoints = points.map(function(feature) {
-  return feature.set(gfc2014.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 100,
-  }));
+var popbyyear = pop_img
+  .reduceRegions({ 
+  reducer: ee.Reducer.sum(),
+  collection: Africa, 
 });
 
-
-var sample = sampledPoints.select(
-    ['lossyear', 'treecover2000']           
-);
-
-
+print("pop dataframe 2", popbyyear)
+print("Population dataframe", countrypop);
 
 
 //Exporting
