@@ -51,6 +51,13 @@ lossByYear = lossByYear.map(addGroups)
 //Population estimate panel
 ///////////////////////////////////////////////////////////////////////////
 
+
+var popz = Allpop.reduceRegions({
+  collection: Africa,
+  reducer: ee.Reducer.mean(),
+  scale: 100
+});
+
 function newCollectionToImage(collection){
 var stack = ee.Image(collection.iterate(function(img, prev) {
 return ee.Image(prev).addBands(img);
@@ -70,6 +77,10 @@ var pop_img=tchImg;
 
 var countrypop = pop_img.reduceRegions(Africa,ee.Reducer.sum());
 
+
+print("Population dataframe", countrypop);
+
+
 var popbyyear = pop_img
   .reduceRegions({ 
   reducer: ee.Reducer.sum(),
@@ -77,8 +88,6 @@ var popbyyear = pop_img
 });
 
 print("pop dataframe 2", popbyyear)
-print("Population dataframe", countrypop);
-
 
 //Exporting
 Export.table.toDrive(countrypop, "Annual_pop");
