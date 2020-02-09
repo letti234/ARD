@@ -51,16 +51,8 @@ lossByYear = lossByYear.map(addGroups)
 ///////////////////////////////////////////////////////////////////////////
 
 //2000
-var Allpop00 = ee.ImageCollection("WorldPop/GP/100m/pop")
-  .filterDate('2000');
-  
-print(Allpop00);
-  
+var Allpop00 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2000');
 var pop00 = Allpop00.reduce(ee.Reducer.sum());
-
-print("2000 pop", pop00);
-
-  
 var pop_2000 = Africa.map(function(feature) {
   return feature.set(pop00.reduceRegion({
     reducer: 'sum',
@@ -70,10 +62,168 @@ var pop_2000 = Africa.map(function(feature) {
   }));
 });
 
-print("final pop data", pop_2000);
+//2001
+var Allpop01 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2001');
+var pop01 = Allpop01.reduce(ee.Reducer.sum());
+var pop_2001 = Africa.map(function(feature) {
+  return feature.set(pop01.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2002
+var Allpop02 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2002');
+var pop02 = Allpop02.reduce(ee.Reducer.sum());
+var pop_2002 = Africa.map(function(feature) {
+  return feature.set(pop02.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2003
+var Allpop03 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2003');
+var pop03 = Allpop03.reduce(ee.Reducer.sum());
+var pop_2003 = Africa.map(function(feature) {
+  return feature.set(pop03.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2004
+var Allpop04 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2004');
+var pop04 = Allpop04.reduce(ee.Reducer.sum());
+var pop_2004 = Africa.map(function(feature) {
+  return feature.set(pop04.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2005
+var Allpop05 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2005');
+var pop05 = Allpop05.reduce(ee.Reducer.sum());
+var pop_2005 = Africa.map(function(feature) {
+  return feature.set(pop05.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2006
+var Allpop06 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2006');
+var pop06 = Allpop06.reduce(ee.Reducer.sum());
+var pop_2006 = Africa.map(function(feature) {
+  return feature.set(pop06.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2007
+var Allpop07 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2007');
+var pop07 = Allpop07.reduce(ee.Reducer.sum());
+var pop_2007 = Africa.map(function(feature) {
+  return feature.set(pop07.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2008
+var Allpop08 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2008');
+var pop08 = Allpop08.reduce(ee.Reducer.sum());
+var pop_2008 = Africa.map(function(feature) {
+  return feature.set(pop08.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2009
+var Allpop09 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2009');
+var pop09 = Allpop09.reduce(ee.Reducer.sum());
+var pop_2009 = Africa.map(function(feature) {
+  return feature.set(pop09.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2010
+var Allpop10 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2010');
+var pop10 = Allpop10.reduce(ee.Reducer.sum());
+var pop_2010 = Africa.map(function(feature) {
+  return feature.set(pop10.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2011
+var Allpop11 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2011');
+var pop11 = Allpop11.reduce(ee.Reducer.sum());
+var pop_2011 = Africa.map(function(feature) {
+  return feature.set(pop11.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+
+//2012
+var Allpop12 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2012');
+var pop12 = Allpop12.reduce(ee.Reducer.sum());
+var pop_2012 = Africa.map(function(feature) {
+  return feature.set(pop12.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+
+
 
 //Exporting
-Export.table.toDrive(pop_2000, "Annual_pop_2000");
+//Export.table.toDrive(pop_2000, "Annual_pop_2000");
+Export.table.toDrive(pop_2000, "Annual_pop_2001");
+Export.table.toDrive(pop_2000, "Annual_pop_2002");
+Export.table.toDrive(pop_2000, "Annual_pop_2003");
+Export.table.toDrive(pop_2000, "Annual_pop_2004");
+Export.table.toDrive(pop_2000, "Annual_pop_2005");
+Export.table.toDrive(pop_2000, "Annual_pop_2006");
+Export.table.toDrive(pop_2000, "Annual_pop_2007");
+Export.table.toDrive(pop_2000, "Annual_pop_2008");
+Export.table.toDrive(pop_2000, "Annual_pop_2009");
+Export.table.toDrive(pop_2000, "Annual_pop_2010");
+Export.table.toDrive(pop_2000, "Annual_pop_2011");
+Export.table.toDrive(pop_2000, "Annual_pop_2012");
 //Export.table.toDrive(lossByYear, "Annual_forest_loss");
 
 
