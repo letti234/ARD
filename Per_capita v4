@@ -50,7 +50,7 @@ lossByYear = lossByYear.map(addGroups)
 //Population estimate panel
 ///////////////////////////////////////////////////////////////////////////
 
-//Population data image collection
+//2000
 var Allpop00 = ee.ImageCollection("WorldPop/GP/100m/pop")
   .filterDate('2000');
   
@@ -70,11 +70,10 @@ var pop_2000 = Africa.map(function(feature) {
   }));
 });
 
-  
 print("final pop data", pop_2000);
 
 //Exporting
-///Export.table.toDrive(popbyyear, "Annual_pop");
-Export.table.toDrive(lossByYear, "Annual_forest_loss");
+Export.table.toDrive(pop_2000, "Annual_pop_2000");
+//Export.table.toDrive(lossByYear, "Annual_forest_loss");
 
 
