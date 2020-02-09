@@ -10,9 +10,6 @@ var Africa = countries.filter(ee.Filter.eq('wld_rgn', 'Africa'));
 //Hansen Global Forest Change image with multiple bands
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015').clip(Africa);
 
-//Population data image collection
-var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop")
-  .filterDate('2000', '2012');
 
 ///////////////////////////////////////////////////////////////////////////
 //Build a forest loss panel
@@ -45,41 +42,37 @@ var addGroups = function(feature) {
   return feature.set(statsDictionary);
 };
 
-print(lossByYear.map(addGroups))
+print("Final forest loss df", lossByYear.map(addGroups))
 lossByYear = lossByYear.map(addGroups)
+
+
 ///////////////////////////////////////////////////////////////////////////
 //Population estimate panel
 ///////////////////////////////////////////////////////////////////////////
 
+//Population data image collection
+var Allpop00 = ee.ImageCollection("WorldPop/GP/100m/pop")
+  .filterDate('2000');
+  
+print(Allpop00);
+  
+var pop00 = Allpop00.reduce(ee.Reducer.sum());
 
-function newCollectionToImage(collection){
-var stack = ee.Image(collection.iterate(function(img, prev) {
-return ee.Image(prev).addBands(img);
-}, ee.Image(1)));
- 
-stack = stack.select(ee.List.sequence(1, stack.bandNames().size().subtract(1)));
-return stack;
-}
+print("2000 pop", pop00)
 
-var tch = Allpop.map(function(img){
-var y = ee.String(ee.Date(img.get('system:time_start')).get("year"));
-return img.set("year",y).rename(y);
-});
-
-var tchImg = newCollectionToImage(tch).clip(Africa);
-var pop_img=tchImg;
-
-
-var popbyyear = pop_img
-  .reduceRegions({ 
+var pop_2000 = pop00.reduceRegions({
+  collection: Africa,
   reducer: ee.Reducer.sum(),
-  collection: Africa, 
+  scale: 100,
 });
+print(pop_2000);
+  
+  
+  
 
-print("pop dataframe 2", popbyyear)
 
 //Exporting
-Export.table.toDrive(popbyyear, "Annual_pop");
+///Export.table.toDrive(popbyyear, "Annual_pop");
 Export.table.toDrive(lossByYear, "Annual_forest_loss");
 
 
