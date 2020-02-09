@@ -58,18 +58,20 @@ print(Allpop00);
   
 var pop00 = Allpop00.reduce(ee.Reducer.sum());
 
-print("2000 pop", pop00)
+print("2000 pop", pop00);
 
-var pop_2000 = pop00.reduceRegions({
-  collection: Africa,
-  reducer: ee.Reducer.sum(),
-  scale: 100,
+  
+var pop_2000 = Africa.map(function(feature) {
+  return feature.set(pop00.reduceRegion({
+    reducer: 'sum',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
 });
-print(pop_2000);
-  
-  
-  
 
+  
+print("final pop data", pop_2000);
 
 //Exporting
 ///Export.table.toDrive(popbyyear, "Annual_pop");
