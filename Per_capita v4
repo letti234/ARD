@@ -196,6 +196,8 @@ var pop_2011 = Africa.map(function(feature) {
   }));
 });
 
+print(pop_2011.limit(10));
+
 
 //2012
 var Allpop12 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2012-01-01', '2012-01-31');
@@ -227,5 +229,12 @@ Export.table.toDrive(pop_2000, "Annual_pop_2010");
 Export.table.toDrive(pop_2000, "Annual_pop_2011");
 Export.table.toDrive(pop_2000, "Annual_pop_2012");
 //Export.table.toDrive(lossByYear, "Annual_forest_loss");
+
+
+/////////////////////////////////////////////////////////
+//
+//Using grids
+//
+/////////////////////////////////////////////////////////
 
 
