@@ -50,8 +50,15 @@ lossByYear = lossByYear.map(addGroups)
 //Population estimate panel
 ///////////////////////////////////////////////////////////////////////////
 
+
+var Allpop = ee.ImageCollection("WorldPop/GP/100m/pop");
+
+var topimg=Allpop.limit(10);
+print("First pop entries", topimg);
+
+
 //2000
-var Allpop00 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2000-01-01', '2000-01-31');
+var Allpop00 = Allpop.filterMetadata('year', 'equals', 2000);
 var pop00 = Allpop00.reduce(ee.Reducer.sum());
 var pop_2000 = Africa.map(function(feature) {
   return feature.set(pop00.reduceRegion({
@@ -62,10 +69,10 @@ var pop_2000 = Africa.map(function(feature) {
   }));
 });
 
-print(pop_2000.limit(10));
+print("2000 dataframe for pop", pop_2000.limit(10));
 
 //2001
-var Allpop01 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2001-01-01', '2001-01-31');
+var Allpop01 = Allpop.filterMetadata('year', 'equals', 2001);
 var pop01 = Allpop01.reduce(ee.Reducer.sum());
 var pop_2001 = Africa.map(function(feature) {
   return feature.set(pop01.reduceRegion({
@@ -76,8 +83,10 @@ var pop_2001 = Africa.map(function(feature) {
   }));
 });
 
+print("2001 dataframe for pop", pop_2001.limit(10));
+
 //2002
-var Allpop02 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2002-01-01', '2002-01-31');
+var Allpop02 = Allpop.filterMetadata('year', 'equals', 2002);
 var pop02 = Allpop02.reduce(ee.Reducer.sum());
 var pop_2002 = Africa.map(function(feature) {
   return feature.set(pop02.reduceRegion({
@@ -89,7 +98,7 @@ var pop_2002 = Africa.map(function(feature) {
 });
 
 //2003
-var Allpop03 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2003-01-01', '2003-01-31');
+var Allpop03 = Allpop.filterMetadata('year', 'equals', 2003);
 var pop03 = Allpop03.reduce(ee.Reducer.sum());
 var pop_2003 = Africa.map(function(feature) {
   return feature.set(pop03.reduceRegion({
@@ -101,7 +110,7 @@ var pop_2003 = Africa.map(function(feature) {
 });
 
 //2004
-var Allpop04 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2004-01-01', '2004-01-31');
+var Allpop04 = Allpop.filterMetadata('year', 'equals', 2004);
 var pop04 = Allpop04.reduce(ee.Reducer.sum());
 var pop_2004 = Africa.map(function(feature) {
   return feature.set(pop04.reduceRegion({
@@ -113,7 +122,7 @@ var pop_2004 = Africa.map(function(feature) {
 });
 
 //2005
-var Allpop05 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2005-01-01', '2005-01-31');
+var Allpop05 = Allpop.filterMetadata('year', 'equals', 2005);
 var pop05 = Allpop05.reduce(ee.Reducer.sum());
 var pop_2005 = Africa.map(function(feature) {
   return feature.set(pop05.reduceRegion({
@@ -125,7 +134,7 @@ var pop_2005 = Africa.map(function(feature) {
 });
 
 //2006
-var Allpop06 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2006-01-01', '2006-01-31');
+var Allpop06 = Allpop.filterMetadata('year', 'equals', 2006);
 var pop06 = Allpop06.reduce(ee.Reducer.sum());
 var pop_2006 = Africa.map(function(feature) {
   return feature.set(pop06.reduceRegion({
@@ -137,7 +146,7 @@ var pop_2006 = Africa.map(function(feature) {
 });
 
 //2007
-var Allpop07 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2007-01-01', '2007-01-31');
+var Allpop07 = Allpop.filterMetadata('year', 'equals', 2007);
 var pop07 = Allpop07.reduce(ee.Reducer.sum());
 var pop_2007 = Africa.map(function(feature) {
   return feature.set(pop07.reduceRegion({
@@ -149,7 +158,7 @@ var pop_2007 = Africa.map(function(feature) {
 });
 
 //2008
-var Allpop08 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2008-01-01', '2008-01-31');
+var Allpop08 = Allpop.filterMetadata('year', 'equals', 2008);
 var pop08 = Allpop08.reduce(ee.Reducer.sum());
 var pop_2008 = Africa.map(function(feature) {
   return feature.set(pop08.reduceRegion({
@@ -161,7 +170,7 @@ var pop_2008 = Africa.map(function(feature) {
 });
 
 //2009
-var Allpop09 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2009-01-01', '2009-01-31');
+var Allpop09 = Allpop.filterMetadata('year', 'equals', 2009);
 var pop09 = Allpop09.reduce(ee.Reducer.sum());
 var pop_2009 = Africa.map(function(feature) {
   return feature.set(pop09.reduceRegion({
@@ -173,7 +182,7 @@ var pop_2009 = Africa.map(function(feature) {
 });
 
 //2010
-var Allpop10 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2010-01-01', '2010-01-31');
+var Allpop10 = Allpop.filterMetadata('year', 'equals', 2010);
 var pop10 = Allpop10.reduce(ee.Reducer.sum());
 var pop_2010 = Africa.map(function(feature) {
   return feature.set(pop10.reduceRegion({
@@ -185,7 +194,7 @@ var pop_2010 = Africa.map(function(feature) {
 });
 
 //2011
-var Allpop11 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2011-01-01', '2011-01-31');
+var Allpop11 = Allpop.filterMetadata('year', 'equals', 2011);
 var pop11 = Allpop11.reduce(ee.Reducer.sum());
 var pop_2011 = Africa.map(function(feature) {
   return feature.set(pop11.reduceRegion({
@@ -200,7 +209,7 @@ print(pop_2011.limit(10));
 
 
 //2012
-var Allpop12 = ee.ImageCollection("WorldPop/GP/100m/pop").filterDate('2012-01-01', '2012-01-31');
+var Allpop12 = Allpop.filterMetadata('year', 'equals', 2012);
 var pop12 = Allpop12.reduce(ee.Reducer.sum());
 var pop_2012 = Africa.map(function(feature) {
   return feature.set(pop12.reduceRegion({
@@ -238,3 +247,47 @@ Export.table.toDrive(pop_2000, "Annual_pop_2012");
 /////////////////////////////////////////////////////////
 
 
+//Grid for SSA - grids need to be within-country, OR we 
+//need to identify which grids are in two countries
+
+
+
+//Need to merge bands by year in the worldpop data
+
+
+
+
+
+
+//Forest loss by year within grid
+
+
+
+
+
+
+
+//Population count within grid
+
+
+
+
+
+
+
+
+
+
+//Loss by year within grid
+
+
+
+
+
+
+
+
+
+
+
+//Population by year for each grid
