@@ -239,11 +239,27 @@ var nightlights = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
 
 print("Raw nightlights data", nightlights);
 
-var night2000 = nightlights
-  .filterMetadata('system:index', 'equals', 'F142000');
-  
+var lights=nightlights.select("stable_lights");
+Map.addLayer(lights);
 
-Map.addLayer("night lights in 2000", night2000);
+
+composites = composites.filter(ee.Filter.listContains("system:band_names", "stable_lights"));
+print(composites)
+
+var airquality = ee.FeatureCollection(composites.map(function(image) {
+
+    // apply the mean reducer 
+    var dayEvents = image.reduceRegions({
+      collection: grid,
+      reducer: ee.Reducer.mean(),
+      scale: 100
+    });
+  var key = ee.String('day').cat(ee.String(ee.Number(image.get('day')).int()));
+
+  return dayEvents;  
+})).flatten();
+
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //Export
