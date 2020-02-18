@@ -232,7 +232,24 @@ var pop_2012 = Africa.map(function(feature) {
 ///////////////////////////////////////////////////////////////////////////
 
 
-//Exporting
+var nightlights = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
+                  .filter(ee.Filter.date('2000-01-01', '2012-12-31'))
+                  .filterBounds(Africa)
+                  .map(function(image){return image.clip(Africa)});
+
+print("Raw nightlights data", nightlights);
+
+var night2000 = nightlights
+  .filterMetadata('system:index', 'equals', 'F142000');
+  
+
+Map.addLayer("night lights in 2000", night2000);
+///////////////////////////////////////////////////////////////////////////
+//
+//Export
+//
+///////////////////////////////////////////////////////////////////////////
+
 Export.table.toDrive(pop_2000, "Annual_pop_2000");
 Export.table.toDrive(pop_2001, "Annual_pop_2001");
 Export.table.toDrive(pop_2002, "Annual_pop_2002");
