@@ -239,26 +239,29 @@ var nightlights = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
 
 print("Raw nightlights data", nightlights);
 
-var lights=nightlights.select("stable_lights");
-Map.addLayer(lights);
+
+var date = ee.Date(nightlights.get('system:time_start'));
+print('Timestamp: ', date); // ee.Date
 
 
-composites = composites.filter(ee.Filter.listContains("system:band_names", "stable_lights"));
-print(composites)
 
-var airquality = ee.FeatureCollection(composites.map(function(image) {
+var econ_act = ee.FeatureCollection(nightlights.map(function(image) {
 
     // apply the mean reducer 
-    var dayEvents = image.reduceRegions({
-      collection: grid,
+    var Year_act = image.reduceRegions({
+      collection: Africa,
       reducer: ee.Reducer.mean(),
-      scale: 100
+      scale: 30
     });
-  var key = ee.String('day').cat(ee.String(ee.Number(image.get('day')).int()));
+  var key = ee.String('year').cat(ee.String(ee.Number(image.get('year')).int()));
 
-  return dayEvents;  
+  return Year_act;  
 })).flatten();
 
+
+
+var econ_mini=econ_act.limit(10)
+//print("Mean nighttime index by year", econ_mini);
 
 ///////////////////////////////////////////////////////////////////////////
 //
