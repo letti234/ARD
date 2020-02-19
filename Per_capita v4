@@ -234,34 +234,114 @@ var pop_2012 = Africa.map(function(feature) {
 
 var nightlights = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
                   .filter(ee.Filter.date('2000-01-01', '2012-12-31'))
-                  .filterBounds(Africa)
+                  .filterBounds(Africa).select("stable_lights")
                   .map(function(image){return image.clip(Africa)});
 
 print("Raw nightlights data", nightlights);
 
 
-var date = ee.Date(nightlights.get('system:time_start'));
-print('Timestamp: ', date); // ee.Date
+//2001
+var lights_01 = nightlights.filterMetadata('system:index', 'equals', 'F152001');
+var light01 = lights_01.reduce(ee.Reducer.mean());
+var light_2001 = Africa.map(function(feature) {
+  return feature.set(light01.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2002
+var lights_02 = nightlights.filterMetadata('system:index', 'equals', 'F152002');
+var light02 = lights_02.reduce(ee.Reducer.mean());
+var light_2002 = Africa.map(function(feature) {
+  return feature.set(light02.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+print("2002 mean lights", light_2002.limit(10));
 
 
-
-var econ_act = ee.FeatureCollection(nightlights.map(function(image) {
-
-    // apply the mean reducer 
-    var Year_act = image.reduceRegions({
-      collection: Africa,
-      reducer: ee.Reducer.mean(),
-      scale: 30
-    });
-  var key = ee.String('year').cat(ee.String(ee.Number(image.get('year')).int()));
-
-  return Year_act;  
-})).flatten();
+//2003
+var lights_03 = nightlights.filterMetadata('system:index', 'equals', 'F152003');
+var light03 = lights_03.reduce(ee.Reducer.mean());
+var light_2003 = Africa.map(function(feature) {
+  return feature.set(light03.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
 
 
+//2004
+var lights_04 = nightlights.filterMetadata('system:index', 'equals', 'F152004');
+var light04 = lights_04.reduce(ee.Reducer.mean());
+var light_2004 = Africa.map(function(feature) {
+  return feature.set(light04.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
 
-var econ_mini=econ_act.limit(10)
-//print("Mean nighttime index by year", econ_mini);
+//2005
+var lights_05 = nightlights.filterMetadata('system:index', 'equals', 'F152005');
+var light05 = lights_05.reduce(ee.Reducer.mean());
+var light_2005 = Africa.map(function(feature) {
+  return feature.set(light05.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2006
+var lights_06 = nightlights.filterMetadata('system:index', 'equals', 'F152006');
+var light06 = lights_06.reduce(ee.Reducer.mean());
+var light_2006 = Africa.map(function(feature) {
+  return feature.set(light06.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+
+//2007
+var lights_07 = nightlights.filterMetadata('system:index', 'equals', 'F152007');
+var light07 = lights_07.reduce(ee.Reducer.mean());
+var light_2007 = Africa.map(function(feature) {
+  return feature.set(light07.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+//2008
+var lights_08 = nightlights.filterMetadata('system:index', 'equals', 'F152008');
+var light08 = lights_08.reduce(ee.Reducer.mean());
+var light_2008 = Africa.map(function(feature) {
+  return feature.set(light08.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+    maxPixels: 1e12,
+  }));
+});
+
+
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -269,19 +349,32 @@ var econ_mini=econ_act.limit(10)
 //
 ///////////////////////////////////////////////////////////////////////////
 
-Export.table.toDrive(pop_2000, "Annual_pop_2000");
-Export.table.toDrive(pop_2001, "Annual_pop_2001");
-Export.table.toDrive(pop_2002, "Annual_pop_2002");
-Export.table.toDrive(pop_2003, "Annual_pop_2003");
-Export.table.toDrive(pop_2004, "Annual_pop_2004");
-Export.table.toDrive(pop_2005, "Annual_pop_2005");
-Export.table.toDrive(pop_2006, "Annual_pop_2006");
-Export.table.toDrive(pop_2007, "Annual_pop_2007");
-Export.table.toDrive(pop_2008, "Annual_pop_2008");
-Export.table.toDrive(pop_2009, "Annual_pop_2009");
-Export.table.toDrive(pop_2010, "Annual_pop_2010");
-Export.table.toDrive(pop_2011, "Annual_pop_2011");
-Export.table.toDrive(pop_2012, "Annual_pop_2012");
+Export.table.toDrive(light_2001, "Lights_2001", "Deforestation")
+Export.table.toDrive(light_2001, "Lights_2002", "Deforestation")
+Export.table.toDrive(light_2001, "Lights_2003", "Deforestation")
+Export.table.toDrive(light_2001, "Lights_2004", "Deforestation")
+Export.table.toDrive(light_2001, "Lights_2005", "Deforestation")
+Export.table.toDrive(light_2001, "Lights_2006", "Deforestation")
+Export.table.toDrive(light_2001, "Lights_2007", "Deforestation")
+Export.table.toDrive(light_2001, "Lights_2008", "Deforestation")
+
+
+
+
+
+//Export.table.toDrive(pop_2000, "Annual_pop_2000");
+//Export.table.toDrive(pop_2001, "Annual_pop_2001");
+//Export.table.toDrive(pop_2002, "Annual_pop_2002");
+//Export.table.toDrive(pop_2003, "Annual_pop_2003");
+//Export.table.toDrive(pop_2004, "Annual_pop_2004");
+///Export.table.toDrive(pop_2005, "Annual_pop_2005");
+//Export.table.toDrive(pop_2006, "Annual_pop_2006");
+//Export.table.toDrive(pop_2007, "Annual_pop_2007");
+//Export.table.toDrive(pop_2008, "Annual_pop_2008");
+//Export.table.toDrive(pop_2009, "Annual_pop_2009");
+//Export.table.toDrive(pop_2010, "Annual_pop_2010");
+//Export.table.toDrive(pop_2011, "Annual_pop_2011");
+//Export.table.toDrive(pop_2012, "Annual_pop_2012");
 //Export.table.toDrive(lossByYear, "Annual_forest_loss");
 
 
