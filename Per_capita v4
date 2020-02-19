@@ -350,13 +350,13 @@ var light_2008 = Africa.map(function(feature) {
 ///////////////////////////////////////////////////////////////////////////
 
 Export.table.toDrive(light_2001, "Lights_2001", "Deforestation")
-Export.table.toDrive(light_2001, "Lights_2002", "Deforestation")
-Export.table.toDrive(light_2001, "Lights_2003", "Deforestation")
-Export.table.toDrive(light_2001, "Lights_2004", "Deforestation")
-Export.table.toDrive(light_2001, "Lights_2005", "Deforestation")
-Export.table.toDrive(light_2001, "Lights_2006", "Deforestation")
-Export.table.toDrive(light_2001, "Lights_2007", "Deforestation")
-Export.table.toDrive(light_2001, "Lights_2008", "Deforestation")
+Export.table.toDrive(light_2002, "Lights_2002", "Deforestation")
+Export.table.toDrive(light_2003, "Lights_2003", "Deforestation")
+Export.table.toDrive(light_2004, "Lights_2004", "Deforestation")
+Export.table.toDrive(light_2005, "Lights_2005", "Deforestation")
+Export.table.toDrive(light_2006, "Lights_2006", "Deforestation")
+Export.table.toDrive(light_2007, "Lights_2007", "Deforestation")
+Export.table.toDrive(light_2008, "Lights_2008", "Deforestation")
 
 
 
