@@ -131,13 +131,13 @@ var pointdata_withbandcounts = pointdata.map(function(pt) {
 
 
 var sample2 = pointdata_withbandcounts.select(
-    ['lossyear', 'treecover2000', 'campid', 'nearestDist',
+    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
 
-
+print(sample2.limit(10));
 //-------------------------------------------------------------
 //
 //EXTRACTING INFORMATION FROM THE SSA SHAPEFILE 
