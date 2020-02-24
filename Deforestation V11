@@ -25,7 +25,7 @@ print('ecoregions', ecodata.first());
 var gfc2014_c = gfc2014.clip(SSA);
 
 //Camp dataset
-var camps = ee.FeatureCollection('users/salem043/allcamp_v2');
+var camps = ee.FeatureCollection('users/salem043/allcampsimple');
 Map.addLayer(camps, {color: 'red'}, 'camps');
 
 //50 km  buffer around camps
@@ -102,11 +102,11 @@ var withNearestDist = joined.map(function(f) {
 // Add the id number of the nearest camp (for later data merging)
 var pointdata = withNearestDist.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
 
-
+print(pointdata.limit(10));
 //-------------------------------------------------------------
 //
 //    OBTAIN COUNT OF NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY
