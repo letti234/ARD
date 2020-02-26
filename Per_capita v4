@@ -388,7 +388,9 @@ Export.table.toDrive(light_2008, "Lights_2008", "Deforestation")
 //Grid for SSA - grids need to be within-country, OR we 
 //need to identify which grids are in two countries
 
-
+var SSA = ee.FeatureCollection
+('users/salem043/Africa_Districts').select("ADM0")
+print("Sub-saharan Africa", SSA.limit(5));
 
 //Need to merge bands by year in the worldpop data
 
