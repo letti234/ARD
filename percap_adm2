@@ -415,22 +415,21 @@ Export.table.toDrive(light_2008, "Lights_2008", "Deforestation")
 
 
 
-
-//Export.table.toDrive(counts, "Annual_camp_counts_subd", "Deforestation");
-//Export.table.toDrive(pop_2000, "Annual_pop_2000_subd", "Deforestation");
-//Export.table.toDrive(pop_2001, "Annual_pop_2001_subd", "Deforestation");
-//Export.table.toDrive(pop_2002, "Annual_pop_2002_subd", "Deforestation");
-//Export.table.toDrive(pop_2003, "Annual_pop_2003_subd", "Deforestation");
-//Export.table.toDrive(pop_2004, "Annual_pop_2004_subd", "Deforestation");
-///Export.table.toDrive(pop_2005, "Annual_pop_2005_subd", "Deforestation");
-//Export.table.toDrive(pop_2006, "Annual_pop_2006_subd", "Deforestation");
-//Export.table.toDrive(pop_2007, "Annual_pop_2007_subd", "Deforestation");
-//Export.table.toDrive(pop_2008, "Annual_pop_2008_subd", "Deforestation");
-//Export.table.toDrive(pop_2009, "Annual_pop_2009_subd", "Deforestation");
-//Export.table.toDrive(pop_2010, "Annual_pop_2010_subd", "Deforestation");
-//Export.table.toDrive(pop_2011, "Annual_pop_2011_subd", "Deforestation");
-//Export.table.toDrive(pop_2012, "Annual_pop_2012_subd", "Deforestation");
-//Export.table.toDrive(lossByYear, "Annual_forest_loss_subd", "Deforestation");
+Export.table.toDrive(counts, "Annual_camp_counts_subd", "Deforestation");
+Export.table.toDrive(pop_2000, "Annual_pop_2000_subd", "Deforestation");
+Export.table.toDrive(pop_2001, "Annual_pop_2001_subd", "Deforestation");
+Export.table.toDrive(pop_2002, "Annual_pop_2002_subd", "Deforestation");
+Export.table.toDrive(pop_2003, "Annual_pop_2003_subd", "Deforestation");
+Export.table.toDrive(pop_2004, "Annual_pop_2004_subd", "Deforestation");
+Export.table.toDrive(pop_2005, "Annual_pop_2005_subd", "Deforestation");
+Export.table.toDrive(pop_2006, "Annual_pop_2006_subd", "Deforestation");
+Export.table.toDrive(pop_2007, "Annual_pop_2007_subd", "Deforestation");
+Export.table.toDrive(pop_2008, "Annual_pop_2008_subd", "Deforestation");
+Export.table.toDrive(pop_2009, "Annual_pop_2009_subd", "Deforestation");
+Export.table.toDrive(pop_2010, "Annual_pop_2010_subd", "Deforestation");
+Export.table.toDrive(pop_2011, "Annual_pop_2011_subd", "Deforestation");
+Export.table.toDrive(pop_2012, "Annual_pop_2012_subd", "Deforestation");
+Export.table.toDrive(lossByYear, "Annual_forest_loss_subd", "Deforestation");
 
 
 /////////////////////////////////////////////////////////
