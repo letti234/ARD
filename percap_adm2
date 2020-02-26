@@ -14,9 +14,9 @@ Map.addLayer(Africa);
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015').clip(Africa);
 
 //Camp location data
-var camps = ee.FeatureCollection('users/salem043/allcampsimple');
+var camps = ee.FeatureCollection('users/salem043/allcampsimpleyear');
 Map.addLayer(camps, {color: 'red'}, 'camps');
-
+print("camp data", camps);
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -51,7 +51,7 @@ var addGroups = function(feature) {
   return feature.set(statsDictionary);
 };
 
-print("Final forest loss df", lossByYear.map(addGroups).limit(10))
+print("Final forest loss df", lossByYear.map(addGroups).limit(2))
 lossByYear = lossByYear.map(addGroups)
 
 
@@ -90,17 +90,19 @@ print("Camps per sub-district", camp_count.limit(5));
 
 
 
-var years = ee.List.sequence(2001, 2012);
+var years_of_camps = ee.List.sequence(2001, 2012);
 var counts = Africa.map(function(feature) {
-  var counts = years.map(function(yr) {
-    var camploc = camps
-      .filter(ee.Filter.eq("year", yr))
+  var counts = years_of_camps.map(function(year) {
+    var camp_location = camps
+      .filter(ee.Filter.eq("year", year))
       .filterBounds(feature.geometry());
     var key = ee.String('year').cat(ee.String(ee.Number(year).int()))
-    return ee.List([key, camploc.size()]);  
+    return ee.List([key, camp_location.size()]);  
   }).flatten()
   return feature.set(ee.Dictionary(counts))
 });
+
+print("Annual counts", counts.limit(20));
 ///////////////////////////////////////////////////////////////////////////
 //
 //Build a population estimate panel
@@ -414,21 +416,21 @@ Export.table.toDrive(light_2008, "Lights_2008", "Deforestation")
 
 
 
-
-//Export.table.toDrive(pop_2000, "Annual_pop_2000");
-//Export.table.toDrive(pop_2001, "Annual_pop_2001");
-//Export.table.toDrive(pop_2002, "Annual_pop_2002");
-//Export.table.toDrive(pop_2003, "Annual_pop_2003");
-//Export.table.toDrive(pop_2004, "Annual_pop_2004");
-///Export.table.toDrive(pop_2005, "Annual_pop_2005");
-//Export.table.toDrive(pop_2006, "Annual_pop_2006");
-//Export.table.toDrive(pop_2007, "Annual_pop_2007");
-//Export.table.toDrive(pop_2008, "Annual_pop_2008");
-//Export.table.toDrive(pop_2009, "Annual_pop_2009");
-//Export.table.toDrive(pop_2010, "Annual_pop_2010");
-//Export.table.toDrive(pop_2011, "Annual_pop_2011");
-//Export.table.toDrive(pop_2012, "Annual_pop_2012");
-//Export.table.toDrive(lossByYear, "Annual_forest_loss");
+//Export.table.toDrive(counts, "Annual_camp_counts_subd", "Deforestation");
+//Export.table.toDrive(pop_2000, "Annual_pop_2000_subd", "Deforestation");
+//Export.table.toDrive(pop_2001, "Annual_pop_2001_subd", "Deforestation");
+//Export.table.toDrive(pop_2002, "Annual_pop_2002_subd", "Deforestation");
+//Export.table.toDrive(pop_2003, "Annual_pop_2003_subd", "Deforestation");
+//Export.table.toDrive(pop_2004, "Annual_pop_2004_subd", "Deforestation");
+///Export.table.toDrive(pop_2005, "Annual_pop_2005_subd", "Deforestation");
+//Export.table.toDrive(pop_2006, "Annual_pop_2006_subd", "Deforestation");
+//Export.table.toDrive(pop_2007, "Annual_pop_2007_subd", "Deforestation");
+//Export.table.toDrive(pop_2008, "Annual_pop_2008_subd", "Deforestation");
+//Export.table.toDrive(pop_2009, "Annual_pop_2009_subd", "Deforestation");
+//Export.table.toDrive(pop_2010, "Annual_pop_2010_subd", "Deforestation");
+//Export.table.toDrive(pop_2011, "Annual_pop_2011_subd", "Deforestation");
+//Export.table.toDrive(pop_2012, "Annual_pop_2012_subd", "Deforestation");
+//Export.table.toDrive(lossByYear, "Annual_forest_loss_subd", "Deforestation");
 
 
 /////////////////////////////////////////////////////////
