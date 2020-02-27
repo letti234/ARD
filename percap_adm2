@@ -7,7 +7,7 @@
 //Country shapefiles
 var Africa = ee.FeatureCollection
 ('users/salem043/Africa_Districts').select("ADM3");
-print("Sub-saharan Africa", Africa.limit(5));
+//print("Sub-saharan Africa", Africa.limit(5));
 Map.addLayer(Africa);
 
 //Hansen Global Forest Change image with multiple bands
@@ -16,7 +16,10 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015').clip(Africa);
 //Camp location data
 var camps = ee.FeatureCollection('users/salem043/allcampsimpleyear');
 Map.addLayer(camps, {color: 'red'}, 'camps');
-print("camp data", camps);
+//print("camp data", camps);
+
+var campwide = ee.FeatureCollection('users/salem043/allcampwide');
+print("wide camp data", campwide);
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -51,7 +54,7 @@ var addGroups = function(feature) {
   return feature.set(statsDictionary);
 };
 
-print("Final forest loss df", lossByYear.map(addGroups).limit(2))
+//print("Final forest loss df", lossByYear.map(addGroups).limit(2))
 lossByYear = lossByYear.map(addGroups)
 
 
@@ -62,32 +65,6 @@ lossByYear = lossByYear.map(addGroups)
 //
 //
 ///////////////////////////////////////////////////////////////////////////
-
-//The join would be, ignoring years
-
-var spatialFilter = 
-  ee.Filter.intersects({
-    leftField: '.geo',
-    rightField: '.geo'
-  });
-  
-var joined = ee.Join.saveAll({
-  matchesKey: 'neighbors', 
-}).apply({
-  primary: Africa, 
-  secondary: camps, 
-  condition: spatialFilter
-});
-
-var camp_count = joined.map(function(pt) {
-  var neighs = ee.List(pt.get('neighbors'));
-  var filt = ee.Filter.bounds(Africa);
-  pt=pt.set('no_camps', neighs.filter(filt).size());
-  return(pt);
-});
-
-print("Camps per sub-district", camp_count.limit(5));
-
 
 
 var years_of_camps = ee.List.sequence(2001, 2012);
@@ -102,7 +79,43 @@ var counts = Africa.map(function(feature) {
   return feature.set(ee.Dictionary(counts))
 });
 
-print("Annual counts", counts.limit(20));
+//print("Annual counts", counts.limit(20));
+
+
+var camps_2001=campwide.select("open_2001");
+print("2001 camps", camps_2001);
+
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+});
+
+var joined = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+}).apply({
+  primary: Africa, 
+  secondary: camps_2001, 
+  condition: spatialFilter
+});
+
+var no_camps_2001 = joined.map(function(pt) {
+  var neighs = ee.List(pt.get('neighbors'));
+  var filt = ee.Filter.bounds(Africa);
+  pt=pt.set('camp_2001', neighs.filter(filt).size());
+  return(pt);
+});
+
+print("2001 camp counts", no_camps_2001.limit(10));
+
+
+
+
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //Build a population estimate panel
@@ -407,7 +420,7 @@ var light_2008 = Africa.map(function(feature) {
 //Export.table.toDrive(light_2001, "Lights_2001", "Deforestation")
 //Export.table.toDrive(light_2002, "Lights_2002", "Deforestation")
 //Export.table.toDrive(light_2003, "Lights_2003", "Deforestation")
-Export.table.toDrive(light_2004, "Lights_2004", "Deforestation")
+//Export.table.toDrive(light_2004, "Lights_2004", "Deforestation")
 //Export.table.toDrive(light_2005, "Lights_2005", "Deforestation")
 //Export.table.toDrive(light_2006, "Lights_2006", "Deforestation")
 //Export.table.toDrive(light_2007, "Lights_2007", "Deforestation")
