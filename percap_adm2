@@ -52,7 +52,7 @@ var addGroups = function(feature) {
   return feature.set(statsDictionary);
 };
 
-//print("Final forest loss df", lossByYear.map(addGroups).limit(2))
+print("Final forest loss df", lossByYear.map(addGroups).limit(10))
 lossByYear = lossByYear.map(addGroups)
 
 
