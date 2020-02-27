@@ -16,10 +16,8 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015').clip(Africa);
 //Camp location data
 var camps = ee.FeatureCollection('users/salem043/allcampsimpleyear');
 Map.addLayer(camps, {color: 'red'}, 'camps');
-//print("camp data", camps);
+print("camp data", camps);
 
-var campwide = ee.FeatureCollection('users/salem043/allcampwide');
-print("wide camp data", campwide);
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -67,7 +65,7 @@ lossByYear = lossByYear.map(addGroups)
 ///////////////////////////////////////////////////////////////////////////
 
 
-var years_of_camps = ee.List.sequence(2001, 2012);
+var years_of_camps = ee.List.sequence(1960, 2012);
 var counts = Africa.map(function(feature) {
   var counts = years_of_camps.map(function(year) {
     var camp_location = camps
@@ -79,37 +77,7 @@ var counts = Africa.map(function(feature) {
   return feature.set(ee.Dictionary(counts))
 });
 
-//print("Annual counts", counts.limit(20));
-
-
-var camps_2001=campwide.select("open_2001");
-print("2001 camps", camps_2001);
-
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-var joined = ee.Join.saveAll({
-  matchesKey: 'neighbors', 
-}).apply({
-  primary: Africa, 
-  secondary: camps_2001, 
-  condition: spatialFilter
-});
-
-var no_camps_2001 = joined.map(function(pt) {
-  var neighs = ee.List(pt.get('neighbors'));
-  var filt = ee.Filter.bounds(Africa);
-  pt=pt.set('camp_2001', neighs.filter(filt).size());
-  return(pt);
-});
-
-print("2001 camp counts", no_camps_2001.limit(10));
-
-
-
+print("Annual counts", counts.limit(20));
 
 
 
