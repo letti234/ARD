@@ -67,7 +67,7 @@ var lossByYearPreset = lossAreaImage.addBands(lossYear)
   scale: 30
 }).map(addGroups);
 
-print(lossByYear.first().propertyNames());
+//print(lossByYear.first().propertyNames());
 //print("Final forest loss df", lossByYear);
 //print("Final forest loss df with preset Props" , lossByYearPreset);
 
