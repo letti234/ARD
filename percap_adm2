@@ -6,8 +6,8 @@
 
 //Country shapefiles
 var Africa = ee.FeatureCollection
-('users/salem043/Africa_Districts').select("ADM3");
-//print("Sub-saharan Africa", Africa.limit(5));
+('users/salem043/Africa_Districts');
+print("Sub-saharan Africa", Africa.limit(5));
 Map.addLayer(Africa);
 
 //Hansen Global Forest Change image with multiple bands
@@ -25,22 +25,7 @@ print("camp data", camps);
 //
 ///////////////////////////////////////////////////////////////////////////
 
-var lossImage = gfc2014.select(['loss']); //Raster of pixels lost 2000-2014
-//loss quantified in terms of square meters lost
-var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); 
-
-
-//Identifies the year in which the pixel transitioned
-var lossYear = gfc2014.select(['lossyear']);
-
-var lossByYear = lossAreaImage.addBands(lossYear) 
-  .reduceRegions({ 
-  reducer: ee.Reducer.sum().group({groupField: 1}),
-  collection: Africa, 
-  scale: 30
-});
-
-
+// local function
 var addGroups = function(feature) {
   var statsFormatted = ee.List(feature.get('groups'))
   .map(function(el) {
@@ -52,9 +37,39 @@ var addGroups = function(feature) {
   return feature.set(statsDictionary);
 };
 
-print("Final forest loss df", lossByYear.map(addGroups).limit(10))
-lossByYear = lossByYear.map(addGroups)
+// preset all properties to 0
+var keys = ee.List.sequence(0,14,1).map(function(year){
+  return ee.Number(year).format("20%02d");
+});
+var preSetPropsAfrica = Africa.map(function(feat){
+  return feat.set(ee.Dictionary.fromLists(keys,ee.List.repeat(0,15)));
+});
 
+var lossImage = gfc2014.select(['loss']); //Raster of pixels lost 2000-2014
+//loss quantified in terms of square meters lost
+var lossAreaImage = lossImage.multiply(ee.Image.pixelArea()); 
+
+//Identifies the year in which the pixel transitioned
+var lossYear = gfc2014.select(['lossyear']);
+
+// without presetting props
+var lossByYear = lossAreaImage.addBands(lossYear) 
+  .reduceRegions({ 
+  reducer: ee.Reducer.sum().group({groupField: 1}),
+  collection: Africa, 
+  scale: 30
+}).map(addGroups);
+// with presetting props
+var lossByYearPreset = lossAreaImage.addBands(lossYear) 
+  .reduceRegions({ 
+  reducer: ee.Reducer.sum().group({groupField: 1}),
+  collection: preSetPropsAfrica, 
+  scale: 30
+}).map(addGroups);
+
+print(lossByYear.first().propertyNames());
+//print("Final forest loss df", lossByYear);
+//print("Final forest loss df with preset Props" , lossByYearPreset);
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -410,7 +425,7 @@ var light_2008 = Africa.map(function(feature) {
 //Export.table.toDrive(pop_2010, "Annual_pop_2010_subd", "Deforestation");
 //Export.table.toDrive(pop_2011, "Annual_pop_2011_subd", "Deforestation");
 //Export.table.toDrive(pop_2012, "Annual_pop_2012_subd", "Deforestation");
-//Export.table.toDrive(lossByYear, "Annual_forest_loss_subd", "Deforestation");
+//Export.table.toDrive(lossByYearPreset, "Annual_forest_loss_subd", "Deforestation");
 
 
 /////////////////////////////////////////////////////////
