@@ -893,17 +893,17 @@ print('sample extract', ecosample.first());
 
 
 Export.table.toDrive(finalcamp_01, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_02, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_03, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_04, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_05, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_06, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_07, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_08, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_09, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_10, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_11, "camp data 01", "Deforestation");
-Export.table.toDrive(finalcamp_12, "camp data 01", "Deforestation");
+Export.table.toDrive(finalcamp_02, "camp data 02", "Deforestation");
+Export.table.toDrive(finalcamp_03, "camp data 03", "Deforestation");
+Export.table.toDrive(finalcamp_04, "camp data 04", "Deforestation");
+Export.table.toDrive(finalcamp_05, "camp data 05", "Deforestation");
+Export.table.toDrive(finalcamp_06, "camp data 06", "Deforestation");
+Export.table.toDrive(finalcamp_07, "camp data 07", "Deforestation");
+Export.table.toDrive(finalcamp_08, "camp data 08", "Deforestation");
+Export.table.toDrive(finalcamp_09, "camp data 09", "Deforestation");
+Export.table.toDrive(finalcamp_10, "camp data 10", "Deforestation");
+Export.table.toDrive(finalcamp_11, "camp data 11", "Deforestation");
+Export.table.toDrive(finalcamp_12, "camp data 12", "Deforestation");
 
 Export.table.toDrive({
  collection: sample,
