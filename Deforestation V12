@@ -1,0 +1,225 @@
+//REFUGEE CAMPS AND DEFORESTATION V9
+//COLETTE SALEMI
+//23 NOV 2019
+
+//Full version
+
+
+//-------------------------------------------------------------
+// 
+//    DATA UPLOAD AND CLEANING
+//  
+//-------------------------------------------------------------
+
+//Hansen Global Forest Change data
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+//Ecoregions data
+var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017')
+print('ecoregions', ecodata.first());
+
+
+var gfc2014_c = gfc2014.clip(SSA);
+
+//Camp dataset
+var camps = ee.FeatureCollection('users/salem043/allcampsimple');
+Map.addLayer(camps, {color: 'red'}, 'camps');
+
+//50 km  buffer around camps
+var bufferPoly = function(feature) {
+  return feature.buffer(50000);   
+};
+
+var buffers = camps.map(bufferPoly);
+//Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+
+//Randomly select 100 pixels
+var points = ee.FeatureCollection.randomPoints(buffers, 1000000);
+
+
+Map.addLayer(points, {color: 'blue'}, 'points');
+
+
+//-------------------------------------------------------------
+//
+//OBTAIN GFC DATA FOR THE MAIN FEATURE COLLECTION
+//By Year
+//
+//-------------------------------------------------------------
+ 
+var sampledPoints = points.map(function(feature) {
+  return feature.set(gfc2014.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+
+var sample = sampledPoints.select(
+    ['lossyear', 'treecover2000']           
+);
+
+
+
+//-------------------------------------------------------------
+//
+//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP 
+//
+//-------------------------------------------------------------
+
+//These commands identify the "nearest neighbor" camps and then determine
+//the closest one and the distace between pixel and camps
+
+var spatialFilter = ee.Filter.withinDistance({
+  distance: 50000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+});
+
+// Join the points
+var joined = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: sample, 
+  secondary: camps, 
+  condition: spatialFilter
+});
+
+// Get distance to nearest point.
+var withNearestDist = joined.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
+
+
+// Add the id number of the nearest camp (for later data merging)
+var pointdata = withNearestDist.map(function(f) {
+  var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
+});
+
+print(pointdata.limit(10));
+//-------------------------------------------------------------
+//
+//    OBTAIN COUNT OF NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY
+//
+//-------------------------------------------------------------
+
+//These functions count how many camps are within a 5, 10, 15, and 
+//20 km buffer from each pixel, respectively
+
+var pointdata_withbandcounts = pointdata.map(function(pt) {
+  var neighs = ee.List(pt.get('neighbors'));
+  var filt = ee.Filter.lt('distance', 20000);
+  pt=pt.set('neighsSize20', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 15000);
+  pt=pt.set('neighsSize15', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 10000);
+  pt=pt.set('neighsSize10', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 5000);
+  pt=pt.set('neighsSize5', neighs.filter(filt).size());
+  return(pt);
+});
+
+
+var sample2 = pointdata_withbandcounts.select(
+    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
+    'neighsSize10', 'neighsSize15', 'neighsSize20', 
+    'neighsSize5']           
+);
+
+
+print(sample2.limit(10));
+//-------------------------------------------------------------
+//
+//EXTRACTING INFORMATION FROM THE SSA SHAPEFILE 
+//
+//-------------------------------------------------------------
+
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["ADM0","ADM1", "ADM2"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(points, SSA, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var SSAdata = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+//-------------------------------------------------------------
+//
+//EXTRACTING INFORMATION FROM THE ECOREGIONS SHAPEFILE 
+//
+//-------------------------------------------------------------
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["BIOME_NAME","ECO_NAME", "systemindex"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(points, ecodata, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var ecosample = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print('sample extract', ecosample.first());
+
+
+
+//-------------------------------------------------------------
+//
+//EXPORT
+//
+//-------------------------------------------------------------
+
+
+Export.table.toDrive({
+ collection: sample2,
+ description:'GFC_data',
+fileFormat: 'csv'
+ });
+
+
+Export.table.toDrive({
+ collection: SSAdata,
+ description:'SSA_data',
+fileFormat: 'csv'
+ });
+
+
+Export.table.toDrive({
+ collection: ecosample,
+ description:'ecoregion_sample',
+fileFormat: 'csv'
+ });
+ 
