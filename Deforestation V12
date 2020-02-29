@@ -358,8 +358,8 @@ var withNearestDist_05 = joined.map(function(f) {
 
 var campdata_05 = withNearestDist_05.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('camp_id');
-  return f.set('camp_id', nearestCamp);
+      .get('campid');
+  return f.set('campid', nearestCamp);
 });
 
 print("2005 camps", campdata_05.limit(10));
@@ -379,7 +379,7 @@ var campdata_05_t = campdata_05.map(function(pt) {
 
 
 var finalcamp_05 = campdata_05_t.select(
-    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
+    ['campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -422,8 +422,8 @@ var withNearestDist_06 = joined.map(function(f) {
 
 var campdata_06 = withNearestDist_06.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('camp_id');
-  return f.set('camp_id', nearestCamp);
+      .get('campid');
+  return f.set('campid', nearestCamp);
 });
 
 print("2006 camps", campdata_06.limit(10));
@@ -443,7 +443,7 @@ var campdata_06_t = campdata_06.map(function(pt) {
 
 
 var finalcamp_06 = campdata_06_t.select(
-    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
+    [ 'campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -485,8 +485,8 @@ var withNearestDist_07 = joined.map(function(f) {
 
 var campdata_07 = withNearestDist_07.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('camp_id');
-  return f.set('camp_id', nearestCamp);
+      .get('campid');
+  return f.set('campid', nearestCamp);
 });
 
 print("2007 camps", campdata_07.limit(10));
@@ -506,7 +506,7 @@ var campdata_07_t = campdata_07.map(function(pt) {
 
 
 var finalcamp_07 = campdata_07_t.select(
-    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
+    [ 'campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -548,8 +548,8 @@ var withNearestDist_08 = joined.map(function(f) {
 
 var campdata_08 = withNearestDist_08.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('camp_id');
-  return f.set('camp_id', nearestCamp);
+      .get('campid');
+  return f.set('campid', nearestCamp);
 });
 
 print("2008 camps", campdata_08.limit(10));
@@ -569,7 +569,7 @@ var campdata_08_t = campdata_08.map(function(pt) {
 
 
 var finalcamp_08 = campdata_08_t.select(
-    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
+    [ 'campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -611,8 +611,8 @@ var withNearestDist_09 = joined.map(function(f) {
 
 var campdata_09 = withNearestDist_09.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('camp_id');
-  return f.set('camp_id', nearestCamp);
+      .get('campid');
+  return f.set('campid', nearestCamp);
 });
 
 print("2009 camps", campdata_09.limit(10));
@@ -632,7 +632,7 @@ var campdata_09_t = campdata_09.map(function(pt) {
 
 
 var finalcamp_09 = campdata_09_t.select(
-    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
+    ['campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -674,8 +674,8 @@ var withNearestDist_10 = joined.map(function(f) {
 
 var campdata_10 = withNearestDist_10.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('camp_id');
-  return f.set('camp_id', nearestCamp);
+      .get('campid');
+  return f.set('campid', nearestCamp);
 });
 
 print("2010 camps", campdata_10.limit(10));
@@ -695,7 +695,7 @@ var campdata_10_t = campdata_10.map(function(pt) {
 
 
 var finalcamp_10 = campdata_10_t.select(
-    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
+    ['campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -737,8 +737,8 @@ var withNearestDist_11 = joined.map(function(f) {
 
 var campdata_11 = withNearestDist_11.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('camp_id');
-  return f.set('camp_id', nearestCamp);
+      .get('campid');
+  return f.set('campid', nearestCamp);
 });
 
 print("2011 camps", campdata_11.limit(10));
@@ -758,7 +758,7 @@ var campdata_11_t = campdata_11.map(function(pt) {
 
 
 var finalcamp_11 = campdata_11_t.select(
-    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
+    ['campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -800,8 +800,8 @@ var withNearestDist_12 = joined.map(function(f) {
 
 var campdata_12 = withNearestDist_12.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('camp_id');
-  return f.set('camp_id', nearestCamp);
+      .get('campid');
+  return f.set('campid', nearestCamp);
 });
 
 print("2012 camps", campdata_12.limit(10));
@@ -821,7 +821,7 @@ var campdata_12_t = campdata_12.map(function(pt) {
 
 
 var finalcamp_12 = campdata_12_t.select(
-    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
+    ['campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
