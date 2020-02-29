@@ -50,6 +50,11 @@ Map.addLayer(points, {color: 'blue'}, 'points');
 //
 //-------------------------------------------------------------
  
+ 
+ 
+ 
+ 
+ 
 var sampledPoints = points.map(function(feature) {
   return feature.set(gfc2014.reduceRegion({
     reducer: 'mean',
