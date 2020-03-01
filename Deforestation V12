@@ -15,17 +15,17 @@
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
 //Sub-Saharan Africa administrative district shapefile
-var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 
 //Ecoregions data
-var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017')
+var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 print('ecoregions', ecodata.first());
 
 
 var gfc2014_c = gfc2014.clip(SSA);
 
 //Camp dataset
-var camps = ee.FeatureCollection('users/salem043/campopenclosev4');
+var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps, {color: 'red'}, 'camps');
 print(camps);
 
