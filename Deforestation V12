@@ -88,7 +88,7 @@ var joined = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: points, 
+  primary: sample, 
   secondary: camps_01, 
   condition: spatialFilter
 });
@@ -123,12 +123,14 @@ var campdata_01_t = campdata_01.map(function(pt) {
 
 
 var finalcamp_01 = campdata_01_t.select(
-    ['campid', 'nearestDist',
+    ['lossyear', 'treecover2000', 'campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
-print("Final camp sample 2001", finalcamp_01.limit(10));
+var data_1 - finalcamp_01,select["campid"] ["campid_1"];
+
+print("Final camp sample 2001", data_1.limit(10));
 
 
 
