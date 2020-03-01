@@ -68,35 +68,16 @@ print("Final forest loss data", sample.limit(10));
 
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2001
+//    CAMP DATA 2001
+//    
 //
 //-------------------------------------------------------------
-
-// local function
-var addGroups = function(feature) {
-  var statsFormatted = ee.List(feature.get('groups'))
-  .map(function(el) {
-    var d = ee.Dictionary(el);
-    return [ee.Number(d.get('group')), d.get('sum')];
-  });
-  var statsDictionary = ee.Dictionary(statsFormatted.flatten());
-
-return feature.set(statsDictionary);
-};
-
-var keys = ee.List.sequence(0,2,1).map(function(year){
-  return ee.Number(null);
-});
-var preSetPropsAfrica = points.map(function(feat){
-  return feat.set(ee.Dictionary.fromLists(keys,ee.List.repeat(0,15)));
-});
 
 
 var camps_01 = camps.filterMetadata('open_2001', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -107,7 +88,7 @@ var joined = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: preSetPropsAfrica, 
+  primary: points, 
   secondary: camps_01, 
   condition: spatialFilter
 });
@@ -121,10 +102,9 @@ var withNearestDist_01 = joined.map(function(f) {
 
 var campdata_01 = withNearestDist_01.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
 
 var campdata_01_t = campdata_01.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -141,26 +121,25 @@ var campdata_01_t = campdata_01.map(function(pt) {
 
 
 var finalcamp_01 = campdata_01_t.select(
-    ['campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
 print("Final camp sample 2001", finalcamp_01.limit(10));
 
-
-
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2002
+//    CAMP DATA 2002
+//    
 //
 //-------------------------------------------------------------
 
-var camps_02 = camps.filterMetadata('open', 'equals', 2002);
+
+var camps_02 = camps.filterMetadata('open_2002', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -183,13 +162,12 @@ var withNearestDist_02 = joined.map(function(f) {
 });
 
 
+
 var campdata_02 = withNearestDist_02.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2002 camps", campdata_02.limit(10));
 
 var campdata_02_t = campdata_02.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -204,26 +182,27 @@ var campdata_02_t = campdata_02.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_02 = campdata_02_t.select(
-    [ 'campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
 print("Final camp sample 2002", finalcamp_02.limit(10));
 
+
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2003
+//    CAMP DATA 2003
+//    
 //
 //-------------------------------------------------------------
 
-var camps_03 = camps.filterMetadata('open', 'equals', 2003);
+
+var camps_03 = camps.filterMetadata('open_2003', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -246,13 +225,12 @@ var withNearestDist_03 = joined.map(function(f) {
 });
 
 
+
 var campdata_03 = withNearestDist_03.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2003 camps", campdata_03.limit(10));
 
 var campdata_03_t = campdata_03.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -267,9 +245,8 @@ var campdata_03_t = campdata_03.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_03 = campdata_03_t.select(
-    ['campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -279,15 +256,16 @@ print("Final camp sample 2003", finalcamp_03.limit(10));
 
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2004
+//    CAMP DATA 2004
+//    
 //
 //-------------------------------------------------------------
 
-var camps_04 = camps.filterMetadata('open', 'equals', 2004);
+
+var camps_04 = camps.filterMetadata('open_2004', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -310,13 +288,12 @@ var withNearestDist_04 = joined.map(function(f) {
 });
 
 
+
 var campdata_04 = withNearestDist_04.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2004 camps", campdata_04.limit(10));
 
 var campdata_04_t = campdata_04.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -331,9 +308,8 @@ var campdata_04_t = campdata_04.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_04 = campdata_04_t.select(
-    ['campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -343,15 +319,16 @@ print("Final camp sample 2004", finalcamp_04.limit(10));
 
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2005
+//    CAMP DATA 2005
+//    
 //
 //-------------------------------------------------------------
 
-var camps_05 = camps.filterMetadata('open', 'equals', 2005);
+
+var camps_05 = camps.filterMetadata('open_2005', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -374,13 +351,12 @@ var withNearestDist_05 = joined.map(function(f) {
 });
 
 
+
 var campdata_05 = withNearestDist_05.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2005 camps", campdata_05.limit(10));
 
 var campdata_05_t = campdata_05.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -395,9 +371,8 @@ var campdata_05_t = campdata_05.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_05 = campdata_05_t.select(
-    ['campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -407,15 +382,16 @@ print("Final camp sample 2005", finalcamp_05.limit(10));
 
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2006
+//    CAMP DATA 2006
+//    
 //
 //-------------------------------------------------------------
 
-var camps_06 = camps.filterMetadata('open', 'equals', 2006);
+
+var camps_06 = camps.filterMetadata('open_2006', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -438,13 +414,12 @@ var withNearestDist_06 = joined.map(function(f) {
 });
 
 
+
 var campdata_06 = withNearestDist_06.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2006 camps", campdata_06.limit(10));
 
 var campdata_06_t = campdata_06.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -459,26 +434,27 @@ var campdata_06_t = campdata_06.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_06 = campdata_06_t.select(
-    [ 'campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
 print("Final camp sample 2006", finalcamp_06.limit(10));
 
+
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2007
+//    CAMP DATA 2007
+//    
 //
 //-------------------------------------------------------------
 
-var camps_07 = camps.filterMetadata('open', 'equals', 2007);
+
+var camps_07 = camps.filterMetadata('open_2007', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -501,13 +477,12 @@ var withNearestDist_07 = joined.map(function(f) {
 });
 
 
+
 var campdata_07 = withNearestDist_07.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2007 camps", campdata_07.limit(10));
 
 var campdata_07_t = campdata_07.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -522,26 +497,27 @@ var campdata_07_t = campdata_07.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_07 = campdata_07_t.select(
-    [ 'campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
 print("Final camp sample 2007", finalcamp_07.limit(10));
 
+
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2008
+//    CAMP DATA 2008
+//    
 //
 //-------------------------------------------------------------
 
-var camps_08 = camps.filterMetadata('open', 'equals', 2008);
+
+var camps_08 = camps.filterMetadata('open_2008', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -564,13 +540,12 @@ var withNearestDist_08 = joined.map(function(f) {
 });
 
 
+
 var campdata_08 = withNearestDist_08.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2008 camps", campdata_08.limit(10));
 
 var campdata_08_t = campdata_08.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -585,26 +560,27 @@ var campdata_08_t = campdata_08.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_08 = campdata_08_t.select(
-    [ 'campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
 print("Final camp sample 2008", finalcamp_08.limit(10));
 
+
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2009
+//    CAMP DATA 2009
+//    
 //
 //-------------------------------------------------------------
 
-var camps_09 = camps.filterMetadata('open', 'equals', 2009);
+
+var camps_09 = camps.filterMetadata('open_2009', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -627,13 +603,12 @@ var withNearestDist_09 = joined.map(function(f) {
 });
 
 
+
 var campdata_09 = withNearestDist_09.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2009 camps", campdata_09.limit(10));
 
 var campdata_09_t = campdata_09.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -648,26 +623,27 @@ var campdata_09_t = campdata_09.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_09 = campdata_09_t.select(
-    ['campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
 print("Final camp sample 2009", finalcamp_09.limit(10));
 
+
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2010
+//    CAMP DATA 2010
+//    
 //
 //-------------------------------------------------------------
 
-var camps_10 = camps.filterMetadata('open', 'equals', 2010);
+
+var camps_10 = camps.filterMetadata('open_2010', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -690,13 +666,12 @@ var withNearestDist_10 = joined.map(function(f) {
 });
 
 
+
 var campdata_10 = withNearestDist_10.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2010 camps", campdata_10.limit(10));
 
 var campdata_10_t = campdata_10.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -711,26 +686,27 @@ var campdata_10_t = campdata_10.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_10 = campdata_10_t.select(
-    ['campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
 print("Final camp sample 2010", finalcamp_10.limit(10));
 
+
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2011
+//    CAMP DATA 2011
+//    
 //
 //-------------------------------------------------------------
 
-var camps_11 = camps.filterMetadata('open', 'equals', 2011);
+
+var camps_11 = camps.filterMetadata('open_2011', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -753,13 +729,12 @@ var withNearestDist_11 = joined.map(function(f) {
 });
 
 
+
 var campdata_11 = withNearestDist_11.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2011 camps", campdata_11.limit(10));
 
 var campdata_11_t = campdata_11.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -774,9 +749,8 @@ var campdata_11_t = campdata_11.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_11 = campdata_11_t.select(
-    ['campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
@@ -785,15 +759,16 @@ print("Final camp sample 2011", finalcamp_11.limit(10));
 
 //-------------------------------------------------------------
 //
-//    LINEAR DISTANCE BETWEEN RANDOM POINTS AND NEAREST CAMP
-//    2012
+//    CAMP DATA 2012
+//    
 //
 //-------------------------------------------------------------
 
-var camps_12 = camps.filterMetadata('open', 'equals', 2012);
+
+var camps_12 = camps.filterMetadata('open_2012', 'equals', 1);
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 50000,
+  distance: 20000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
@@ -816,13 +791,12 @@ var withNearestDist_12 = joined.map(function(f) {
 });
 
 
+
 var campdata_12 = withNearestDist_12.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('campid');
-  return f.set('campid', nearestCamp);
+      .get('camp_id');
+  return f.set('camp_id', nearestCamp);
 });
-
-print("2012 camps", campdata_12.limit(10));
 
 var campdata_12_t = campdata_12.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -837,109 +811,13 @@ var campdata_12_t = campdata_12.map(function(pt) {
   return(pt);
 });
 
-
 var finalcamp_12 = campdata_12_t.select(
-    ['campid', 'nearestDist',
+    ['camp_id', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
 print("Final camp sample 2012", finalcamp_12.limit(10));
 
-//-------------------------------------------------------------
-//
-//EXTRACTING INFORMATION FROM THE SSA SHAPEFILE 
-//
-//-------------------------------------------------------------
 
 
-//Specify the properties that I want to copy from the SSA shapefile
-var properties = ["ADM0","ADM1", "ADM2"];
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(points, SSA, spatialFilter);
-
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var SSAdata = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-//-------------------------------------------------------------
-//
-//EXTRACTING INFORMATION FROM THE ECOREGIONS SHAPEFILE 
-//
-//-------------------------------------------------------------
-
-//Specify the properties that I want to copy from the SSA shapefile
-var properties = ["BIOME_NAME","ECO_NAME", "systemindex"];
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(points, ecodata, spatialFilter);
-
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var ecosample = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-print('sample extract', ecosample.first());
-
-
-
-//-------------------------------------------------------------
-//
-//EXPORT
-//
-//-------------------------------------------------------------
-
-
-Export.table.toDrive(finalcamp_01, "camp_data_01", "Deforestation");
-Export.table.toDrive(finalcamp_02, "camp_data_02", "Deforestation");
-Export.table.toDrive(finalcamp_03, "camp_data_03", "Deforestation");
-Export.table.toDrive(finalcamp_04, "camp_data_04", "Deforestation");
-Export.table.toDrive(finalcamp_05, "camp_data_05", "Deforestation");
-Export.table.toDrive(finalcamp_06, "camp_data_06", "Deforestation");
-Export.table.toDrive(finalcamp_07, "camp_data_07", "Deforestation");
-Export.table.toDrive(finalcamp_08, "camp_data_08", "Deforestation");
-Export.table.toDrive(finalcamp_09, "camp_data_09", "Deforestation");
-Export.table.toDrive(finalcamp_10, "camp_data_10", "Deforestation");
-Export.table.toDrive(finalcamp_11, "camp_data_11", "Deforestation");
-Export.table.toDrive(finalcamp_12, "camp_data_12", "Deforestation");
-
-Export.table.toDrive({
- collection: sample,
- description:'GFC_data',
-fileFormat: 'csv'
- });
-
-
-Export.table.toDrive({
- collection: SSAdata,
- description:'SSA_data',
-fileFormat: 'csv'
- });
-
-
-Export.table.toDrive({
- collection: ecosample,
- description:'ecoregion_sample',
-fileFormat: 'csv'
- });
- 
