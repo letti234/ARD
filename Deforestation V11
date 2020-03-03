@@ -231,8 +231,6 @@ fileFormat: 'csv'
 var camps2 = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps, {color: 'red'}, 'camps');
 
-//No. camps at different distances in 2001/////////////////////
-
 var spatialFilter = ee.Filter.withinDistance({
   distance: 80000000,
   leftField: '.geo',
@@ -240,7 +238,8 @@ var spatialFilter = ee.Filter.withinDistance({
   maxError: 10
 });
 
-// Join the points
+//No. camps at different distances in 2001/////////////////////
+
 var joined_1 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -281,14 +280,6 @@ print("campcounts_2001", campcount_1.limit(20));
 
 //No. camps at different distances in 2002/////////////////////
 
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-// Join the points
 var joined_2 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -330,14 +321,6 @@ print("campcounts_2002", campcount_2.limit(20));
 
 //No. camps at different distances in 2003/////////////////////
 
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-// Join the points
 var joined_3 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -378,14 +361,6 @@ print("campcounts_2003", campcount_3.limit(20));
 
   //No. camps at different distances in 2004/////////////////////
 
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-// Join the points
 var joined_4 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -426,14 +401,6 @@ print("campcounts_2004", campcount_4.limit(20));
 
 //No. camps at different distances in 2005/////////////////////
 
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-// Join the points
 var joined_5 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -474,14 +441,6 @@ print("campcounts_2005", campcount_5.limit(20));
 
 //No. camps at different distances in 2006/////////////////////
 
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-// Join the points
 var joined_6 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -522,14 +481,6 @@ print("campcounts_2006", campcount_6.limit(20));
 
 //No. camps at different distances in 2007/////////////////////
 
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-// Join the points
 var joined_7 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -570,14 +521,6 @@ print("campcounts_2007", campcount_7.limit(20));
 
 //No. camps at different distances in 2008/////////////////////
 
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-// Join the points
 var joined_8 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -618,14 +561,6 @@ print("campcounts_2008", campcount_8.limit(20));
 
 //No. camps at different distances in 2009/////////////////////
 
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-// Join the points
 var joined_9 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -665,13 +600,6 @@ var campcount_9 = pointdata_withbandcounts_9.select(
 print("campcounts_2009", campcount_9.limit(20));
 
 //No. camps at different distances in 2010/////////////////////
-
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
 
 // Join the points
 var joined_10 = ee.Join.saveAll({
@@ -714,14 +642,6 @@ print("campcounts_2010", campcount_10.limit(20));
 
 //No. camps at different distances in 2011/////////////////////
 
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-// Join the points
 var joined_11 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -762,14 +682,6 @@ print("campcounts_2011", campcount_11.limit(20));
 
 //No. camps at different distances in 2012/////////////////////
 
-var spatialFilter = ee.Filter.withinDistance({
-  distance: 80000000,
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-// Join the points
 var joined_12 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
