@@ -222,3 +222,57 @@ Export.table.toDrive({
 fileFormat: 'csv'
  });
  
+//-------------------------------------------------------------
+//
+//    ROBUSTNESS CHECKS 
+//
+//-------------------------------------------------------------
+
+//These commands identify the "nearest neighbor" camps and then determine
+//the closest one and the distace between pixel and camps
+
+var spatialFilter = ee.Filter.withinDistance({
+  distance: 80000000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+});
+
+// Join the points
+var joined_1 = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: sample, 
+  secondary: camps.filterMetadata('open_2001', 'equals', 1), 
+  condition: spatialFilter
+});
+
+var withNearestDist_1 = joined_1.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
+
+var pointdata_withbandcounts_1 = pointdata.map(function(pt) {
+  var neighs = ee.List(pt.get('neighbors'));
+  var filt = ee.Filter.lt('distance', 20000);
+  pt=pt.set('neighsSize20', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 15000);
+  pt=pt.set('neighsSize15', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 10000);
+  pt=pt.set('neighsSize10', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 5000);
+  pt=pt.set('neighsSize5', neighs.filter(filt).size());
+  return(pt);
+});
+
+
+var campcount_1 = pointdata_withbandcounts.select(
+    [ 'neighsSize10', 'neighsSize15', 'neighsSize20', 
+    'neighsSize5']           
+);
+
+
+print("campcounts_2001", campcount_1.limit(10));
