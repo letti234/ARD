@@ -25,7 +25,7 @@ print('ecoregions', ecodata.first());
 var gfc2014_c = gfc2014.clip(SSA);
 
 //Camp dataset
-var camps = ee.FeatureCollection('users/salem043/allcampsimple');
+var camps = ee.FeatureCollection('users/salem043/campopenclosev4');
 Map.addLayer(camps, {color: 'red'}, 'camps');
 
 //50 km  buffer around camps
@@ -37,10 +37,10 @@ var buffers = camps.map(bufferPoly);
 //Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
 
 //Randomly select 100 pixels
-var points = ee.FeatureCollection.randomPoints(buffers, 1000000);
+var points = ee.FeatureCollection.randomPoints(buffers, 1200000);
 
 
-Map.addLayer(points, {color: 'blue'}, 'points');
+//Map.addLayer(points, {color: 'blue'}, 'points');
 
 
 //-------------------------------------------------------------
@@ -102,11 +102,11 @@ var withNearestDist = joined.map(function(f) {
 // Add the id number of the nearest camp (for later data merging)
 var pointdata = withNearestDist.map(function(f) {
   var nearestCamp = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('camp_id');
-  return f.set('camp_id', nearestCamp);
+      .get('campid');
+  return f.set('campid', nearestCamp);
 });
 
-print(pointdata.limit(10));
+print("camp data step", pointdata.limit(10));
 //-------------------------------------------------------------
 //
 //    OBTAIN COUNT OF NUMBER OF CAMPS 5, 10, 15, 20 KM AWAY
@@ -131,13 +131,13 @@ var pointdata_withbandcounts = pointdata.map(function(pt) {
 
 
 var sample2 = pointdata_withbandcounts.select(
-    ['lossyear', 'treecover2000', 'camp_id', 'nearestDist',
+    ['lossyear', 'treecover2000', 'campid', 'nearestDist',
     'neighsSize10', 'neighsSize15', 'neighsSize20', 
     'neighsSize5']           
 );
 
 
-print(sample2.limit(10));
+print("GFC and camp data", sample2.limit(10));
 //-------------------------------------------------------------
 //
 //EXTRACTING INFORMATION FROM THE SSA SHAPEFILE 
@@ -191,7 +191,7 @@ var ecosample = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-print('sample extract', ecosample.first());
+print('sample extract', ecosample.limit(10));
 
 
 
