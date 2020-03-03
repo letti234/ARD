@@ -809,18 +809,18 @@ var campcount_12 = pointdata_withbandcounts_12.select(
 print("campcounts_2012", campcount_12.limit(20));
 
 
-Export.table.toDrive(finalcamp_1, "camp_count_1", "Deforestation");
-Export.table.toDrive(finalcamp_2, "camp_count_2", "Deforestation");
-Export.table.toDrive(finalcamp_3, "camp_count_3", "Deforestation");
-Export.table.toDrive(finalcamp_4, "camp_count_4", "Deforestation");
-Export.table.toDrive(finalcamp_5, "camp_count_5", "Deforestation");
-Export.table.toDrive(finalcamp_6, "camp_count_6", "Deforestation");
-Export.table.toDrive(finalcamp_7, "camp_count_7", "Deforestation");
-Export.table.toDrive(finalcamp_8, "camp_count_8", "Deforestation");
-Export.table.toDrive(finalcamp_9, "camp_count_9", "Deforestation");
-Export.table.toDrive(finalcamp_10, "camp_count_10", "Deforestation");
-Export.table.toDrive(finalcamp_11, "camp_count_11", "Deforestation");
-Export.table.toDrive(finalcamp_12, "camp_count_12", "Deforestation");
+Export.table.toDrive(campcount_1, "camp_count_1", "Deforestation");
+Export.table.toDrive(campcount_2, "camp_count_2", "Deforestation");
+Export.table.toDrive(campcount_3, "camp_count_3", "Deforestation");
+Export.table.toDrive(campcount_4, "camp_count_4", "Deforestation");
+Export.table.toDrive(campcount_5, "camp_count_5", "Deforestation");
+Export.table.toDrive(campcount_6, "camp_count_6", "Deforestation");
+Export.table.toDrive(campcount_7, "camp_count_7", "Deforestation");
+Export.table.toDrive(campcount_8, "camp_count_8", "Deforestation");
+Export.table.toDrive(campcount_9, "camp_count_9", "Deforestation");
+Export.table.toDrive(campcount_10, "camp_count_10", "Deforestation");
+Export.table.toDrive(campcount_11, "camp_count_11", "Deforestation");
+Export.table.toDrive(campcount_12, "camp_count_12", "Deforestation");
 
 
 
