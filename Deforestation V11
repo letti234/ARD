@@ -25,7 +25,7 @@ print('ecoregions', ecodata.first());
 var gfc2014_c = gfc2014.clip(SSA);
 
 //Camp dataset
-var camps = ee.FeatureCollection('users/salem043/campopenclosev4');
+var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps, {color: 'red'}, 'camps');
 
 //50 km  buffer around camps
@@ -229,7 +229,6 @@ fileFormat: 'csv'
 //-------------------------------------------------------------
 
 var camps2 = ee.FeatureCollection('users/salem043/allcampwide');
-Map.addLayer(camps, {color: 'red'}, 'camps');
 
 var spatialFilter = ee.Filter.withinDistance({
   distance: 80000000,
