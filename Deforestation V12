@@ -222,6 +222,12 @@ Export.table.toDrive({
 fileFormat: 'csv'
  });
  
+ 
+ 
+ 
+ 
+ 
+ 
 //-------------------------------------------------------------
 //
 //    ROBUSTNESS CHECKS 
@@ -1090,82 +1096,6 @@ print("campcounts_2010", campcount_10.limit(20));
 
 //No. camps at different distances in 2011/////////////////////
 
-var joined_12 = ee.Join.saveAll({
-  matchesKey: 'neighbors', 
-  measureKey: 'distance',
-  ordering: 'distance'
-}).apply({
-  primary: sample, 
-  secondary: camps2.filterMetadata('open_2011', 'equals', 1), 
-  condition: spatialFilter
-});
-
-var withNearestDist_12 = joined_11.map(function(f) {
-  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('distance');
-  return f.set('nearestDist', nearestDist);
-});
-
-var pointdata_withbandcounts_11 = withNearestDist_11.map(function(pt) {
-  var neighs = ee.List(pt.get('neighbors'));
-  var filt = ee.Filter.lt('distance', 1000);
-  pt=pt.set('neighsSize1', neighs.filter(filt).size());
-  filt = ee.Filter.lt('distance', 2000);
-  pt=pt.set('neighsSize2', neighs.filter(filt).size());
-  filt = ee.Filter.lt('distance', 3000);
-  pt=pt.set('neighsSize3', neighs.filter(filt).size());
-  filt = ee.Filter.lt('distance', 4000);
-  pt=pt.set('neighsSize4', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 5000);
-  pt=pt.set('neighsSize5', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 6000);
-  pt=pt.set('neighsSize6', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 7000);
-  pt=pt.set('neighsSize7', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 8000);
-  pt=pt.set('neighsSize8', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 9000);
-  pt=pt.set('neighsSize9', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 10000);
-  pt=pt.set('neighsSize10', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 11000);
-    pt=pt.set('neighsSize11', neighs.filter(filt).size());
-  filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12', neighs.filter(filt).size());
-  filt = ee.Filter.lt('distance', 13000);
-  pt=pt.set('neighsSize13', neighs.filter(filt).size());
-  filt = ee.Filter.lt('distance', 14000);
-  pt=pt.set('neighsSize14', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 15000);
-  pt=pt.set('neighsSize15', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 16000);
-  pt=pt.set('neighsSize16', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 17000);
-  pt=pt.set('neighsSize17', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 18000);
-  pt=pt.set('neighsSize18', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 19000);
-  pt=pt.set('neighsSize19', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 20000);
-  pt=pt.set('neighsSize20', neighs.filter(filt).size());
-  return(pt);
-});
-
-
-var campcount_11 = pointdata_withbandcounts_11.select(
-    ['neighsSize1', 'neighsSize2', 'neighsSize3',
-    'neighsSize4', 'neighsSize5', 'neighsSize6',
-    'neighsSize7', 'neighsSize8', 'neighsSize9',
-    'neighsSize10', 'neighsSize11', 'neighsSize12',
-    'neighsSize13', 'neighsSize14', 'neighsSize15',
-    'neighsSize16', 'neighsSize17', 'neighsSize18',
-    'neighsSize19', 'neighsSize20']
-);
-
-print("campcounts_2011", campcount_11.limit(20));
-
-//No. camps at different distances in 2011/////////////////////
-
 var joined_11 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -1239,6 +1169,86 @@ var campcount_11 = pointdata_withbandcounts_11.select(
 );
 
 print("campcounts_2011", campcount_11.limit(20));
+
+
+
+
+//No. camps at different distances in 2012/////////////////////
+
+var joined_12 = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: sample, 
+  secondary: camps2.filterMetadata('open_2012', 'equals', 1), 
+  condition: spatialFilter
+});
+
+var withNearestDist_12 = joined_12.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
+
+var pointdata_withbandcounts_12 = withNearestDist_12.map(function(pt) {
+  var neighs = ee.List(pt.get('neighbors'));
+  var filt = ee.Filter.lt('distance', 1000);
+  pt=pt.set('neighsSize1', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 2000);
+  pt=pt.set('neighsSize2', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 3000);
+  pt=pt.set('neighsSize3', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 4000);
+  pt=pt.set('neighsSize4', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 5000);
+  pt=pt.set('neighsSize5', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 6000);
+  pt=pt.set('neighsSize6', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 7000);
+  pt=pt.set('neighsSize7', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 8000);
+  pt=pt.set('neighsSize8', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 9000);
+  pt=pt.set('neighsSize9', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 10000);
+  pt=pt.set('neighsSize10', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 11000);
+    pt=pt.set('neighsSize11', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 12000);
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 13000);
+  pt=pt.set('neighsSize13', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 14000);
+  pt=pt.set('neighsSize14', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 15000);
+  pt=pt.set('neighsSize15', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 16000);
+  pt=pt.set('neighsSize16', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 17000);
+  pt=pt.set('neighsSize17', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 18000);
+  pt=pt.set('neighsSize18', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 19000);
+  pt=pt.set('neighsSize19', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 20000);
+  pt=pt.set('neighsSize20', neighs.filter(filt).size());
+  return(pt);
+});
+
+
+var campcount_12 = pointdata_withbandcounts_12.select(
+    ['neighsSize1', 'neighsSize2', 'neighsSize3',
+    'neighsSize4', 'neighsSize5', 'neighsSize6',
+    'neighsSize7', 'neighsSize8', 'neighsSize9',
+    'neighsSize10', 'neighsSize11', 'neighsSize12',
+    'neighsSize13', 'neighsSize14', 'neighsSize15',
+    'neighsSize16', 'neighsSize17', 'neighsSize18',
+    'neighsSize19', 'neighsSize20']
+);
+
+print("campcounts_2012", campcount_12.limit(20));
+
 
 
 
