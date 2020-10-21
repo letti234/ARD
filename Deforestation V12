@@ -34,13 +34,13 @@ var bufferPoly = function(feature) {
 };
 
 var buffers = camps.map(bufferPoly);
-//Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
 
 //Randomly select 100 pixels
 var points = ee.FeatureCollection.randomPoints(buffers, 1200000);
 
 
-//Map.addLayer(points, {color: 'blue'}, 'points');
+Map.addLayer(points, {color: 'blue'}, 'points');
 
 
 //-------------------------------------------------------------
