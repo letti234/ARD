@@ -1,0 +1,102 @@
+//Step 1: read in camp and GFC data and produce 50 km buffer areas
+//        produce a hypothetical camp area, 1 km buffer
+//Camp dataset
+var camps = ee.FeatureCollection('users/salem043/allcampwide');
+
+//Produce 50 km  buffer around camps
+var bufferPoly = function(feature) {
+  return feature.buffer(50000);   
+};
+
+var buffers = camps.map(bufferPoly);
+Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+
+var bufferPoly2 = function(feature) {
+  return feature.buffer(1000);   
+};
+
+var campArea = camps.map(bufferPoly2);
+Map.addLayer(campArea, {color: 'cyan'}, 'camp area');
+
+Map.addLayer(camps, {color: 'red'}, 'camps');
+
+print(buffers, "50 km buffers")
+
+
+//Hansen Global Forest Change data
+var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
+
+
+//Step 2: Produce grids within buffers using degrees (womp womp womp)
+
+var tiles = tile(buffers, 0.1);
+
+function tile(region, size_in_degrees) {
+  function tile_geometry(geometry) {
+    var coords = ee.List(geometry.bounds().coordinates().get(0))
+    var min_point = ee.List(coords.get(0))
+    var max_point = ee.List(coords.get(2))
+  
+    function sequence(direction) {
+      var start = min_point.get(direction)
+      var stop = ee.Number(max_point.get(direction))
+      return ee.List.sequence(start, stop, size_in_degrees)
+    }
+  
+    var tiles = sequence(0).map(function (x) {
+      return sequence(1).map(function (y) { 
+          return ee.Feature(ee.Geometry.Rectangle([
+            [ee.Number(x), ee.Number(y)],
+            [
+              ee.Number(x).add(size_in_degrees).min(max_point.get(0)),
+              ee.Number(y).add(size_in_degrees).min(max_point.get(1))
+            ]
+        ]).intersection(geometry, 30))
+      })
+  	}).flatten()
+    return ee.FeatureCollection(tiles).filterBounds(geometry)
+  }
+
+  function tile_feature_collection(feature_collection) {
+    return ee.FeatureCollection(
+      feature_collection.iterate(
+        function (feature, acc) {
+          return ee.FeatureCollection(acc).merge(tile_geometry(ee.Feature(feature).geometry()))
+        }, ee.FeatureCollection([]))
+    )
+  }
+
+  if (region instanceof ee.FeatureCollection)
+    return tile_feature_collection(region)
+  else if (region instanceof ee.Feature)
+    return tile_geometry(region.geometry())
+  else if (region instanceof ee.Geometry)
+    return tile_geometry(region)
+  else
+    throw Error(
+      'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
+    )
+}
+
+print(tiles.limit(1));
+
+
+//Step 3: For each tile, obtain GEE zonal statistics
+//    Number of GFC pixels within each buffer
+//    Mean pct. forest cover in 2000
+//    Number of pixels with zero F.C. in 2000
+//    Number of pixels that transition to zero F.C. in each yr. 01-12
+//    Number of camp buffers 1-2, 2-3, ...19-20 km from each grid centroid in each year
+//    Some remoteness measure for the grid centroid each year
+
+
+var c = gfc2014.reduceRegion({
+  reducer: ee.Reducer.count(),
+  geometry: buffers,
+  maxPixels: 20000000000
+  });
+
+print(c);
+
+
+
