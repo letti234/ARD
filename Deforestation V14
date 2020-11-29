@@ -62,13 +62,17 @@ var gfcSampleMask = gfcSampleMask
 .remap([ 1],
        [1], null);
        
-print(gfcSampleMask, "remapped maks");
-Map.addLayer(gfcSampleMask);
+//Map.addLayer(gfcSampleMask);
 
 //Mask the mask layer to the two other GEE rasters so that NAs in the
 //mask layer are NAs in those rasters
 //var gfcSampleCover2000Masked=mask()
 
+var gfc2000CoverMasked = gfcSampleCover2000.updateMask(gfcSampleMask);
+//Map.addLayer(gfc2000CoverMasked);
+
+var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
+//Map.addLayer(gfcLossYearMasked);
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -139,13 +143,10 @@ Map.addLayer(tiles);
 ///////////////////////////////////////////////////////////////////////
 //
 //  Zonal statistics from GFC: includes
-//    1. No. GFC pixels in each tile
+//    1. Number of non-NA GFC pixels in each tile
 //    2. GFC Mean pct. forest cover in 200 for each tile
-//    3. No. pixels with zero FC in 2000
-//    4. No. pixels that transition to zero FC each year (01-12)
-//    5. No. of camp area buffer boundaties 1-2, 2-3, ...19-20 
-//       km from tile centroid that are open in 2001, 2002, ...2012
-//    6. No. of NA pixels in GFC (water bodies)
+//    3. Number of pixels with zero FC in 2000
+//    4. Number of pixels that transition to zero FC each year (01-12)
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -158,7 +159,7 @@ Map.addLayer(gfc2000Sample);
 
 
 var pixelCounts = tiles.map(function(feature) {
-  return feature.set(gfc2000Sample.reduceRegion({
+  return feature.set(gfc2000CoverMasked.reduceRegion({
     reducer: 'count',
     geometry: feature.geometry(),
     scale: 100,
@@ -175,25 +176,57 @@ print("Number of pixels that are not NA", tileCounts);
 //2. Mean pct forest cover of tile in 2000
 
 var tileCountsPlusBaseline = tileCounts.map(function(feature) {
-  return feature.set(gfc2000Sample.reduceRegion({
+  return feature.set(gfc2000CoverMasked.reduceRegion({
     reducer: 'mean',
     geometry: feature.geometry(),
     scale: 100,
   }));
 });
 
-
-
-
-  //Filter treecover2000 layer so it only includes zeroes
-  
-  var zeroFC2000 = gfc2000Sample.eq(0);
-
-  Map.addLayer(zeroFC2000); 
-  //This works, but includes water, need to set water to NA
-
-
 print("Updated FC", tileCountsPlusBaseline);
+
+
+
+//2. Number of pixels with zero FC in 2000
+
+var gfc2000CoverZeroes = gfc2000CoverMasked
+.remap([ 0], [1], null);
+
+print(gfc2000CoverZeroes, "2000 pixels with zero FC");
+Map.addLayer(gfc2000CoverZeroes);
+
+
+var TileCounts2 = tileCountsPlusBaseline.map(function(feature) {
+  return feature.set(gfc2000CoverZeroes.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+print(TileCounts2);
+
+var DataRenamed = Data.map(function(feat){
+  return ee.Feature(feat.geometry(), { 
+    numPixelsNoNA: feat.get('number_pixels')
+  })
+})
+print(DataRenamed, "renaming");
+
+var tileCounts3 = TileCounts2.select(
+    ['number_pixels', 'remapped', 'treecover2000'], 
+    ['numPixelsNoNA', 'numPixelsZeroFC2000', 'meanPctCover2000']            
+);
+
+print(tileCounts3);
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Zonal statistics from GFC and ARD: includes
+//    1. No. of camp area buffer boundaties 1-2, 2-3, ...19-20 
+//       km from tile centroid that are open in 2001, 2002, ...2012
+//
+///////////////////////////////////////////////////////////////////////
 
 
 ///////////////////////////////////////////////////////////////////////
