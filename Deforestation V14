@@ -217,7 +217,12 @@ print(DataRenamed, "renaming");
 
 //Num. pixels transition to zero FC in 2001, 2002, 2003, etc.
 
-//Training: execute with 2001
+//Training: Count number of pixels with property=2001 in lossyr data
+
+
+var gfcLoss2001 = gfcSampleLossYr
+.remap([ 2001], [1], null);
+
 
 
 
@@ -238,7 +243,6 @@ print(DataRenamed, "renaming");
 //    3. Pct. tile in other biomes 
 //
 ///////////////////////////////////////////////////////////////////////
-
 
 
 
