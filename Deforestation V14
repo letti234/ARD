@@ -20,7 +20,7 @@ var buffers = camps.map(bufferPoly);
 //For training, select one of these buffers 
 //!!!Drop this when producing full sample
 var buffsSample=buffers.limit(1);
-Map.addLayer(buffsSample);
+//Map.addLayer(buffsSample);
 Map.centerObject(buffsSample);
 
 
@@ -41,6 +41,34 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 //Clip GFC down to the subsample buffer
 //!!Change this when upscaling
 var gfcSample = gfc2014.clip(buffsSample);
+print(gfcSample, "GFC geographic subsample")
+
+//The bands we rely on for our analysis
+var gfcSampleCover2000= gfcSample.select(["treecover2000"]);
+var gfcSampleMask=gfcSample.select(["datamask"])
+var gfcSampleLossYr = gfcSample.select(["lossyear"])
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Clean the GFC data - use the mask layer to assign all pixels
+//  with no data or in bodies of water as NA
+//
+///////////////////////////////////////////////////////////////////////
+
+//Reclassify 2 = NA and 0 = NA in the mask layer
+
+var gfcSampleMask = gfcSampleMask
+.remap([ 1],
+       [1], null);
+       
+print(gfcSampleMask, "remapped maks");
+Map.addLayer(gfcSampleMask);
+
+//Mask the mask layer to the two other GEE rasters so that NAs in the
+//mask layer are NAs in those rasters
+//var gfcSampleCover2000Masked=mask()
+
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -117,11 +145,12 @@ Map.addLayer(tiles);
 //    4. No. pixels that transition to zero FC each year (01-12)
 //    5. No. of camp area buffer boundaties 1-2, 2-3, ...19-20 
 //       km from tile centroid that are open in 2001, 2002, ...2012
+//    6. No. of NA pixels in GFC (water bodies)
 //
 ///////////////////////////////////////////////////////////////////////
 
 
-//Number of pixels in each tile
+//1. Number of pixels in each tile
 
 //Select one layer of GFC 
 var gfc2000Sample=gfcSample.select(['treecover2000']);
@@ -143,7 +172,7 @@ var tileCounts = pixelCounts.select(
 print("Number of pixels that are not NA", tileCounts);
 
 
-//Mean pct forest cover of tile in 2000
+//2. Mean pct forest cover of tile in 2000
 
 var tileCountsPlusBaseline = tileCounts.map(function(feature) {
   return feature.set(gfc2000Sample.reduceRegion({
@@ -152,6 +181,16 @@ var tileCountsPlusBaseline = tileCounts.map(function(feature) {
     scale: 100,
   }));
 });
+
+
+
+
+  //Filter treecover2000 layer so it only includes zeroes
+  
+  var zeroFC2000 = gfc2000Sample.eq(0);
+
+  Map.addLayer(zeroFC2000); 
+  //This works, but includes water, need to set water to NA
 
 
 print("Updated FC", tileCountsPlusBaseline);
