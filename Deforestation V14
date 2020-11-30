@@ -374,7 +374,38 @@ var loss2010 = loss2009.map(function(feature) {
   }));
 });
 
-print(loss2010, "most recent");
+//2011
+var gfcLoss2011 = gfcLossYearMasked
+.remap([11], [1], null);
+
+var gfcLoss2011Clean = gfcLoss2011.select(
+  ['remapped'], ['loss2011']);
+
+var loss2011 = loss2010.map(function(feature) {
+  return feature.set(gfcLoss2011Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+
+//2012
+var gfcLoss2012 = gfcLossYearMasked
+.remap([12], [1], null);
+
+var gfcLoss2012Clean = gfcLoss2012.select(
+  ['remapped'], ['loss2012']);
+
+var loss2012 = loss2011.map(function(feature) {
+  return feature.set(gfcLoss2012Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+print(loss2012, "most recent");
 ///////////////////////////////////////////////////////////////////////
 //
 //  Zonal statistics from GFC and ARD: includes
