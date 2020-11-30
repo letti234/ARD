@@ -588,7 +588,7 @@ var pointdata_withbandcounts_1 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-print(pointdata_withbandcounts_1);
+print(pointdata_withbandcounts_1, "camp count 2001 with other data");
 
 
 
@@ -665,7 +665,7 @@ var campcount_2 = pointdata_withbandcounts_2.select(
     'neighsSize19_2002', 'neighsSize20_2002']
 );
 
-print(campcount_2)
+print(campcount_2, "camp count 2002")
 
 
 //2003
@@ -741,7 +741,7 @@ var campcount_3 = pointdata_withbandcounts_3.select(
     'neighsSize19_2003', 'neighsSize20_2003']
 );
 
-print(campcount_3)  
+print(campcount_3, "camp count 2003")  
 
 
 
@@ -818,7 +818,7 @@ var campcount_4 = pointdata_withbandcounts_4.select(
     'neighsSize19_2004', 'neighsSize20_2004']
 );
 
-print(campcount_4)  
+print(campcount_4, "camp count 2004");  
 
 
 
@@ -895,7 +895,7 @@ var campcount_5 = pointdata_withbandcounts_5.select(
     'neighsSize19_2005', 'neighsSize20_2005']
 );
 
-print(campcount_5)  
+print(campcount_5, "camp count 2005")  ;
 
 
 //2006
@@ -971,7 +971,7 @@ var campcount_6 = pointdata_withbandcounts_6.select(
     'neighsSize19_2006', 'neighsSize20_2006']
 );
 
-print(campcount_6)  
+print(campcount_6, "camp count 2006")  
 
 
 //2007
@@ -1426,7 +1426,7 @@ var campcount_12 = pointdata_withbandcounts_12.select(
     'neighsSize19_2012', 'neighsSize20_2012']
 );
 
-print(campcount_12, "camp count 2012")  
+print(campcount_12, "camp count 2012")  ;
 
 
 
