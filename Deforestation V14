@@ -1369,9 +1369,7 @@ print(campcount_12, "camp count 2012")  ;
 ///////////////////////////////////////////////////////////////////////
 //
 //  Zonal statistics from biome data: includes
-//    1. Pct. tile in grasslands, savannahs biome
-//    2. Pct. tile in rainforest biome
-//    3. Pct. tile in other biomes 
+//    1. Biome of centroid
 //
 ///////////////////////////////////////////////////////////////////////
 
