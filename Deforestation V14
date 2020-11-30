@@ -512,7 +512,7 @@ var campcount_1 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-print(campcount_1);
+print(campcount_1, "2001 distances and all other zonal stats");
 
 
 
@@ -1376,8 +1376,60 @@ print(campcount_12, "camp count 2012")  ;
 var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 print('ecoregions', ecodata.limit(10));
 
-Map.addLayer(ecodata);
 
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["BIOME_NAME","ECO_NAME", "systemindex"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(campcount_1, ecodata, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var ecosample = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print('sample extract', ecosample.limit(10));
+
+
+
+//-------------------------------------------------------------
+//
+//EXTRACTING INFORMATION FROM THE SSA SHAPEFILE 
+//
+//-------------------------------------------------------------
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["ADM0","ADM1", "ADM2"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(campcount_1, SSA, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var SSAdata = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
 
 ///////////////////////////////////////////////////////////////////////
 //
