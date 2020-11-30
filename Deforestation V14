@@ -250,12 +250,12 @@ var loss2002 = loss2001.map(function(feature) {
 });
 
 
-//2002
+//2003
 var gfcLoss2003 = gfcLossYearMasked
 .remap([3], [1], null);
 
 var gfcLoss2003Clean = gfcLoss2003.select(
-  ['remapped'], ['loss2002']);
+  ['remapped'], ['loss2003']);
 
 var loss2003 = loss2002.map(function(feature) {
   return feature.set(gfcLoss2003Clean.reduceRegion({
@@ -265,8 +265,116 @@ var loss2003 = loss2002.map(function(feature) {
   }));
 });
 
-print(loss2003, "most recent");
+//2004
+var gfcLoss2004 = gfcLossYearMasked
+.remap([4], [1], null);
 
+var gfcLoss2004Clean = gfcLoss2004.select(
+  ['remapped'], ['loss2004']);
+
+var loss2004 = loss2003.map(function(feature) {
+  return feature.set(gfcLoss2004Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+
+//2005
+var gfcLoss2005 = gfcLossYearMasked
+.remap([5], [1], null);
+
+var gfcLoss2005Clean = gfcLoss2005.select(
+  ['remapped'], ['loss2005']);
+
+var loss2005 = loss2004.map(function(feature) {
+  return feature.set(gfcLoss2005Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+
+//2006
+var gfcLoss2006 = gfcLossYearMasked
+.remap([6], [1], null);
+
+var gfcLoss2006Clean = gfcLoss2006.select(
+  ['remapped'], ['loss2006']);
+
+var loss2006 = loss2005.map(function(feature) {
+  return feature.set(gfcLoss2006Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+
+//2007
+var gfcLoss2007 = gfcLossYearMasked
+.remap([7], [1], null);
+
+var gfcLoss2007Clean = gfcLoss2007.select(
+  ['remapped'], ['loss2007']);
+
+var loss2007 = loss2006.map(function(feature) {
+  return feature.set(gfcLoss2007Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+//2008
+var gfcLoss2008 = gfcLossYearMasked
+.remap([8], [1], null);
+
+var gfcLoss2008Clean = gfcLoss2008.select(
+  ['remapped'], ['loss2008']);
+
+var loss2008 = loss2007.map(function(feature) {
+  return feature.set(gfcLoss2008Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+
+//2009
+var gfcLoss2009 = gfcLossYearMasked
+.remap([9], [1], null);
+
+var gfcLoss2009Clean = gfcLoss2009.select(
+  ['remapped'], ['loss2009']);
+
+var loss2009 = loss2008.map(function(feature) {
+  return feature.set(gfcLoss2009Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+//2010
+var gfcLoss2010 = gfcLossYearMasked
+.remap([10], [1], null);
+
+var gfcLoss2010Clean = gfcLoss2010.select(
+  ['remapped'], ['loss2010']);
+
+var loss2010 = loss2009.map(function(feature) {
+  return feature.set(gfcLoss2010Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+print(loss2010, "most recent");
 ///////////////////////////////////////////////////////////////////////
 //
 //  Zonal statistics from GFC and ARD: includes
