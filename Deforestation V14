@@ -146,7 +146,6 @@ Map.addLayer(tiles);
 //    1. Number of non-NA GFC pixels in each tile
 //    2. GFC Mean pct. forest cover in 200 for each tile
 //    3. Number of pixels with zero FC in 2000
-//    4. Number of pixels that transition to zero FC each year (01-12)
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -213,18 +212,19 @@ print(DataRenamed, "renaming");
 //Num. pixels transition to zero FC in 2001, 2002, 2003, etc.
 
 
-////////////////////////////////////////////////////////////////////
-//Training: Count number of pixels with property=2001 in lossyr data
+///////////////////////////////////////////////////////////////////////
+//
+//  Zonal statistics from GFC:  counts of annual pixel transition to
+//                              zero FC (Learn to do this in a function)
+//
+///////////////////////////////////////////////////////////////////////
 
+//2001
 var gfcLoss2001 = gfcLossYearMasked
 .remap([1], [1], null);
 
 var gfcLoss2001Clean = gfcLoss2001.select(
-  ['remapped'], [1]);
-
-//Map.addLayer(gfcLoss2001);
-
-//Count number of 2001 lost pixels for each tile
+  ['remapped'], ['loss2001']);
 
 var loss2001 = DataRenamed.map(function(feature) {
   return feature.set(gfcLoss2001Clean.reduceRegion({
@@ -234,25 +234,38 @@ var loss2001 = DataRenamed.map(function(feature) {
   }));
 });
 
-print(loss2001, "Trainer result for 2001");
+//2002
+var gfcLoss2002 = gfcLossYearMasked
+.remap([2], [1], null);
+
+var gfcLoss2002Clean = gfcLoss2002.select(
+  ['remapped'], ['loss2002']);
+
+var loss2002 = loss2001.map(function(feature) {
+  return feature.set(gfcLoss2002Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
 
 
-//////////////////////////////////////////////////////////////////////
-//Convert the training effort above into a function
+//2002
+var gfcLoss2003 = gfcLossYearMasked
+.remap([3], [1], null);
 
-var myList = ee.List.sequence(1, 9);
+var gfcLoss2003Clean = gfcLoss2003.select(
+  ['remapped'], ['loss2002']);
 
-var yearlyLoss = function(number) {
-var lossThisYear = gfcLossYearMasked
-.remap([ee.Number(number)], [1], null);
+var loss2003 = loss2002.map(function(feature) {
+  return feature.set(gfcLoss2003Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
 
-var lossThisYearClean = lossThisYear.select(
-  ['remapped'], [ee.Number(number)]);
-}
-
-
-
-
+print(loss2003, "most recent");
 
 ///////////////////////////////////////////////////////////////////////
 //
