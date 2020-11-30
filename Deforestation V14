@@ -1122,7 +1122,7 @@ var campcount_8 = pointdata_withbandcounts_8.select(
     'neighsSize19_2008', 'neighsSize20_2008']
 );
 
-print(campcount_8)  
+print(campcount_8, "camp count 2008")  
 
 
 
@@ -1199,7 +1199,7 @@ var campcount_9 = pointdata_withbandcounts_9.select(
     'neighsSize19_2009', 'neighsSize20_2009']
 );
 
-print(campcount_9)  ;
+print(campcount_9, "camp count 2009")  ;
 
 
 //2010
