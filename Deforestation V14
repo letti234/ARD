@@ -1047,7 +1047,7 @@ var campcount_7 = pointdata_withbandcounts_7.select(
     'neighsSize19_2007', 'neighsSize20_2007']
 );
 
-print(campcount_7)  
+print(campcount_7, "camp count 2007")  
 
 //2008
 var joined_8 = ee.Join.saveAll({
