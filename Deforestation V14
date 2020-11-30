@@ -14,14 +14,10 @@ var bufferPoly = function(feature) {
 };
 
 var buffers = camps.map(bufferPoly);
-//Map.addLayer(buffers, {color: 'yellow'}, 'buffers');
+//Map.addLayer(buffers, {}, 'buffers');
 
-
-//For training, select one of these buffers 
-//!!!Drop this when producing full sample
-var buffsSample=buffers;
-//Map.addLayer(buffsSample);
-//Map.centerObject(buffsSample);
+var buffsSample=buffers.union();
+Map.addLayer(buffsSample, {}, 'buffers dissolved');
 
 
 //Produce a 1 km buffer around the camp: this is the camp area, we want
@@ -84,7 +80,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Code courtesty of a kind stranger who offered it on Stack Exchange
 //!!Need to figure out how to form these tiles in meters
 //!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffsSample, 0.01);
+var tiles = tile(buffsSample, 0.1);
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
