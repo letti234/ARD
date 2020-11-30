@@ -31,8 +31,6 @@ var bufferPoly2 = function(feature) {
 };
 
 var campArea = camps.map(bufferPoly2);
-//Map.addLayer(campArea, {color: 'cyan'}, 'camp area');
-//Map.addLayer(camps, {color: 'red'}, 'camps');
 
 
 //Import Hansen Global Forest Change data
@@ -72,7 +70,7 @@ var gfc2000CoverMasked = gfcSampleCover2000.updateMask(gfcSampleMask);
 //Map.addLayer(gfc2000CoverMasked);
 
 var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
-Map.addLayer(gfcLossYearMasked);
+//Map.addLayer(gfcLossYearMasked);
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -188,7 +186,7 @@ var gfc2000CoverZeroes = gfc2000CoverMasked
 .remap([ 0], [1], null);
 
 print(gfc2000CoverZeroes, "2000 pixels with zero FC");
-Map.addLayer(gfc2000CoverZeroes);
+//Map.addLayer(gfc2000CoverZeroes);
 
 var TileCounts2 = tileCountsPlusBaseline.map(function(feature) {
   return feature.set(gfc2000CoverZeroes.reduceRegion({
@@ -405,7 +403,8 @@ var loss2012 = loss2011.map(function(feature) {
   }));
 });
 
-print(loss2012, "most recent");
+print(loss2012, "Tile counts of transition to zero FC");
+
 ///////////////////////////////////////////////////////////////////////
 //
 //  Zonal statistics from GFC and ARD: includes
@@ -414,6 +413,39 @@ print(loss2012, "most recent");
 //
 ///////////////////////////////////////////////////////////////////////
 
+//Map.addLayer(campArea, {color: 'cyan'}, 'camp area');
+Map.addLayer(camps, {color: 'red'}, 'camps');
+
+//Obtain tile centroids - basically converts our tiles into point data
+var getCentroids = function(feature) {
+  return feature.set({centralPoint: feature.centroid()});
+};
+
+var tileCenter = loss2012.map(getCentroids);
+
+var tileCentroids = tileCenter.map(function(f) {
+  var centroid = ee.Feature(ee.List(f.get('centralPoint')));
+  return centroid;
+});
+//Map.addLayer(tileCentroids);
+
+print(tileCentroids, 'centroids');
+
+//For each centroid, draw a 1 km polygon around the centroid and
+//count the number of camps within that polygon
+
+//For training, execute on the first centroid
+var centroidMini = tileCentroids.limit(1);
+Map.addLayer(centroidMini);
+
+var buffer1km = function(feature) {
+  return feature.buffer(1000);   
+};
+
+var oneKmBuffer = centroidMini.map(buffer1km);
+Map.addLayer(oneKmBuffer);
+
+print(oneKmBuffer);
 
 ///////////////////////////////////////////////////////////////////////
 //
