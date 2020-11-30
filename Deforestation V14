@@ -72,7 +72,7 @@ var gfc2000CoverMasked = gfcSampleCover2000.updateMask(gfcSampleMask);
 //Map.addLayer(gfc2000CoverMasked);
 
 var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
-//Map.addLayer(gfcLossYearMasked);
+Map.addLayer(gfcLossYearMasked);
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -151,12 +151,7 @@ Map.addLayer(tiles);
 ///////////////////////////////////////////////////////////////////////
 
 
-//1. Number of pixels in each tile
-
-//Select one layer of GFC 
-var gfc2000Sample=gfcSample.select(['treecover2000']);
-Map.addLayer(gfc2000Sample);
-
+//1. Function counts the number of pixels in each tile
 
 var pixelCounts = tiles.map(function(feature) {
   return feature.set(gfc2000CoverMasked.reduceRegion({
@@ -166,6 +161,7 @@ var pixelCounts = tiles.map(function(feature) {
   }));
 });
 
+//Change the property name to avoid issues 
 var tileCounts = pixelCounts.select(
     ['treecover2000'], ['number_pixels']            
 );
@@ -173,7 +169,7 @@ var tileCounts = pixelCounts.select(
 print("Number of pixels that are not NA", tileCounts);
 
 
-//2. Mean pct forest cover of tile in 2000
+//2. Function to calculate the mean pct forest cover of tile in 2000
 
 var tileCountsPlusBaseline = tileCounts.map(function(feature) {
   return feature.set(gfc2000CoverMasked.reduceRegion({
@@ -194,7 +190,6 @@ var gfc2000CoverZeroes = gfc2000CoverMasked
 
 print(gfc2000CoverZeroes, "2000 pixels with zero FC");
 Map.addLayer(gfc2000CoverZeroes);
-
 
 var TileCounts2 = tileCountsPlusBaseline.map(function(feature) {
   return feature.set(gfc2000CoverZeroes.reduceRegion({
@@ -217,11 +212,44 @@ print(DataRenamed, "renaming");
 
 //Num. pixels transition to zero FC in 2001, 2002, 2003, etc.
 
+
+////////////////////////////////////////////////////////////////////
 //Training: Count number of pixels with property=2001 in lossyr data
 
+var gfcLoss2001 = gfcLossYearMasked
+.remap([1], [1], null);
 
-var gfcLoss2001 = gfcSampleLossYr
-.remap([ 2001], [1], null);
+var gfcLoss2001Clean = gfcLoss2001.select(
+  ['remapped'], [1]);
+
+//Map.addLayer(gfcLoss2001);
+
+//Count number of 2001 lost pixels for each tile
+
+var loss2001 = DataRenamed.map(function(feature) {
+  return feature.set(gfcLoss2001Clean.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+print(loss2001, "Trainer result for 2001");
+
+
+//////////////////////////////////////////////////////////////////////
+//Convert the training effort above into a function
+
+var myList = ee.List.sequence(1, 9);
+
+var yearlyLoss = function(number) {
+var lossThisYear = gfcLossYearMasked
+.remap([ee.Number(number)], [1], null);
+
+var lossThisYearClean = lossThisYear.select(
+  ['remapped'], [ee.Number(number)]);
+}
+
 
 
 
