@@ -36,6 +36,8 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 //!!Change this when upscaling
 var gfcSample = gfc2014.clip(buffsSample);
 //print(gfcSample, "GFC geographic subsample");
+print(gfcSample);
+print(gfc2014);
 
 //The bands we rely on for our analysis
 var gfcSampleCover2000= gfcSample.select(["treecover2000"]);
@@ -131,7 +133,7 @@ function tile(region, size_in_degrees) {
 
 //print(tiles, "Tile example");
 
-Map.addLayer(tiles);
+//Map.addLayer(tiles);
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -1457,7 +1459,6 @@ var remoteness = campcount_1.map(function(feature) {
 //
 ///////////////////////////////////////////////////////////////////////
 
-print(camp_count_1.limit(10));
 
 
 Export.table.toDrive(campcount_2, "camp_count_2", "Deforestation");
