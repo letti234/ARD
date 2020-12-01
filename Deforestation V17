@@ -275,14 +275,12 @@ print(tileCentroids.limit(2), 'centroids');
 
 
 
+///////////////////////////////////////////////////////////////////////
+//
+//  Function to get all camp counts
+//
+///////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-// all years in camp wide data 
-var years2 = ee.List.sequence(2001,2012);
 
 // indices for years you want to calculate stats for (2001 to 2014) 
 var indices2 = ee.List.sequence(2011,2012);
@@ -299,10 +297,8 @@ var spatialFilter = ee.Filter.withinDistance({
 // map over feature collection 
 var centroids_new = tileCentroids.map(function(feature){  //Start of big function with ({ open
   
-
 var cdata = indices2.iterate(function(i, dictin){ //Start of second function with ({ open
     
-// get year for this iteration 
 var thisyear = i ;
 
 var varname = ee.String('open_').cat(ee.Number(thisyear).int())
@@ -312,31 +308,41 @@ var joinedUp = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: centroidMini, 
+  primary: tileCentroids, 
   secondary: camps.filterMetadata(varname, 'equals', 1), 
   condition: spatialFilter
 });
 
 
-var withNearestDist = joinedUp.map(function(f) {
-  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('distance');
-  return f.set('nearestDist', nearestDist);
-});
-
 var neighsSize1 = ee.String('camps1km_').cat(ee.Number(thisyear).int());
 
-var getdata = withNearestDist.map(function(pt) {
+var getdata = joinedUp.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
   var filt = ee.Filter.lt('distance', 1000);
-  pt=pt.set(neighsSize1, neighs.filter(filt).size());
+  pt=pt.set(neighsSize1, neighs.filter(filt).size()) ;
+    return(pt);
+});
   
-   return ee.Dictionary(dictin).combine(dict);
-}, ee.Dictionary());
+return ee.Dictionary(dictin).combine(getdata);
+
+
+}, ee.Dictionary()); //End of second function with )} closed
+
  return feature.set(cdata) ;
-}); //End of big function with )} closed)
+}); //End of big function with )} closed
+
+
+print(centroids_new);
 
 
 
+
+
+
+
+
+
+
+// get year for this iteration 
 
 
