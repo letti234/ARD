@@ -141,6 +141,11 @@ function tile(region, size_in_degrees) {
 //
 ///////////////////////////////////////////////////////////////////////
 
+// all years in GFC image 
+var years = ee.List.sequence(2000,2019)
+
+// indices for years you want to calculate stats for (2001 to 2014) 
+var indices = ee.List.sequence(1,14)
 
 //1. Function counts the number of pixels in each tile
 
@@ -157,7 +162,7 @@ var tileCounts = pixelCounts.select(
     ['treecover2000'], ['number_pixels']            
 );
 
-print("Number of pixels that are not NA", tileCounts.limit(10));
+//print("Number of pixels that are not NA", tileCounts.limit(10));
 
 
 //2. Function to calculate the mean pct forest cover of tile in 2000
@@ -198,7 +203,23 @@ var DataRenamed = TileCounts2.map(function(feat){
     meanPctCover2000: feat.get('treecover2000')
   })
 })
-//print(DataRenamed, "renaming");
+print(DataRenamed.limit(10), "renaming");
 
-//Num. pixels transition to zero FC in 2001, 2002, 2003, etc.
+ 
+///////////////////////////////////////////////////////////////////////
+//
+//  Zonal statistics from GFC:  counts of annual pixel transition to
+//                              zero FC (Learn to do this in a function)
+//
+///////////////////////////////////////////////////////////////////////
 
+// all years in GFC image 
+var years = ee.List.sequence(2000,2019)
+
+// indices for years you want to calculate stats for (2001 to 2014) 
+var indices = ee.List.sequence(1,14)
+
+// map over feature collection 
+var tiles_new = tiles.map(function(feature){
+  
+ 
