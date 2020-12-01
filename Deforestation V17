@@ -145,7 +145,6 @@ var pixelCounts = tiles.map(function(feature) {
   return feature.set(gfc2000CoverMasked.reduceRegion({
     reducer: 'count',
     geometry: feature.geometry(),
-    scale: 100,
   }));
 });
 
@@ -163,7 +162,6 @@ var tileCountsPlusBaseline = tileCounts.map(function(feature) {
   return feature.set(gfc2000CoverMasked.reduceRegion({
     reducer: 'mean',
     geometry: feature.geometry(),
-    scale: 100,
   }));
 });
 
@@ -182,7 +180,6 @@ var TileCounts2 = tileCountsPlusBaseline.map(function(feature) {
   return feature.set(gfc2000CoverZeroes.reduceRegion({
     reducer: 'count',
     geometry: feature.geometry(),
-    scale: 100,
   }));
 });
 
@@ -267,8 +264,6 @@ var tileCentroids = tileCenter.map(function(f) {
 Map.addLayer(tileCentroids);
 
 print(tileCentroids.limit(2), 'centroids');
-
-
 
 
 
