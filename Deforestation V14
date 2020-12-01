@@ -1457,7 +1457,7 @@ var remoteness = campcount_1.map(function(feature) {
 //
 ///////////////////////////////////////////////////////////////////////
 
-
+print(camp_count_1.limit(10));
 
 
 Export.table.toDrive(campcount_2, "camp_count_2", "Deforestation");
