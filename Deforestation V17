@@ -207,9 +207,6 @@ print(DataRenamed.limit(10), "renaming");
 ///////////////////////////////////////////////////////////////////////
 
 
-// all years in GFC image 
-var years = ee.List.sequence(2001,2012)
-
 // indices for years you want to calculate stats for (2001 to 2014) 
 var indices = ee.List.sequence(1,12)
 
@@ -294,14 +291,17 @@ var spatialFilter = ee.Filter.withinDistance({
 });
 
 
-// map over feature collection 
-var centroids_new = tileCentroids.map(function(feature){  //Start of big function with ({ open
+// map over feature collection of tile centroids
+var centroids_new = tileCentroids.map(function(feature){  
   
-var cdata = indices2.iterate(function(i, dictin){ //Start of second function with ({ open
+//Within this function, iterated through the 2001-2012 index
+var cdata = indices2.iterate(function(i, dictin2){ //Start of second function with ({ open
     
+//Set an object equal to the year from the list
 var thisyear = i ;
 
-var campDataVarName = ee.String('open_').cat(ee.Number(thisyear).int())
+//Generate the string name of the variable in the camp data (open_2001 = camp open in 2001)
+var operatingThisYear = ee.String('open_').cat(ee.Number(i).int());
   
 var joinedUp = ee.Join.saveAll({
   matchesKey: 'neighbors', 
@@ -309,12 +309,12 @@ var joinedUp = ee.Join.saveAll({
   ordering: 'distance'
 }).apply({
   primary: tileCentroids, 
-  secondary: camps.filterMetadata(campDataVarName, 'equals', 1), 
+  secondary: camps.filterMetadata(operatingThisYear, 'equals', 1), 
   condition: spatialFilter
 });
 
 
-var neighsSize1 = ee.String('camps1km_').cat(ee.Number(thisyear).int());
+var neighsSize1 = ee.String('camps1km_').cat(ee.Number(i).int());
 
 var getdata = joinedUp.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
@@ -323,13 +323,14 @@ var getdata = joinedUp.map(function(pt) {
     return(pt);
 });
   
-return ee.Dictionary(dictin).combine(getdata);
+return ee.Dictionary(dictin2).combine(getdata);
 
 
-}, ee.Dictionary()); //End of second function with )} closed
+}, ee.Dictionary()   ); 
 
  return feature.set(cdata) ;
-}); //End of big function with )} closed
+ 
+}); 
 
 
 print(centroids_new);
@@ -339,10 +340,5 @@ print(centroids_new);
 
 
 
-
-
-
-
-// get year for this iteration 
 
 
