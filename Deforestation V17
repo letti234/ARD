@@ -301,7 +301,7 @@ var cdata = indices2.iterate(function(i, dictin){ //Start of second function wit
     
 var thisyear = i ;
 
-var varname = ee.String('open_').cat(ee.Number(thisyear).int())
+var campDataVarName = ee.String('open_').cat(ee.Number(thisyear).int())
   
 var joinedUp = ee.Join.saveAll({
   matchesKey: 'neighbors', 
@@ -309,7 +309,7 @@ var joinedUp = ee.Join.saveAll({
   ordering: 'distance'
 }).apply({
   primary: tileCentroids, 
-  secondary: camps.filterMetadata(varname, 'equals', 1), 
+  secondary: camps.filterMetadata(campDataVarName, 'equals', 1), 
   condition: spatialFilter
 });
 
