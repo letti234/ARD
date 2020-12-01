@@ -77,7 +77,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Code courtesty of a kind stranger who offered it on Stack Exchange
 //!!Need to figure out how to form these tiles in meters
 //!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffsSample, 0.01);
+var tiles = tile(buffsSample, 0.1);
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -220,6 +220,15 @@ var years = ee.List.sequence(2000,2019)
 var indices = ee.List.sequence(1,14)
 
 // map over feature collection 
-var tiles_new = tiles.map(function(feature){
+var tiles_new = tiles.map(function(feature){ 
+  
+  var mdata = indices.iterate(function(i, dictin){ 
+    
+  var thisyear = years.get(i)
+  
+  
+    
+  });
+});
   
  
