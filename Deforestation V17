@@ -272,73 +272,107 @@ print(tileCentroids.limit(2), 'centroids');
 
 
 
+
 ///////////////////////////////////////////////////////////////////////
 //
-//  Function to get all camp counts
+//  Annual camp counts
 //
 ///////////////////////////////////////////////////////////////////////
-
-
-// indices for years you want to calculate stats for (2001 to 2014) 
-var indices2 = ee.List.sequence(2011,2012);
-
 
 var spatialFilter = ee.Filter.withinDistance({
-  distance: 30000,
+  distance: 80000000,
   leftField: '.geo',
   rightField: '.geo',
   maxError: 10
 });
 
-
-// map over feature collection of tile centroids
-var centroids_new = tileCentroids.map(function(feature){  
-  
-//Within this function, iterated through the 2001-2012 index
-var cdata = indices2.iterate(function(i, dictin2){ //Start of second function with ({ open
-    
-//Set an object equal to the year from the list
-var thisyear = i ;
-
-//Generate the string name of the variable in the camp data (open_2001 = camp open in 2001)
-var operatingThisYear = ee.String('open_').cat(ee.Number(i).int());
-  
-var joinedUp = ee.Join.saveAll({
+//2003
+var joined_3 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
   primary: tileCentroids, 
-  secondary: camps.filterMetadata(operatingThisYear, 'equals', 1), 
+  secondary: camps.filterMetadata('open_2003', 'equals', 1), 
   condition: spatialFilter
 });
 
 
-var neighsSize1 = ee.String('camps1km_').cat(ee.Number(i).int());
+var withNearestDist= joined_3.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
 
-var getdata = joinedUp.map(function(pt) {
+var pointdata_withbandcounts_3 = withNearestDist.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
   var filt = ee.Filter.lt('distance', 1000);
-  pt=pt.set(neighsSize1, neighs.filter(filt).size()) ;
-    return(pt);
+  pt=pt.set('neighsSize1_2003', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 2000);
+  return(pt);
 });
+
+var campcount_3 = pointdata_withbandcounts_3.select(
+    ['neighsSize1_2003']
+);
+
+print(campcount_3, "camp count 2003")  
+
+
+
+
+// indices for years you want to calculate stats for (2001 to 2014) 
+var indexedYears = ee.List.sequence(2001,2012)
+
+// map over feature collection 
+var centroids_new = tileCentroids.map(function(feature){
   
-return ee.Dictionary(dictin2).combine(getdata);
+  // iterate over years of interest. could modify this so you iterate over years
+  // depending on how the GFC image is masked 
+var cdata = indexedYears.iterate(function(i, dictin){
 
 
-}, ee.Dictionary()   ); 
-
- return feature.set(cdata) ;
- 
-}); 
-
-
-print(centroids_new);
-
-
-
-
-
+var openYearDummy = ee.String('open_').cat(ee.Number(i).int())
+    
+var joined = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: tileCentroids, 
+  secondary: camps.filterMetadata(openYearDummy, 'equals', 1), 
+  condition: spatialFilter
+});
 
 
+var withNearestDist= joined.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
 
+
+var firstNeighbor = ee.String('numNeighbors_').cat(ee.Number(i).int())
+    
+var pointdata_withbandcounts = withNearestDist.map(function(pt) {
+  var neighs = ee.List(pt.get('neighbors'));
+  var filt = ee.Filter.lt('distance', 1000);
+  pt=pt.set(firstNeighbor, neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 2000);
+  return(pt);
+});
+
+var dictin = pointdata_withbandcounts.select(
+    [firstNeighbor])
+
+    // append zonal statistics for this year to dictionary 
+    return ee.Dictionary(dictin).combine(dict)
+    
+  }, ee.Dictionary()) // begin iteration with an empty dictionary  
+
+  // return feature with zonal stats accumulated from all years 
+  return feature.set(cdata)
+
+})
+
+print(centroids_new.limit(3));
