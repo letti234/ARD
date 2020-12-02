@@ -1298,7 +1298,7 @@ var remoteness = campcount_1.map(function(feature) {
   }));
 });
 
-//print(remoteness, "travel time to nearest mkt +2k");
+print(remoteness.limit(2), "travel time to nearest mkt +2k");
 
 
 
