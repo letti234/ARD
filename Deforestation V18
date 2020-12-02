@@ -1212,6 +1212,95 @@ var campcount_12 = pointdata_withbandcounts_12.select(
 
 
 
+///////////////////////////////////////////////////////////////////////
+//
+//  Zonal statistics from biome data: includes
+//    1. Biome of centroid
+//
+///////////////////////////////////////////////////////////////////////
+
+var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
+//print('ecoregions', ecodata.limit(10));
+
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["BIOME_NAME","ECO_NAME", "systemindex"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(campcount_1, ecodata, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var ecosample = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+var eco = ecosample.select(['BIOME_NAME']);
+//print('sample extract', eco.limit(1));
+
+
+//-------------------------------------------------------------
+//
+//EXTRACTING INFORMATION FROM THE SSA SHAPEFILE 
+//
+//-------------------------------------------------------------
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["ADM0","ADM1", "ADM2"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(campcount_1, SSA, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var SSAdata = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print(SSAdata, "SSA ADM of centroid");
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Remoteness measure - use Harvest choice to get travel time from centroid
+//
+///////////////////////////////////////////////////////////////////////
+
+var distanceMkt20K = ee.Image('users/salem043/traveltimetomarket_ssa_020k');
+
+print(distanceMkt20K);
+
+
+var remoteness = campcount_1.map(function(feature) {
+  return feature.set(distanceMkt20K.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+//print(remoteness, "travel time to nearest mkt +2k");
+
+
 
 /////////////////////////////////////////////////////
 
@@ -1233,4 +1322,5 @@ Export.table.toDrive(campcount_11, "campCount11Group1", "Deforestation2");
 Export.table.toDrive(campcount_12, "campCount12Group1", "Deforestation2");
 Export.table.toDrive(remoteness, "remoteness", "Deforestation2");
 Export.table.toDrive(ecosample, "centroid_biomes", "Deforestation2");
+Export.table.toDrive(SSAdata, "centroid_country", "Deforestation2");
 
