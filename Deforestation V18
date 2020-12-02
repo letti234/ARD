@@ -85,7 +85,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Code courtesty of a kind stranger who offered it on Stack Exchange
 //!!Need to figure out how to form these tiles in meters
 //!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffsSample, 0.1);
+var tiles = tile(buffsSample, 0.01);
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
