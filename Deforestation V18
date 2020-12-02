@@ -1306,7 +1306,7 @@ print(remoteness.limit(2), "travel time to nearest mkt +2k");
 
 
 
-Export.table.toDrive(tiles_new, "tileRasterReductions", "Deforestation2");
+Export.table.toDrive(tiles_new, "tileRasterReductionsGroup1", "Deforestation2");
 Export.table.toDrive(campcount_1, "campCount1Group1", "Deforestation2");
 Export.table.toDrive(campcount_1, "campCount1Group1", "Deforestation2");
 Export.table.toDrive(campcount_2, "campCount2Group1", "Deforestation2");
@@ -1320,7 +1320,7 @@ Export.table.toDrive(campcount_9, "campCount9Group1", "Deforestation2");
 Export.table.toDrive(campcount_10, "campCount10Group1", "Deforestation2");
 Export.table.toDrive(campcount_11, "campCount11Group1", "Deforestation2");
 Export.table.toDrive(campcount_12, "campCount12Group1", "Deforestation2");
-Export.table.toDrive(remoteness, "remoteness", "Deforestation2");
-Export.table.toDrive(ecosample, "centroid_biomes", "Deforestation2");
-Export.table.toDrive(SSAdata, "centroid_country", "Deforestation2");
+Export.table.toDrive(remoteness, "remotenessGroup1", "Deforestation2");
+Export.table.toDrive(ecosample, "centroidBiomesGroup1", "Deforestation2");
+Export.table.toDrive(SSAdata, "centroidCountryGroup1", "Deforestation2");
 
