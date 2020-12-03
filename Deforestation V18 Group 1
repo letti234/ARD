@@ -271,8 +271,6 @@ var tileCentroids = tileCenter.map(function(f) {
 ///print(tileCentroids.limit(3), 'centroids');
 
 
-
-
 ///////////////////////////////////////////////////////////////////////
 //
 //  Annual camp counts
@@ -351,20 +349,14 @@ var pointdata_withbandcounts_1 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_1 = pointdata_withbandcounts_1.select(
-    ['neighsSize1_2002', 'neighsSize2_2002', 'neighsSize3_2002',
-    'neighsSize4_2002', 'neighsSize5_2002', 'neighsSize6_2002',
-    'neighsSize7_2002', 'neighsSize8_2002', 'neighsSize9_2002',
-    'neighsSize10_2002', 'neighsSize11_2002', 'neighsSize12_2002',
-    'neighsSize13_2002', 'neighsSize14_2002', 'neighsSize15_2002',
-    'neighsSize16_2002', 'neighsSize17_2002', 'neighsSize18_2002',
-    'neighsSize19_2002', 'neighsSize20_2002']
-);
-
-//print(campcount_1, "2001 distances and all other zonal stats");
-
-
-
+var campcount_1 =  pointdata_withbandcounts_1.select([
+  'neighsSize1_2001', 'neighsSize2_2001', 'neighsSize3_2001',
+    'neighsSize4_2001', 'neighsSize5_2001', 'neighsSize6_2001',
+    'neighsSize7_2001', 'neighsSize8_2001', 'neighsSize9_2001',
+    'neighsSize10_2001', 'neighsSize11_2001', 'neighsSize12_2001',
+    'neighsSize13_2001', 'neighsSize14_2001', 'neighsSize15_2001',
+    'neighsSize16_2001', 'neighsSize17_2001', 'neighsSize18_2001',
+    'neighsSize19_2001', 'neighsSize20_2001']);
 //Num. camps at different distances in 2001/////////////////////
 
 var spatialFilter = ee.Filter.withinDistance({
@@ -382,7 +374,7 @@ var joined_2 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: campcount_1, 
   secondary: camps.filterMetadata('open_2002', 'equals', 1), 
   condition: spatialFilter
 });
@@ -439,18 +431,6 @@ var pointdata_withbandcounts_2 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_2 = pointdata_withbandcounts_2.select(
-    ['neighsSize1_2002', 'neighsSize2_2002', 'neighsSize3_2002',
-    'neighsSize4_2002', 'neighsSize5_2002', 'neighsSize6_2002',
-    'neighsSize7_2002', 'neighsSize8_2002', 'neighsSize9_2002',
-    'neighsSize10_2002', 'neighsSize11_2002', 'neighsSize12_2002',
-    'neighsSize13_2002', 'neighsSize14_2002', 'neighsSize15_2002',
-    'neighsSize16_2002', 'neighsSize17_2002', 'neighsSize18_2002',
-    'neighsSize19_2002', 'neighsSize20_2002']
-);
-
-//print(campcount_2, "camp count 2002")
-
 
 //2003
 var joined_3 = ee.Join.saveAll({
@@ -458,7 +438,7 @@ var joined_3 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_2, 
   secondary: camps.filterMetadata('open_2003', 'equals', 1), 
   condition: spatialFilter
 });
@@ -515,17 +495,7 @@ var pointdata_withbandcounts_3 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_3 = pointdata_withbandcounts_3.select(
-    ['neighsSize1_2003', 'neighsSize2_2003', 'neighsSize3_2003',
-    'neighsSize4_2003', 'neighsSize5_2003', 'neighsSize6_2003',
-    'neighsSize7_2003', 'neighsSize8_2003', 'neighsSize9_2003',
-    'neighsSize10_2003', 'neighsSize11_2003', 'neighsSize12_2003',
-    'neighsSize13_2003', 'neighsSize14_2003', 'neighsSize15_2003',
-    'neighsSize16_2003', 'neighsSize17_2003', 'neighsSize18_2003',
-    'neighsSize19_2003', 'neighsSize20_2003']
-);
-
-//print(campcount_3, "camp count 2003")  
+print(pointdata_withbandcounts_3.limit(2), "camp count 2003")  
 
 
 
@@ -535,7 +505,7 @@ var joined_4 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_3, 
   secondary: camps.filterMetadata('open_2004', 'equals', 1), 
   condition: spatialFilter
 });
@@ -592,19 +562,8 @@ var pointdata_withbandcounts_4 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_4 = pointdata_withbandcounts_4.select(
-    ['neighsSize1_2004', 'neighsSize2_2004', 'neighsSize3_2004',
-    'neighsSize4_2004', 'neighsSize5_2004', 'neighsSize6_2004',
-    'neighsSize7_2004', 'neighsSize8_2004', 'neighsSize9_2004',
-    'neighsSize10_2004', 'neighsSize11_2004', 'neighsSize12_2004',
-    'neighsSize13_2004', 'neighsSize14_2004', 'neighsSize15_2004',
-    'neighsSize16_2004', 'neighsSize17_2004', 'neighsSize18_2004',
-    'neighsSize19_2004', 'neighsSize20_2004']
-);
 
-//print(campcount_4, "camp count 2004");  
-
-
+print(pointdata_withbandcounts_4.limit(2))
 
 //2005
 var joined_5 = ee.Join.saveAll({
@@ -612,7 +571,7 @@ var joined_5 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_4, 
   secondary: camps.filterMetadata('open_2005', 'equals', 1), 
   condition: spatialFilter
 });
@@ -669,17 +628,8 @@ var pointdata_withbandcounts_5 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_5 = pointdata_withbandcounts_5.select(
-    ['neighsSize1_2005', 'neighsSize2_2005', 'neighsSize3_2005',
-    'neighsSize4_2005', 'neighsSize5_2005', 'neighsSize6_2005',
-    'neighsSize7_2005', 'neighsSize8_2005', 'neighsSize9_2005',
-    'neighsSize10_2005', 'neighsSize11_2005', 'neighsSize12_2005',
-    'neighsSize13_2005', 'neighsSize14_2005', 'neighsSize15_2005',
-    'neighsSize16_2005', 'neighsSize17_2005', 'neighsSize18_2005',
-    'neighsSize19_2005', 'neighsSize20_2005']
-);
 
-//print(campcount_5, "camp count 2005")  ;
+print(pointdata_withbandcounts_5.limit(2), "camp count 2005")  ;
 
 
 //2006
@@ -1322,37 +1272,6 @@ var df1_1=df1.map(function(pair) {
   return f1.set(f2.toDictionary());
 });
 
+print(df1_1.limit(1));
 
-// Apply the join.
-var df2 = innerJoin.apply(df1_1, campcount_2,  toyFilter);
-print('Preliminary feature collection', df1.limit(10));
-
-var df2_1=df2.map(function(pair) {
-  var f1 = ee.Feature(pair.get('primary'));
-  var f2 = ee.Feature(pair.get('secondary'));
-  return f1.set(f2.toDictionary());
-});
-
-print(df2_1.limit(1));
-
-
-
-
-Export.table.toDrive(tiles_new, "tileRasterReductionsGroup1", "Deforestation2");
-Export.table.toDrive(campcount_1, "campCount1Group1", "Deforestation2");
-Export.table.toDrive(campcount_1, "campCount1Group1", "Deforestation2");
-Export.table.toDrive(campcount_2, "campCount2Group1", "Deforestation2");
-Export.table.toDrive(campcount_3, "campCount3Group1", "Deforestation2");
-Export.table.toDrive(campcount_4, "campCount4Group1", "Deforestation2");
-Export.table.toDrive(campcount_5, "campCount5Group1", "Deforestation2");
-Export.table.toDrive(campcount_6, "campCount6Group1", "Deforestation2");
-Export.table.toDrive(campcount_7, "campCount7Group1", "Deforestation2");
-Export.table.toDrive(campcount_8, "campCount8Group1", "Deforestation2");
-Export.table.toDrive(campcount_9, "campCount9Group1", "Deforestation2");
-Export.table.toDrive(campcount_10, "campCount10Group1", "Deforestation2");
-Export.table.toDrive(campcount_11, "campCount11Group1", "Deforestation2");
-Export.table.toDrive(campcount_12, "campCount12Group1", "Deforestation2");
-Export.table.toDrive(remoteness, "remotenessGroup1", "Deforestation2");
-Export.table.toDrive(ecosample, "centroidBiomesGroup1", "Deforestation2");
-Export.table.toDrive(SSAdata, "centroidCountryGroup1", "Deforestation2");
 
