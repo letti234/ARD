@@ -1200,8 +1200,17 @@ print(df1_1.limit(1));
 /////////////////////////////////////////////////////
 //Export
 ///////////////////////////////////////////////////
-print(pointdata_withbandcounts_12.limit(1)); ///points
-print(ecosample.limit(1)); ///points
-print(remoteness.limit(1)); ///points
+print(pointdata_withbandcounts_12.limit(1)); ///Camp counts by buffers and years
+print(ecosample.limit(1)); ///Biome
+print(remoteness.limit(1)); ///Distance to nearest market and 
 print(tiles_new.limit(1)); ///Polygons
-print(dataRenamed.limit(1)); //print as CSV and merge
+print(DataRenamed.limit(1)); //print as CSV and merge
+
+Export.table.toDrive({
+  collection: tiles_new.select(['system:index', 'loss1', 'loss2', 'loss3',
+  'loss4', 'loss5', 'loss6', 'loss7', 'loss8', 'loss9', 'loss10', 'loss11', 'loss12'],
+  ['ID', 'loss2001', 'loss2002', 'loss2003', 'loss2004', 'loss2005', 'loss2006', 
+  'loss2007', 'loss2008', 'loss2009', 'loss2010', 'loss2011', 'loss2012'   ]),
+  fileFormat: 'shp',
+  description: 'id_demo',
+});
