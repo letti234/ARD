@@ -10,7 +10,8 @@ var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
 
 
-var campFilter = ee.Filter.inList('country', ['Senegal']);
+var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
+'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali']);
 var filteredArea = camps.filter(campFilter);
 
 var campRegion=camps.filter(campFilter);
@@ -84,7 +85,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Code courtesty of a kind stranger who offered it on Stack Exchange
 //!!Need to figure out how to form these tiles in meters
 //!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffsSample, 0.1);
+var tiles = tile(buffsSample, 0.01);
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -1213,6 +1214,7 @@ Export.table.toDrive({
   'loss2007', 'loss2008', 'loss2009', 'loss2010', 'loss2011', 'loss2012'   ]),
   fileFormat: 'shp',
   description: 'ShapefileForestlossGroup1',
+  folder: "Deforestation2"
 });
 
 Export.table.toDrive(ecosample, "biomeGroup1", "Deforestation2");
