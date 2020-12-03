@@ -10,9 +10,10 @@ var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
 
 
-var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
-'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali']);
+var campFilter = ee.Filter.inList('country', ['Burkina Faso', 'Ghana',
+'Togo', 'Benin', 'Niger', 'Nigeria', 'Chad', 'Cameroon', 'CAR']);
 var filteredArea = camps.filter(campFilter);
+
 
 var campRegion=camps.filter(campFilter);
 Map.addLayer(campRegion);
@@ -1307,21 +1308,21 @@ print(remoteness.limit(2), "travel time to nearest mkt +2k");
 
 
 
-Export.table.toDrive(tiles_new, "tileRasterReductionsGroup1", "Deforestation2");
-Export.table.toDrive(campcount_1, "campCount1Group1", "Deforestation2");
-Export.table.toDrive(campcount_1, "campCount1Group1", "Deforestation2");
-Export.table.toDrive(campcount_2, "campCount2Group1", "Deforestation2");
-Export.table.toDrive(campcount_3, "campCount3Group1", "Deforestation2");
-Export.table.toDrive(campcount_4, "campCount4Group1", "Deforestation2");
-Export.table.toDrive(campcount_5, "campCount5Group1", "Deforestation2");
-Export.table.toDrive(campcount_6, "campCount6Group1", "Deforestation2");
-Export.table.toDrive(campcount_7, "campCount7Group1", "Deforestation2");
-Export.table.toDrive(campcount_8, "campCount8Group1", "Deforestation2");
-Export.table.toDrive(campcount_9, "campCount9Group1", "Deforestation2");
-Export.table.toDrive(campcount_10, "campCount10Group1", "Deforestation2");
-Export.table.toDrive(campcount_11, "campCount11Group1", "Deforestation2");
-Export.table.toDrive(campcount_12, "campCount12Group1", "Deforestation2");
-Export.table.toDrive(remoteness, "remotenessGroup1", "Deforestation2");
-Export.table.toDrive(ecosample, "centroidBiomesGroup1", "Deforestation2");
-Export.table.toDrive(SSAdata, "centroidCountryGroup1", "Deforestation2");
+Export.table.toDrive(tiles_new, "tileRasterReductionsGroup2", "Deforestation2");
+Export.table.toDrive(campcount_1, "campCount1Group2", "Deforestation2");
+Export.table.toDrive(campcount_1, "campCount1Group2", "Deforestation2");
+Export.table.toDrive(campcount_2, "campCount2Group2", "Deforestation2");
+Export.table.toDrive(campcount_3, "campCount3Group2", "Deforestation2");
+Export.table.toDrive(campcount_4, "campCount4Group2", "Deforestation2");
+Export.table.toDrive(campcount_5, "campCount5Group2", "Deforestation2");
+Export.table.toDrive(campcount_6, "campCount6Group2", "Deforestation2");
+Export.table.toDrive(campcount_7, "campCount7Group2", "Deforestation2");
+Export.table.toDrive(campcount_8, "campCount8Group2", "Deforestation2");
+Export.table.toDrive(campcount_9, "campCount9Group2", "Deforestation2");
+Export.table.toDrive(campcount_10, "campCount10Group2", "Deforestation2");
+Export.table.toDrive(campcount_11, "campCount11Group2", "Deforestation2");
+Export.table.toDrive(campcount_12, "campCount12Group2", "Deforestation2");
+Export.table.toDrive(remoteness, "remotenessGroup2", "Deforestation2");
+Export.table.toDrive(ecosample, "centroidBiomesGroup2", "Deforestation2");
+Export.table.toDrive(SSAdata, "centroidCountryGroup2", "Deforestation2");
 
