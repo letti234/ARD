@@ -1305,6 +1305,25 @@ print(remoteness.limit(2), "travel time to nearest mkt +2k");
 
 /////////////////////////////////////////////////////
 
+var toyFilter = ee.Filter.equals({
+  leftField: 'system:index',
+  rightField: 'system:index'
+});
+
+// Define the join.
+var innerJoin = ee.Join.inner();
+
+// Apply the join.
+var df1 = innerJoin.apply(tiles_new, campcount_1,  toyFilter);
+print('Preliminary feature collection', df1.limit(10));
+
+var df1_1=df1.map(function(pair) {
+  var f1 = ee.Feature(pair.get('primary'));
+  var f2 = ee.Feature(pair.get('secondary'));
+  return f1.set(f2.toDictionary());
+});
+
+print(df1_1.limit(1));
 
 
 Export.table.toDrive(tiles_new, "tileRasterReductionsGroup1", "Deforestation2");
