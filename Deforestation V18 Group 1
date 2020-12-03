@@ -638,7 +638,7 @@ var joined_6 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_5, 
   secondary: camps.filterMetadata('open_2006', 'equals', 1), 
   condition: spatialFilter
 });
@@ -695,16 +695,6 @@ var pointdata_withbandcounts_6 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_6 = pointdata_withbandcounts_6.select(
-    ['neighsSize1_2006', 'neighsSize2_2006', 'neighsSize3_2006',
-    'neighsSize4_2006', 'neighsSize5_2006', 'neighsSize6_2006',
-    'neighsSize7_2006', 'neighsSize8_2006', 'neighsSize9_2006',
-    'neighsSize10_2006', 'neighsSize11_2006', 'neighsSize12_2006',
-    'neighsSize13_2006', 'neighsSize14_2006', 'neighsSize15_2006',
-    'neighsSize16_2006', 'neighsSize17_2006', 'neighsSize18_2006',
-    'neighsSize19_2006', 'neighsSize20_2006']
-);
-
 //print(campcount_6, "camp count 2006")  
 
 
@@ -714,7 +704,7 @@ var joined_7 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_6, 
   secondary: camps.filterMetadata('open_2007', 'equals', 1), 
   condition: spatialFilter
 });
@@ -771,16 +761,6 @@ var pointdata_withbandcounts_7 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_7 = pointdata_withbandcounts_7.select(
-    ['neighsSize1_2007', 'neighsSize2_2007', 'neighsSize3_2007',
-    'neighsSize4_2007', 'neighsSize5_2007', 'neighsSize6_2007',
-    'neighsSize7_2007', 'neighsSize8_2007', 'neighsSize9_2007',
-    'neighsSize10_2007', 'neighsSize11_2007', 'neighsSize12_2007',
-    'neighsSize13_2007', 'neighsSize14_2007', 'neighsSize15_2007',
-    'neighsSize16_2007', 'neighsSize17_2007', 'neighsSize18_2007',
-    'neighsSize19_2007', 'neighsSize20_2007']
-);
-
 //print(campcount_7, "camp count 2007")  
 
 //2008
@@ -789,7 +769,7 @@ var joined_8 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_7, 
   secondary: camps.filterMetadata('open_2008', 'equals', 1), 
   condition: spatialFilter
 });
@@ -846,19 +826,6 @@ var pointdata_withbandcounts_8 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_8 = pointdata_withbandcounts_8.select(
-    ['neighsSize1_2008', 'neighsSize2_2008', 'neighsSize3_2008',
-    'neighsSize4_2008', 'neighsSize5_2008', 'neighsSize6_2008',
-    'neighsSize7_2008', 'neighsSize8_2008', 'neighsSize9_2008',
-    'neighsSize10_2008', 'neighsSize11_2008', 'neighsSize12_2008',
-    'neighsSize13_2008', 'neighsSize14_2008', 'neighsSize15_2008',
-    'neighsSize16_2008', 'neighsSize17_2008', 'neighsSize18_2008',
-    'neighsSize19_2008', 'neighsSize20_2008']
-);
-
-//print(campcount_8, "camp count 2008")  
-
-
 
 //2009
 var joined_9 = ee.Join.saveAll({
@@ -866,7 +833,7 @@ var joined_9 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_8, 
   secondary: camps.filterMetadata('open_2009', 'equals', 1), 
   condition: spatialFilter
 });
@@ -923,16 +890,6 @@ var pointdata_withbandcounts_9 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_9 = pointdata_withbandcounts_9.select(
-    ['neighsSize1_2009', 'neighsSize2_2009', 'neighsSize3_2009',
-    'neighsSize4_2009', 'neighsSize5_2009', 'neighsSize6_2009',
-    'neighsSize7_2009', 'neighsSize8_2009', 'neighsSize9_2009',
-    'neighsSize10_2009', 'neighsSize11_2009', 'neighsSize12_2009',
-    'neighsSize13_2009', 'neighsSize14_2009', 'neighsSize15_2009',
-    'neighsSize16_2009', 'neighsSize17_2009', 'neighsSize18_2009',
-    'neighsSize19_2009', 'neighsSize20_2009']
-);
-
 //print(campcount_9, "camp count 2009")  ;
 
 
@@ -942,7 +899,7 @@ var joined_10 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_9, 
   secondary: camps.filterMetadata('open_2010', 'equals', 1), 
   condition: spatialFilter
 });
@@ -999,26 +956,13 @@ var pointdata_withbandcounts_10 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_10 = pointdata_withbandcounts_10.select(
-    ['neighsSize1_2010', 'neighsSize2_2010', 'neighsSize3_2010',
-    'neighsSize4_2010', 'neighsSize5_2010', 'neighsSize6_2010',
-    'neighsSize7_2010', 'neighsSize8_2010', 'neighsSize9_2010',
-    'neighsSize10_2010', 'neighsSize11_2010', 'neighsSize12_2010',
-    'neighsSize13_2010', 'neighsSize14_2010', 'neighsSize15_2010',
-    'neighsSize16_2010', 'neighsSize17_2010', 'neighsSize18_2010',
-    'neighsSize19_2010', 'neighsSize20_2010']
-);
-
-//print(campcount_10, "camp count 2010");
-
-
 //2011
 var joined_11 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_10, 
   secondary: camps.filterMetadata('open_2011', 'equals', 1), 
   condition: spatialFilter
 });
@@ -1075,16 +1019,6 @@ var pointdata_withbandcounts_11 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_11 = pointdata_withbandcounts_11.select(
-    ['neighsSize1_2011', 'neighsSize2_2011', 'neighsSize3_2011',
-    'neighsSize4_2011', 'neighsSize5_2011', 'neighsSize6_2011',
-    'neighsSize7_2011', 'neighsSize8_2011', 'neighsSize9_2011',
-    'neighsSize10_2011', 'neighsSize11_2011', 'neighsSize12_2011',
-    'neighsSize13_2011', 'neighsSize14_2011', 'neighsSize15_2011',
-    'neighsSize16_2011', 'neighsSize17_2011', 'neighsSize18_2011',
-    'neighsSize19_2011', 'neighsSize20_2011']
-);
-
 //print(campcount_11, "camo count 2011")  
 
 //2012
@@ -1093,7 +1027,7 @@ var joined_12 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_11, 
   secondary: camps.filterMetadata('open_2012', 'equals', 1), 
   condition: spatialFilter
 });
@@ -1150,17 +1084,6 @@ var pointdata_withbandcounts_12 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_12 = pointdata_withbandcounts_12.select(
-    ['neighsSize1_2012', 'neighsSize2_2012', 'neighsSize3_2012',
-    'neighsSize4_2012', 'neighsSize5_2012', 'neighsSize6_2012',
-    'neighsSize7_2012', 'neighsSize8_2012', 'neighsSize9_2012',
-    'neighsSize10_2012', 'neighsSize11_2012', 'neighsSize12_2012',
-    'neighsSize13_2012', 'neighsSize14_2012', 'neighsSize15_2012',
-    'neighsSize16_2012', 'neighsSize17_2012', 'neighsSize18_2012',
-    'neighsSize19_2012', 'neighsSize20_2012']
-);
-
-
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1193,7 +1116,7 @@ var ecosample = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-var eco = ecosample.select(['BIOME_NAME']);
+
 //print('sample extract', eco.limit(1));
 
 
@@ -1217,7 +1140,7 @@ var spatialFilter = ee.Filter.intersects({
 });
 
 // Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(campcount_1, SSA, spatialFilter);
+var joinAll = ee.Join.saveAll('matched').apply(ecosample, SSA, spatialFilter);
 
 // Since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
@@ -1240,7 +1163,7 @@ var distanceMkt20K = ee.Image('users/salem043/traveltimetomarket_ssa_020k');
 print(distanceMkt20K);
 
 
-var remoteness = campcount_1.map(function(feature) {
+var remoteness = SSAdata.map(function(feature) {
   return feature.set(distanceMkt20K.reduceRegion({
     reducer: 'mean',
     geometry: feature.geometry(),
@@ -1274,4 +1197,11 @@ var df1_1=df1.map(function(pair) {
 
 print(df1_1.limit(1));
 
-
+/////////////////////////////////////////////////////
+//Export
+///////////////////////////////////////////////////
+print(pointdata_withbandcounts_12.limit(1)); ///points
+print(ecosample.limit(1)); ///points
+print(remoteness.limit(1)); ///points
+print(tiles_new.limit(1)); ///Polygons
+print(dataRenamed.limit(1)); //print as CSV and merge
