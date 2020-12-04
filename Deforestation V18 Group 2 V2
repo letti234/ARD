@@ -10,7 +10,8 @@ var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
 
 
-var campFilter = ee.Filter.inList('country', []);
+var campFilter = ee.Filter.inList('country', ['Burkina Faso', 'Ghana',
+'Togo', 'Benin', 'Niger', 'Nigeria', 'Chad', 'Cameroon', 'CAR']);
 var filteredArea = camps.filter(campFilter);
 
 var campRegion=camps.filter(campFilter);
@@ -1212,11 +1213,11 @@ Export.table.toDrive({
   ['ID', 'loss2001', 'loss2002', 'loss2003', 'loss2004', 'loss2005', 'loss2006', 
   'loss2007', 'loss2008', 'loss2009', 'loss2010', 'loss2011', 'loss2012'   ]),
   fileFormat: 'shp',
-  description: 'ShapefileForestlossGroup1',
+  description: 'ShapefileForestlossGroup2',
   folder: "Deforestation2"
 });
 
-Export.table.toDrive(ecosample, "biomeGroup1", "Deforestation2");
-Export.table.toDrive(remoteness, "remotenessADMGroup1", "Deforestation2");
-Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceData", "Deforestation2");
-Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1", "Deforestation2");
+Export.table.toDrive(ecosample, "biomeGroup2", "Deforestation2");
+Export.table.toDrive(remoteness, "remotenessADMGroup2", "Deforestation2");
+Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "Deforestation2");
+Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "Deforestation2");
