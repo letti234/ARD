@@ -10,8 +10,10 @@ var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
 
 
-var campFilter = ee.Filter.inList('country', ['Burkina Faso', 'Ghana',
-'Togo', 'Benin', 'Niger', 'Nigeria', 'Chad', 'Cameroon']);
+var campFilter = ee.Filter.inList('country', ['Chad', 'Cameroon',
+'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
+'Kenya', 'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
+]);
 var filteredArea = camps.filter(campFilter);
 
 var campRegion=camps.filter(campFilter);
@@ -25,14 +27,6 @@ var bufferPoly = function(feature) {
 var buffers = campRegion.map(bufferPoly);
 //Map.addLayer(buffers, {}, 'buffers');
 
-
-//Produce 50 km  buffer around the camps - this the are we are going to study
-var bufferPoly = function(feature) {
-  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
-};
-
-var buffers = campRegion.map(bufferPoly);
-//Map.addLayer(buffers, {}, 'buffers');
 
 var buffsSample=buffers.union();
 Map.addLayer(buffsSample, {}, 'buffers dissolved');
