@@ -24,8 +24,9 @@ var bufferPoly = function(feature) {
   return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
 };
 
-var buffers = camps.map(bufferPoly);
+var buffers = campRegion.map(bufferPoly);
 //Map.addLayer(buffers, {}, 'buffers');
+
 
 var buffsSample=buffers.union();
 Map.addLayer(buffsSample, {}, 'buffers dissolved');
