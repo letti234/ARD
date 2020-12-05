@@ -1208,10 +1208,10 @@ Export.table.toDrive({
   'loss2007', 'loss2008', 'loss2009', 'loss2010', 'loss2011', 'loss2012'   ]),
   fileFormat: 'shp',
   description: 'ShapefileForestlossGroup1',
-  folder: "Deforestation2"
+  folder: "deforTilesGEE"
 });
 
-Export.table.toDrive(ecosample, "biomeGroup1", "Deforestation2");
-Export.table.toDrive(remoteness, "remotenessADMGroup1", "Deforestation2");
-Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceData", "Deforestation2");
-Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1", "Deforestation2");
+Export.table.toDrive(ecosample, "biomeGroup1", "deforTilesGEE");
+Export.table.toDrive(remoteness, "remotenessADMGroup1", "deforTilesGEE");
+Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceData", "deforTilesGEE");
+Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1", "deforTilesGEE");
