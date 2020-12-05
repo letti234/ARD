@@ -10,8 +10,9 @@ var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
 
 
-var campFilter = ee.Filter.inList('country', ['Sudan', 'South Sudan',
- 'Ethiopia', 'Kenya', 'Burundi', 'Rwanda', 'Tanzania', 'DRC'
+var campFilter = ee.Filter.inList('country', ['Angola', 
+'Zambia', 'Zimbabwe', 'Malawi', 'Mozambique', 'Zimbabwe', 'Botswana',
+'Namibia', 'Swaziland'
 ]);
 var filteredArea = camps.filter(campFilter);
 
