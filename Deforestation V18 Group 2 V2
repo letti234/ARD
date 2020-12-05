@@ -11,7 +11,7 @@ Map.addLayer(camps);
 
 
 var campFilter = ee.Filter.inList('country', ['Burkina Faso', 'Ghana',
-'Togo', 'Benin', 'Niger', 'Nigeria', 'Chad', 'Cameroon', 'CAR']);
+'Togo', 'Benin', 'Niger', 'Nigeria', 'Chad', 'Cameroon']);
 var filteredArea = camps.filter(campFilter);
 
 var campRegion=camps.filter(campFilter);
