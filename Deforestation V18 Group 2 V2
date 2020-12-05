@@ -29,7 +29,7 @@ var buffers = campRegion.map(bufferPoly);
 
 
 var buffsSample=buffers.union();
-Map.addLayer(buffsSample, {}, 'buffers dissolved');
+//Map.addLayer(buffsSample, {}, 'buffers dissolved');
 
 
 
