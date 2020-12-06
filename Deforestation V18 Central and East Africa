@@ -10,8 +10,8 @@ var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
 
 
-var campFilter = ee.Filter.inList('country', ['Chad', 'Cameroon',
-'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
+var campFilter = ee.Filter.inList('country', ['Chad',
+'CAR', 'Sudan', 'South Sudan', 
 'Kenya', 'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
 ]);
 var filteredArea = camps.filter(campFilter);
@@ -29,7 +29,7 @@ var buffers = campRegion.map(bufferPoly);
 
 
 var buffsSample=buffers.union();
-//Map.addLayer(buffsSample, {}, 'buffers dissolved');
+Map.addLayer(buffsSample, {}, 'buffers dissolved');
 
 
 
