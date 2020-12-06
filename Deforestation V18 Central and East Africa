@@ -11,8 +11,8 @@ Map.addLayer(camps);
 
 
 var campFilter = ee.Filter.inList('country', ['Chad',
-'CAR', 'Sudan', 'South Sudan', 
-'Kenya', 'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
+'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
+'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
 ]);
 var filteredArea = camps.filter(campFilter);
 
