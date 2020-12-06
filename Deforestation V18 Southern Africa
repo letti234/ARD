@@ -12,7 +12,7 @@ Map.addLayer(camps);
 
 var campFilter = ee.Filter.inList('country', ['Angola', 
 'Zambia', 'Zimbabwe', 'Malawi', 'Mozambique', 'Zimbabwe', 'Botswana',
-'Namibia', 'Swaziland'
+'Namibia', 'Swaziland', 'Cameroon', 'Kenya'
 ]);
 var filteredArea = camps.filter(campFilter);
 
