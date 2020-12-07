@@ -1211,6 +1211,8 @@ Export.table.toDrive({
   folder: "deforTilesGEE"
 });
 
+
+Export.table.toDrive(tiles_new, "PctLossGroup1", "deforTilesGEE");
 Export.table.toDrive(ecosample, "biomeGroup1", "deforTilesGEE");
 Export.table.toDrive(remoteness, "remotenessADMGroup1", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup1", "deforTilesGEE");
