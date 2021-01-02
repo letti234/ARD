@@ -946,11 +946,26 @@ print(pointdata_withbandcounts_12.limit(10), "Full camp distance data");
 
 //Exporting
 
+var toyFilter = ee.Filter.equals({
+  leftField: 'system:index',
+  rightField: 'system:index'
+});
+
+// Define the join.
+var innerJoin = ee.Join.simple()
+
+// Apply the join.
+var data2 = innerJoin.apply(pointdata_withbandcounts_12, ecosample,  toyFilter);
+
+print(data2.limit(10), "Camp and ecoregion data");
+
+var data3 = innerJoin.apply(data2, SSAdata, toyFilter);
+print(data3.limit(5), "camp, ecoregion, SSA");
 
 Export.table.toDrive(pointdata_withbandcounts_12, 
 "LULCCampDistance", "deforTilesGEE"); //Distance the nearest camps
 
-Export.table.toDrive(LULCecosample, 
+Export.table.toDrive(ecosample, 
 "LULCbiome", "deforTilesGEE"); //Centroid biomes
 
 
@@ -958,7 +973,7 @@ Export.table.toDrive(SSAdata,
 "LULCADM", "deforTilesGEE"); //Centroid country, province, district
 
 
-Export.table.toDrive(remoteness, "LULCremotenessADMGroup2", "deforTilesGEE");
+//Export.table.toDrive(remoteness, "LULCremotenessADMGroup2", "deforTilesGEE");
 
 Export.table.toDrive(vectorGFC, "GFC", "deforTilesGEE");
 
