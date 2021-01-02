@@ -1,5 +1,7 @@
 ////////////////////////////////////////////////////////////////////
-//Load all data 
+//
+//  Load all data 
+//
 ////////////////////////////////////////////////////////////////////
 
 //Sub-Saharan Africa administrative district shapefile
@@ -32,7 +34,12 @@ var lulcYrSub = lulc.select(['b9', 'b10', 'b11', 'b12', 'b13',
 'lc_2009', 'lc_2010', 'lc_2011', 'lc_2012']);
 print(lulcYrSub, "LULC subset 2000-2012");
 
-//create feature collection of LULC pixel centroids
+////////////////////////////////////////////////////////////////////
+//
+//  Create feature collection of pixel centroids.
+//  Extract LULC data for each  centroid
+//
+////////////////////////////////////////////////////////////////////
 
 //Pick first band 
 var demomap = lulc.select(["b1"]);
@@ -45,9 +52,7 @@ var vectors = demomap.sample({
 
 print(vectors.limit(10), "pixel centroids");
 
-//Find centroid's LULC 2001-2012 
-
- 
+//Find centroid's LULC 2000-2012 
 var vectorGFC = vectors.map(function(feature) {
   return feature.set(lulcYrSub.reduceRegion({
     reducer: 'mean',
@@ -58,9 +63,60 @@ var vectorGFC = vectors.map(function(feature) {
 
 print(vectorGFC.limit(10), "GFC data for centroids");
 
-//Find centroid's biome and country
+////////////////////////////////////////////////////////////////////
+//
+//  Get centroid biome and ADM
+//
+////////////////////////////////////////////////////////////////////
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["BIOME_NAME","ECO_NAME", "systemindex"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(vectorGFC, ecodata, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var ecosample = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print(ecosample.limit(10));
 
 
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties2 = ["ADM0","ADM1", "ADM2"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(ecosample, SSA, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var SSAdata = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties2)).select(properties2);
+});
+
+print(SSAdata.limit(10), "SSA ADM of centroid");
 
 //Find centroid distance to nearest camp each year
 
