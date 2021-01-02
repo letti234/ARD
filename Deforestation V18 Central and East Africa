@@ -7,7 +7,7 @@
 //Read in camp data - this is saved in wide format, with binary indicators
 //of whether a camp was open 1999-2016
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
-Map.addLayer(camps);
+//Map.addLayer(camps);
 
 
 var campFilter = ee.Filter.inList('country', ['Chad',
@@ -28,7 +28,8 @@ var buffers = campRegion.map(bufferPoly);
 //Map.addLayer(buffers, {}, 'buffers');
 
 
-var buffsSample=buffers.union();
+
+var buffsSample=buffers.geometry().dissolve();
 Map.addLayer(buffsSample, {}, 'buffers dissolved');
 
 
