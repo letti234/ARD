@@ -28,11 +28,16 @@ var bufferPoly = function(feature) {
 
 var buffers = filteredArea.map(bufferPoly);
 
-Map.addLayer(buffers, {}, 'buffers');
+var buffsSample=buffers.union();
+print(buffsSample.limit(5), "buffer polygons")
+
+
+Map.addLayer(buffsSample, {}, 'buffers');
 //print(buffers, "camp buffers");
 
+
 //ESA stack of images
-var lulc = ee.Image('users/salem043/ESA_1992_2015').clip(buffers);
+var lulc = ee.Image('users/salem043/ESA_1992_2015').clip(buffsSample);
 //print(lulc, "Land cover data global raw");
 
 //Subset and name bands for clarity
@@ -54,7 +59,7 @@ var demomap = lulc.select(["b1"]);
 
 //Obtain pixel centroids for first band
 var vectors = demomap.sample({
-  region: buffers,
+  region: buffsSample,
   geometries: true,  // this tells GEE to use pixel centroids
 });
 
@@ -87,7 +92,7 @@ var spatialFilter = ee.Filter.intersects({
 });
 
 // Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(vectorGFC, ecodata, spatialFilter);
+var joinAll = ee.Join.saveAll('matched').apply(vectors, ecodata, spatialFilter);
 
 // Since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
@@ -945,29 +950,22 @@ var pointdata_withbandcounts_12 = withNearestDist.map(function(pt) {
 
 print(pointdata_withbandcounts_12.limit(10), "Full camp distance data");
 
-//Determine centroid remoteness
+
+////////////////////////////////////////////////////////////////////
+//
+//  Centroid remoteness
+//
+////////////////////////////////////////////////////////////////////
 
 
 
+////////////////////////////////////////////////////////////////////
+//
+//  Ientify the buffer that the pixel resides in
+//
+////////////////////////////////////////////////////////////////////
 
 
-
-//Exporting
-
-var toyFilter = ee.Filter.equals({
-  leftField: 'system:index',
-  rightField: 'system:index'
-});
-
-// Define the join.
-var innerJoin = ee.Join.simple();
-
-// Apply the join.
-var data2 = innerJoin.apply(pointdata_withbandcounts_12, ecosample,  toyFilter);
-print(data2.limit(10), "Camp and ecoregion data");
-
-var data3 = innerJoin.apply(SSAdata, vectorGFC, toyFilter);
-print(data3.limit(5), "SSA and GFC data");
 
 
 
