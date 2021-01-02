@@ -1,1 +1,25 @@
-var lulc = ee.ImageCollection(users/salem043/ESA_1992_2015);
+//Load data
+//var SSA = 
+
+var camps = ee.FeatureCollection('users/salem043/allcampwide');
+Map.addLayer(camps);
+
+var lulc = ee.Image('users/salem043/ESA_1992_2015');
+print(lulc, "Land cover data global raw");
+
+
+//Subset LULC pixels to camp buffers and create feature collection
+//of LULC pixel centroids
+
+
+
+
+//Find centroid distance to nearest camp each year
+
+
+
+//Find centroid's LULC 2000-2012 
+
+
+
+//Find centroid's biome and country
