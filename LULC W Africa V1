@@ -961,12 +961,25 @@ print(pointdata_withbandcounts_12.limit(10), "Full camp distance data");
 
 ////////////////////////////////////////////////////////////////////
 //
-//  Ientify the buffer that the pixel resides in
+//  Ientify the buffer that the pixel resides in - obtain the buffer
+//  centroid, then find the centroid with the least distance to the
+//  pixel
 //
 ////////////////////////////////////////////////////////////////////
 
 
+//Obtain tile centroids - basically converts our tiles into point data
+var getCentroids = function(feature) {
+  return feature.set({centralPoint: feature.centroid()});
+};
 
+var bufferCenter = buffsSample.map(getCentroids);
+
+var bufferCentroid = bufferCenter.map(function(f) {
+  var centroid = ee.Feature(ee.List(f.get('centralPoint')));
+  return centroid;
+});
+Map.addLayer(bufferCentroid);
 
 
 
