@@ -971,18 +971,17 @@ print(data3.limit(5), "SSA and GFC data");
 
 
 Export.table.toDrive(pointdata_withbandcounts_12, 
-"LULCCampDistance", "deforTilesGEE"); //Distance the nearest camps
+"LULCCampDistance_G1", "deforTilesGEE"); //Distance the nearest camps
 
 Export.table.toDrive(ecosample, 
-"LULCbiome", "deforTilesGEE"); //Centroid biomes
+"LULCbiome_G1", "deforTilesGEE"); //Centroid biomes
 
 
 Export.table.toDrive(SSAdata, 
-"LULCADM", "deforTilesGEE"); //Centroid country, province, district
-
+"LULCADM_G1", "deforTilesGEE"); //Centroid country, province, district
 
 //Export.table.toDrive(remoteness, "LULCremotenessADMGroup2", "deforTilesGEE");
 
-Export.table.toDrive(vectorGFC, "GFC", "deforTilesGEE");
+Export.table.toDrive(vectorGFC, "LULC_G1", "deforTilesGEE");
 
 
