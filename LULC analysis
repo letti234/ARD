@@ -956,7 +956,6 @@ var innerJoin = ee.Join.simple()
 
 // Apply the join.
 var data2 = innerJoin.apply(pointdata_withbandcounts_12, ecosample,  toyFilter);
-
 print(data2.limit(10), "Camp and ecoregion data");
 
 var data3 = innerJoin.apply(data2, SSAdata, toyFilter);
