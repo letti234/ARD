@@ -20,3 +20,4 @@ print(buffsUnion.limit(10)) //Oh no, now there's only 1 polygon!
 
 var buffsSample=buffers.geometry().dissolve();
 Map.addLayer(buffsSample, {}, 'buffers dissolved');
+print(buffsSample);
