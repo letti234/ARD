@@ -139,7 +139,7 @@ var joined_1 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: vector_GFC, 
+  primary: vectorGFC, 
   secondary: camps.filterMetadata('open_2001', 'equals', 1), 
   condition: spatialFilter
 });
