@@ -938,3 +938,28 @@ var pointdata_withbandcounts_12 = withNearestDist.map(function(pt) {
 print(pointdata_withbandcounts_12.limit(10), "Full camp distance data");
 
 //Determine centroid remoteness
+
+
+
+
+
+
+//Exporting
+
+
+Export.table.toDrive(pointdata_withbandcounts_12, 
+"LULCCampDistance", "deforTilesGEE"); //Distance the nearest camps
+
+Export.table.toDrive(LULCecosample, 
+"LULCbiome", "deforTilesGEE"); //Centroid biomes
+
+
+Export.table.toDrive(SSAdata, 
+"LULCADM", "deforTilesGEE"); //Centroid country, province, district
+
+
+Export.table.toDrive(remoteness, "LULCremotenessADMGroup2", "deforTilesGEE");
+
+Export.table.toDrive(vectorGFC, "GFC", "deforTilesGEE");
+
+
