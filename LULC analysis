@@ -37,10 +37,20 @@ var vectors = demomap.sample({
   geometries: true,  // this tells GEE to use pixel centroids
 });
 
+print(vectors.limit(10), "pixel centroids");
 
-//Find centroid's LULC 2000-2012 
+//Find centroid's LULC 2001-2012 
 
+ 
+var vectorGFC = vectors.map(function(feature) {
+  return feature.set(lulcYrSub.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
 
+print(vectorGFC.limit(10), "GFC data for centroids");
 
 //Find centroid's biome and country
 
