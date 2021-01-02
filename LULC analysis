@@ -2,9 +2,11 @@
 //Load all data 
 ////////////////////////////////////////////////////////////////////
 
+//Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
 
+//30 km buffers around camps
 var bufferPoly = function(feature) {
   return feature.buffer(30000);  
 };
@@ -13,34 +15,35 @@ var buffers = camps.map(bufferPoly);
 Map.addLayer(buffers, {}, 'buffers');
 print(buffers, "camp buffers");
 
+//ESA stack of images
 var lulc = ee.Image('users/salem043/ESA_1992_2015').clip(buffers);
 print(lulc, "Land cover data global raw");
 
+//Subset and name bands for clarity
 var lulcYrSub = lulc.select(['b9', 'b10', 'b11', 'b12', 'b13', 
 'b14', 'b15', 'b16', 'b17', 'b18', 'b19', 'b20', 'b21'], ["lc_2000", "lc_2001", 
 'lc_2002', 'lc_2003', 'lc_2004', 'lc_2005', 'lc_2006', 'lc_2007', 'lc_2008',
 'lc_2009', 'lc_2010', 'lc_2011', 'lc_2012']);
 print(lulcYrSub, "LULC subset 2000-2012");
 
-
-var demomap = lulc.select(['b9'], ["lc_2000"]);
-var ndwiViz = {min: 0, max: 210, palette: [ '008000', '6495ED']};
-Map.addLayer(demomap, ndwiViz);
-
 //create feature collection of LULC pixel centroids
 
+//Pick first band 
+var demomap = lulcYrSub.select(["lc_2000"]);
 
+//Obtain pixel centroids for first band
 var vectors = demomap.sample({
   region: buffers,
-  geometries: true,  // if you want points
+  geometries: true,  // this tells GEE to use pixel centroids
 });
-
-//Find centroid distance to nearest camp each year
-
 
 
 //Find centroid's LULC 2000-2012 
 
 
-
 //Find centroid's biome and country
+
+
+//Find centroid distance to nearest camp each year
+
+
