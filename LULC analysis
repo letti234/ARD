@@ -2,6 +2,12 @@
 //Load all data 
 ////////////////////////////////////////////////////////////////////
 
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+//Ecoregions data
+var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
+
 //Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
@@ -29,7 +35,7 @@ print(lulcYrSub, "LULC subset 2000-2012");
 //create feature collection of LULC pixel centroids
 
 //Pick first band 
-var demomap = lulcYrSub.select(["lc_2000"]);
+var demomap = lulc.select(["b1"]);
 
 //Obtain pixel centroids for first band
 var vectors = demomap.sample({
@@ -53,6 +59,7 @@ var vectorGFC = vectors.map(function(feature) {
 print(vectorGFC.limit(10), "GFC data for centroids");
 
 //Find centroid's biome and country
+
 
 
 //Find centroid distance to nearest camp each year
