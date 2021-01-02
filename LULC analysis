@@ -14,14 +14,17 @@ var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
 
+
+var campFilter = ee.Filter.inList('country', ['Burundi']);
+var filteredArea = camps.filter(campFilter);
+
 //30 km buffers around camps
 var bufferPoly = function(feature) {
   return feature.buffer(30000);  
 };
 
-var buffers2 = camps.map(bufferPoly);
+var buffers = filteredArea.map(bufferPoly);
 
-var buffers = buffers2.select(1);
 Map.addLayer(buffers, {}, 'buffers');
 print(buffers, "camp buffers");
 
