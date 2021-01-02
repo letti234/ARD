@@ -66,7 +66,7 @@ var vectorGFC = vectors.map(function(feature) {
   }));
 });
 
-print(vectorGFC.limit(10), "GFC data for centroids");
+print(vectorGFC.limit(10), "LULC data for centroids");
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -965,6 +965,11 @@ print(data2.limit(10), "Camp and ecoregion data");
 
 var data3 = innerJoin.apply(SSAdata, vectorGFC, toyFilter);
 print(data3.limit(5), "SSA and GFC data");
+
+
+
+
+
 Export.table.toDrive(pointdata_withbandcounts_12, 
 "LULCCampDistance", "deforTilesGEE"); //Distance the nearest camps
 
