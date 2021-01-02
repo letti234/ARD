@@ -1,5 +1,6 @@
-//Load data
-//var SSA = 
+////////////////////////////////////////////////////////////////////
+//Load all data 
+////////////////////////////////////////////////////////////////////
 
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
@@ -22,12 +23,17 @@ var lulcYrSub = lulc.select(['b9', 'b10', 'b11', 'b12', 'b13',
 print(lulcYrSub, "LULC subset 2000-2012");
 
 
-var demomap = lulc.select(['b1']);
+var demomap = lulc.select(['b9'], ["lc_2000"]);
 var ndwiViz = {min: 0, max: 210, palette: [ '008000', '6495ED']};
 Map.addLayer(demomap, ndwiViz);
 
 //create feature collection of LULC pixel centroids
 
+
+var vectors = demomap.sample({
+  region: buffers,
+  geometries: true,  // if you want points
+});
 
 //Find centroid distance to nearest camp each year
 
