@@ -28,8 +28,8 @@ var bufferPoly = function(feature) {
 
 var buffers = filteredArea.map(bufferPoly);
 
-var buffsSample=buffers.union();
-print(buffsSample.limit(5), "buffer polygons")
+var buffsSample=buffers.geometry().dissolve();
+print(buffsSample.limit(5), "buffer polygons");
 
 
 Map.addLayer(buffsSample, {}, 'buffers');
@@ -967,19 +967,43 @@ print(pointdata_withbandcounts_12.limit(10), "Full camp distance data");
 //
 ////////////////////////////////////////////////////////////////////
 
+var areas = buffsSample.select(['system:index'], ['Polygon ID']);
 
-//Obtain tile centroids - basically converts our tiles into point data
-var getCentroids = function(feature) {
-  return feature.set({centralPoint: feature.centroid()});
-};
+//Specify the properties that I want to copy from the SSA shapefile
+var properties3 = ["system:index"];
 
-var bufferCenter = buffsSample.map(getCentroids);
-
-var bufferCentroid = bufferCenter.map(function(f) {
-  var centroid = ee.Feature(ee.List(f.get('centralPoint')));
-  return centroid;
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
 });
-Map.addLayer(bufferCentroid);
+
+// Join the points and polygons and apply the spatial filter 
+var joinAll = ee.Join.saveAll('matched').apply(vectors, areas, spatialFilter);
+
+var polygonData = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties3)).select(properties3);
+});
+
+print(polygonData.limit(10), "Pixel's buffer");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
