@@ -4,14 +4,29 @@
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 Map.addLayer(camps);
 
-var lulc = ee.Image('users/salem043/ESA_1992_2015');
+var bufferPoly = function(feature) {
+  return feature.buffer(30000);  
+};
+
+var buffers = camps.map(bufferPoly);
+Map.addLayer(buffers, {}, 'buffers');
+print(buffers, "camp buffers");
+
+var lulc = ee.Image('users/salem043/ESA_1992_2015').clip(buffers);
 print(lulc, "Land cover data global raw");
 
+var lulcYrSub = lulc.select(['b9', 'b10', 'b11', 'b12', 'b13', 
+'b14', 'b15', 'b16', 'b17', 'b18', 'b19', 'b20', 'b21'], ["lc_2000", "lc_2001", 
+'lc_2002', 'lc_2003', 'lc_2004', 'lc_2005', 'lc_2006', 'lc_2007', 'lc_2008',
+'lc_2009', 'lc_2010', 'lc_2011', 'lc_2012']);
+print(lulcYrSub, "LULC subset 2000-2012");
 
-//Subset LULC pixels to camp buffers and create feature collection
-//of LULC pixel centroids
 
+var demomap = lulc.select(['b1']);
+var ndwiViz = {min: 0, max: 210, palette: [ '008000', '6495ED']};
+Map.addLayer(demomap, ndwiViz);
 
+//create feature collection of LULC pixel centroids
 
 
 //Find centroid distance to nearest camp each year
