@@ -41,6 +41,7 @@ var vectors = demomap.sample({
 //Find centroid's LULC 2000-2012 
 
 
+
 //Find centroid's biome and country
 
 
