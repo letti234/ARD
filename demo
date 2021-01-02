@@ -16,5 +16,7 @@ print(buffers.limit(10)); //Each buffer has its own ID but some overlap!
 var buffsUnion=buffers.union();
 print(buffsUnion.limit(10)) //Oh no, now there's only 1 polygon!
 
-//var buffsSample=buffers.dissolve();
-//Map.addLayer(buffsSample, {}, 'buffers dissolved');
+
+
+var buffsSample=buffers.geometry().dissolve();
+Map.addLayer(buffsSample, {}, 'buffers dissolved');
