@@ -19,7 +19,9 @@ var bufferPoly = function(feature) {
   return feature.buffer(30000);  
 };
 
-var buffers = camps.map(bufferPoly);
+var buffers2 = camps.map(bufferPoly);
+
+var buffers = buffers2.select(1);
 Map.addLayer(buffers, {}, 'buffers');
 print(buffers, "camp buffers");
 
@@ -952,7 +954,7 @@ var toyFilter = ee.Filter.equals({
 });
 
 // Define the join.
-var innerJoin = ee.Join.simple()
+var innerJoin = ee.Join.simple();
 
 // Apply the join.
 var data2 = innerJoin.apply(pointdata_withbandcounts_12, ecosample,  toyFilter);
