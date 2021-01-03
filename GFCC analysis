@@ -128,11 +128,21 @@ var pixelCounts = tiles.map(function(feature) {
   }));
 });
 
-print(pixelCounts.limit(10), "2000 sum of pct cover")
-
 var counts = pixelCounts.select(["tree_canopy_cover_mean"], ["noPixels"]);
 
-//Divide the aggregate count by the number of pixels
+//Get the sum of percent forest cover
+var gfccData = counts.map(function(feature) {
+ return feature.set(GFCC2000.reduceRegion({
+ reducer: 'sum',
+ geometry: feature.geometry(),
+  }));
+});
+
+var gfccFull = gfccData.select(["noPixels", "tree_canopy_cover_mean"],
+["noPixels", "sumPctCover"]);
+
+
+print(gfccFull.limit(10), "GFCC");
 
 
 //Obtain other tile data 
