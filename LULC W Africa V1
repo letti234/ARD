@@ -1037,7 +1037,8 @@ Export.table.toDrive(ecosample,
 Export.table.toDrive(SSAdata, 
 "LULCADM_G1", "deforTilesGEE"); //Centroid country, province, district
 
-Export.table.toDrive(remoteness, "LULCremotenessADMGroup2", "deforTilesGEE");
+Export.table.toDrive(remoteness, 
+"LULCremotenessADMGroup2", "deforTilesGEE"); //Centroid remoteness
 
 Export.table.toDrive(vectorGFC, "LULC_G1", "deforTilesGEE");
 
