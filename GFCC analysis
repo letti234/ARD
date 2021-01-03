@@ -19,24 +19,20 @@ var gfcc00 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
       .filter(ee.Filter.date('2000-01-01', '2000-12-31'))
       .select('tree_canopy_cover');
       
-      
-var treeCanopyCoverVis = {
-  min: 0.0,
-  max: 100.0,
-  palette: ['ffffff', 'afce56', '5f9c00', '0e6a00', '003800'],
-};
-
-print(gfcc00.limit(10), "GFCC 2000");
-Map.addLayer(gfcc00.mean(), treeCanopyCoverVis, "GFCC 2000 pre reducer");
+//Use a reducer to convert from an image collection to an image with 1 band
 
 var gfcc2000 = gfcc00.reduce(ee.Reducer.median());
-Map.addLayer(gfcc2000,  treeCanopyCoverVis,  "GFCC 2000 pre reducer");
+var gfcc2005 = gfcc05.reduce(ee.Reducer.median());
+var gfcc2010 = gfcc10.reduce(ee.Reducer.median());
+var gfcc2015 = gfcc15.reduce(ee.Reducer.median());
+
+
 
 //Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 
 var campsMini = camps.limit(1);
-Map.addLayer(campsMini);
+//Map.addLayer(campsMini);
 
 //Generate buffer
 var bufferPoly = function(feature) {
@@ -44,7 +40,7 @@ var bufferPoly = function(feature) {
 };
 
 var buffers = campsMini.map(bufferPoly);
-Map.addLayer(buffers, {}, 'buffers');
+//Map.addLayer(buffers, {}, 'buffers');
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -103,7 +99,7 @@ function tile(region, size_in_degrees) {
     )
 }
 
-Map.addLayer(tiles);
+//Map.addLayer(tiles);
 
 //////////////////////////////////////////////////////////////////////////////
 //
