@@ -25,17 +25,20 @@ var gfcc2005 = gfcc05.reduce(ee.Reducer.mean());
 var gfcc2010 = gfcc10.reduce(ee.Reducer.mean());
 var gfcc2015 = gfcc15.reduce(ee.Reducer.mean());
 
+//Clip GFCC data to SSA
 var g00 = gfcc2000.clip(SSA);
-Map.addLayer(g00);
-//Reprojections
+var g05 = gfcc2000.clip(SSA);
+var g10 = gfcc2000.clip(SSA);
+var g15 = gfcc2000.clip(SSA);
+
+//Reproject GFCC data
 var proj = ee.Projection("EPSG:4326");
 
-var GFCC2000 = gfcc2000.reproject(proj, null, 30)
+var GFCC2000 = g00.reproject(proj, null, 30);
+var GFCC2005 = g05.reproject(proj, null, 30);
+var GFCC2010 = g10.reproject(proj, null, 30);
+var GFCC2015 = g15.reproject(proj, null, 30);
 
-
-
-print(GFCC2000, "GFCC 2000 reduced reproj");
-//Map.addLayer(GFCC2000, {}, "gfcc 2000 reprojection")
 
 //Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
@@ -126,6 +129,8 @@ var pixelCounts = tiles.map(function(feature) {
 });
 
 print(pixelCounts.limit(10), "2000 sum of pct cover")
+
+var counts = pixelCounts.select(["tree_canopy_cover_mean"], ["noPixels"]);
 
 //Divide the aggregate count by the number of pixels
 
