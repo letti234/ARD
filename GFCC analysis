@@ -26,6 +26,9 @@ var gfcc2005 = gfcc05.reduce(ee.Reducer.median());
 var gfcc2010 = gfcc10.reduce(ee.Reducer.median());
 var gfcc2015 = gfcc15.reduce(ee.Reducer.median());
 
+print(gfcc00, "GFCC 2000 not reduced")
+
+print(gfcc2000.limit(10), "GFCC 2000 reduced")
 
 
 //Camp data
