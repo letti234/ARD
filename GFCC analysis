@@ -27,7 +27,7 @@ var treeCanopyCoverVis = {
 };
 
 print(gfcc00.limit(10), "GFCC 2000");
-Map.addLayer(gfcc00.mean, treeCanopyCoverVis, "GFCC 2000 pre reducer");
+Map.addLayer(gfcc00.mean(), treeCanopyCoverVis, "GFCC 2000 pre reducer");
 
 var gfcc2000 = gfcc00.reduce(ee.Reducer.median());
 Map.addLayer(gfcc2000,  treeCanopyCoverVis,  "GFCC 2000 pre reducer");
