@@ -1,12 +1,12 @@
 
-var region = ee.Geometry.Rectangle(-119.224, 34.669, -99.536, 50.064);
+var region = ee.Geometry.Rectangle(-100, 34.669, -99.536, 50.064);
 
 // Create 10 random points in the region.
-var randomPoints = ee.FeatureCollection.randomPoints(region);
+var randomPoints = ee.FeatureCollection.randomPoints(region, 100);
 
 //Produce 10 km buffer this the are we are going to study
 var bufferPoly = function(feature) {
-  return feature.buffer(10000);  //!!Change back to 50k after making sure the border identification works 
+  return feature.buffer(10000);  
 };
 
 var buffers = randomPoints.map(bufferPoly);
@@ -14,10 +14,11 @@ Map.addLayer(buffers, {}, 'buffers');
 print(buffers.limit(10)); //Each buffer has its own ID but some overlap!
 
 var buffsUnion=buffers.union();
-print(buffsUnion.limit(10)) //Oh no, now there's only 1 polygon!
+print(buffsUnion.limit(10)); //Oh no, now there's only 1 polygon!
 
 
 
 var buffsSample=buffers.geometry().dissolve();
 Map.addLayer(buffsSample, {}, 'buffers dissolved');
 print(buffsSample);
+
