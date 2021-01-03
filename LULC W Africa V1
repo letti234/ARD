@@ -966,14 +966,35 @@ print(pointdata_withbandcounts_12.limit(10), "Full camp distance data");
 
 //100k data
 var dist_100 = ee.Image('users/salem043/traveltimetomarket_ssa_100k');
-Map.addLayer(dist_100, {}, "distance to nearest mkt 100k");
+//Map.addLayer(dist_100, {}, "distance to nearest mkt 100k");
 
 
-//100k data
+var remote1 = vectors.map(function(feature) {
+  return feature.set(dist_100.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+var remote2=remote1.select(["b1"], ["dist100k"]);
+print(remote2.limit(10), "distance to mkt +100k");
+
+
+//50k data
 var dist_50 = ee.Image('users/salem043/traveltimetomarket_ssa_100k');
-Map.addLayer(dist_50, {}, "distance to nearest mkt 50k");
+//Map.addLayer(dist_50, {}, "distance to nearest mkt 50k");
 
-Map.addLayer(camps);
+
+var remote3 = remote2.map(function(feature) {
+  return feature.set(dist_50.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+var remoteness = remote3.select(["dist100k", "b1"], ["dist100k", "dist50k"]);
 
 ////////////////////////////////////////////////////////////////////
 //
