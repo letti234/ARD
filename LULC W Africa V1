@@ -21,6 +21,10 @@ var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
 'Togo', 'Benin', 'Niger', 'Nigeria']);
 var filteredArea = camps.filter(campFilter);
 
+
+
+
+
 //30 km buffers around camps
 var bufferPoly = function(feature) {
   return feature.buffer(30000);  
@@ -28,12 +32,15 @@ var bufferPoly = function(feature) {
 
 var buffers = filteredArea.map(bufferPoly);
 
-var buffsSample=buffers.geometry().dissolve();
-print(buffsSample.limit(5), "buffer polygons");
+var buffsSample=buffers.union();
+print(buffsSample, "buffers multi");
 
 
-Map.addLayer(buffsSample, {}, 'buffers');
+//Map.addLayer(buffsSample, {}, 'buffers');
 //print(buffers, "camp buffers");
+
+
+
 
 
 //ESA stack of images
@@ -957,7 +964,16 @@ print(pointdata_withbandcounts_12.limit(10), "Full camp distance data");
 //
 ////////////////////////////////////////////////////////////////////
 
+//100k data
+var dist_100 = ee.Image('users/salem043/traveltimetomarket_ssa_100k');
+Map.addLayer(dist_100, {}, "distance to nearest mkt 100k");
 
+
+//100k data
+var dist_50 = ee.Image('users/salem043/traveltimetomarket_ssa_100k');
+Map.addLayer(dist_50, {}, "distance to nearest mkt 50k");
+
+Map.addLayer(camps);
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -967,27 +983,7 @@ print(pointdata_withbandcounts_12.limit(10), "Full camp distance data");
 //
 ////////////////////////////////////////////////////////////////////
 
-var areas = buffsSample.select(['system:index'], ['Polygon ID']);
-
-//Specify the properties that I want to copy from the SSA shapefile
-var properties3 = ["system:index"];
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter 
-var joinAll = ee.Join.saveAll('matched').apply(vectors, areas, spatialFilter);
-
-var polygonData = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties3)).select(properties3);
-});
-
-print(polygonData.limit(10), "Pixel's buffer");
+//var areas = buffsSample.select(['system:index'], ['Polygon ID']);
 
 
 
