@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////
 
 //Sub-Saharan Africa administrative district shapefile
-var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 
 //Ecoregions data
 var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
