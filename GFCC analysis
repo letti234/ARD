@@ -1,0 +1,29 @@
+
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+
+var gfcc15 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2015-01-01', '2015-12-31'))
+    
+
+var gfcc10 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2010-01-01', '2010-12-31'))
+      
+var gfcc05 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2005-01-01', '2005-12-31'))
+      
+var treeCanopyCover = map15.select('tree_canopy_cover');
+var treeCanopyCoverVis = {
+  min: 0.0,
+  max: 100.0,
+  palette: ['ffffff', 'afce56', '5f9c00', '0e6a00', '003800'],
+};
+Map.setCenter(-88.6, 26.4, 3);
+Map.addLayer(treeCanopyCover.mean(), treeCanopyCoverVis, 'Tree Canopy Cover');
+
+
+//Camp data
+var camps = ee.FeatureCollection('users/salem043/allcampwide');
+Map.addLayer(camps);
+
+
+
