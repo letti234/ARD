@@ -1,29 +1,104 @@
 
-var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 
 var gfcc15 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2015-01-01', '2015-12-31'))
+      .filter(ee.Filter.date('2015-01-01', '2015-12-31'));
     
 
 var gfcc10 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2010-01-01', '2010-12-31'))
+      .filter(ee.Filter.date('2010-01-01', '2010-12-31'));
       
 var gfcc05 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2005-01-01', '2005-12-31'))
+      .filter(ee.Filter.date('2005-01-01', '2005-12-31'));
       
-var treeCanopyCover = map15.select('tree_canopy_cover');
-var treeCanopyCoverVis = {
-  min: 0.0,
-  max: 100.0,
-  palette: ['ffffff', 'afce56', '5f9c00', '0e6a00', '003800'],
-};
-Map.setCenter(-88.6, 26.4, 3);
-Map.addLayer(treeCanopyCover.mean(), treeCanopyCoverVis, 'Tree Canopy Cover');
-
+var gfcc00 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2000-01-01', '2000-12-31'));
+      
 
 //Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
-Map.addLayer(camps);
+
+var campsMini = camps.limit(1);
+Map.addLayer(campsMini);
+
+//Generate buffer
+var bufferPoly = function(feature) {
+  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
+};
+
+var buffers = campsMini.map(bufferPoly);
+Map.addLayer(buffers, {}, 'buffers');
 
 
 
+
+//Generate tiles
+
+var tiles = tile(buffers, 0.01);
+
+function tile(region, size_in_degrees) {
+  function tile_geometry(geometry) {
+    var coords = ee.List(geometry.bounds().coordinates().get(0))
+    var min_point = ee.List(coords.get(0))
+    var max_point = ee.List(coords.get(2))
+  
+    function sequence(direction) {
+      var start = min_point.get(direction)  
+      var stop = ee.Number(max_point.get(direction))
+      return ee.List.sequence(start, stop, size_in_degrees)
+    }
+  
+    var tiles = sequence(0).map(function (x) {
+      return sequence(1).map(function (y) { 
+          return ee.Feature(ee.Geometry.Rectangle([
+            [ee.Number(x), ee.Number(y)],
+            [
+              ee.Number(x).add(size_in_degrees).min(max_point.get(0)),
+              ee.Number(y).add(size_in_degrees).min(max_point.get(1))
+            ]
+        ]).intersection(geometry, 30))
+      })
+  	}).flatten()
+    return ee.FeatureCollection(tiles).filterBounds(geometry)
+  }
+
+  function tile_feature_collection(feature_collection) {
+    return ee.FeatureCollection(
+      feature_collection.iterate(
+        function (feature, acc) {
+          return ee.FeatureCollection(acc).merge(tile_geometry(ee.Feature(feature).geometry()))
+        }, ee.FeatureCollection([]))
+    )
+  }
+
+  if (region instanceof ee.FeatureCollection)
+    return tile_feature_collection(region)
+  else if (region instanceof ee.Feature)
+    return tile_geometry(region.geometry())
+  else if (region instanceof ee.Geometry)
+    return tile_geometry(region)
+  else
+    throw Error(
+      'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
+    )
+}
+
+Map.addLayer(tiles);
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//For each year, determine the percent of the overall tile that is forested
+//
+//////////////////////////////////////////////////////////////////////////////
+
+//Get the number of pixels in each tile
+
+
+
+//Find the aggregate count of values within each tile
+
+
+//Divide the aggregate count by the number of pixels
+
+
+//Obtain other tile data 
