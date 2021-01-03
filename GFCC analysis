@@ -20,16 +20,20 @@ var gfcc00 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
       .select('tree_canopy_cover');
       
 //Use a reducer to convert from an image collection to an image with 1 band
+var gfcc2000 = gfcc00.reduce(ee.Reducer.mean());
+var gfcc2005 = gfcc05.reduce(ee.Reducer.mean());
+var gfcc2010 = gfcc10.reduce(ee.Reducer.mean());
+var gfcc2015 = gfcc15.reduce(ee.Reducer.mean());
 
-var gfcc2000 = gfcc00.reduce(ee.Reducer.median());
-var gfcc2005 = gfcc05.reduce(ee.Reducer.median());
-var gfcc2010 = gfcc10.reduce(ee.Reducer.median());
-var gfcc2015 = gfcc15.reduce(ee.Reducer.median());
+//Reprojections
+var proj = ee.Projection("EPSG:4326");
 
-print(gfcc00, "GFCC 2000 not reduced")
+var GFCC2000 = gfcc2000.reproject(proj, null, 30)
 
-print(gfcc2000.limit(10), "GFCC 2000 reduced")
 
+
+print(GFCC2000, "GFCC 2000 reduced reproj");
+Map.addLayer(GFCC2000, {}, "gfcc 2000 reprojection")
 
 //Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
@@ -113,9 +117,9 @@ function tile(region, size_in_degrees) {
 //Get the number of pixels in each tile
 
 //var pixelCounts = tiles.map(function(feature) {
- // return feature.set(gfcc2000.reduceRegion({
- // reducer: 'count',
- // geometry: feature.geometry(),
+ //return feature.set(gfcc2000.reduceRegion({
+ //reducer: 'count',
+ //geometry: feature.geometry(),
  // }));
 //});
 
