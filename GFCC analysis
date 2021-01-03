@@ -109,14 +109,14 @@ function tile(region, size_in_degrees) {
 
 //Get the number of pixels in each tile
 
-//var pixelCounts = tiles.map(function(feature) {
-  //return feature.set(gfcc00.reduceRegion({
-  //  reducer: 'count',
-  //  geometry: feature.geometry(),
-//  }));
-//});
+var pixelCounts = tiles.map(function(feature) {
+  return feature.set(gfcc2000.reduceRegion({
+  reducer: 'count',
+  geometry: feature.geometry(),
+  }));
+});
 
-//print(pixelCounts.limit(10), "2000 sum of pct cover")
+print(pixelCounts.limit(10), "2000 sum of pct cover")
 
 //Divide the aggregate count by the number of pixels
 
