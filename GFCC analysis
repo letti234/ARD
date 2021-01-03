@@ -9,7 +9,6 @@ var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 var gfcc15 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
       .filter(ee.Filter.date('2015-01-01', '2015-12-31'));
     
-
 var gfcc10 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
       .filter(ee.Filter.date('2010-01-01', '2010-12-31'));
       
@@ -17,8 +16,14 @@ var gfcc05 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
       .filter(ee.Filter.date('2005-01-01', '2005-12-31'));
       
 var gfcc00 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2000-01-01', '2000-12-31'));
+      .filter(ee.Filter.date('2000-01-01', '2000-12-31'))
+      .select('tree_canopy_cover');
       
+print(gfcc00.limit(10), "GFCC 2000");
+Map.addLayer(gfcc00, {}, "GFCC 2000 pre reducer");
+
+var gfcc2000 = gfcc00.reduce(ee.Reducer.median());
+Map.addLayer(gfcc2000, {}, "GFCC 2000 pre reducer");
 
 //Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
@@ -101,16 +106,14 @@ Map.addLayer(tiles);
 
 //Get the number of pixels in each tile
 
-var pixelCounts = tiles.map(function(feature) {
-  return feature.set(gfcc00.reduceRegion({
-    reducer: 'count',
-    geometry: feature.geometry(),
-  }));
-});
+//var pixelCounts = tiles.map(function(feature) {
+  //return feature.set(gfcc00.reduceRegion({
+  //  reducer: 'count',
+  //  geometry: feature.geometry(),
+//  }));
+//});
 
-
-//Find the aggregate count of values within each tile
-
+print(pixelCounts.limit(10), "2000 sum of pct cover")
 
 //Divide the aggregate count by the number of pixels
 
