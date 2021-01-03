@@ -18,6 +18,7 @@ var bufferDissolve = function(feature) {
 };
 
 
+
 var buffsSample=buffers.geometry().dissolve();
 Map.addLayer(buffsSample, {}, 'buffers dissolved');
 print(buffsSample);
