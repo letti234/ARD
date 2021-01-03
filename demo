@@ -2,20 +2,17 @@
 var region = ee.Geometry.Rectangle(-100, 34.669, -99.536, 50.064);
 
 // Create 10 random points in the region.
-var randomPoints = ee.FeatureCollection.randomPoints(region, 100);
+var randomPoints = ee.FeatureCollection.randomPoints(region, 10000);
 
 //Produce 10 km buffer this the are we are going to study
 var bufferPoly = function(feature) {
-  return feature.buffer(10000);  
+  var buffs= feature.buffer(1000);
+  return buffs.dissolve();
 };
 
 var buffers = randomPoints.map(bufferPoly);
 Map.addLayer(buffers, {}, 'buffers');
-print(buffers.limit(10)); //Each buffer has its own ID but some overlap!
-
-var bufferDissolve = function(feature) {
-  return feature.dissolve();  
-};
+print(buffers.limit(10), "wut"); //Each buffer has its own ID but some overlap!
 
 
 
@@ -23,3 +20,7 @@ var buffsSample=buffers.geometry().dissolve();
 Map.addLayer(buffsSample, {}, 'buffers dissolved');
 print(buffsSample);
 
+
+
+var bb = ee.FeatureCollection(buffsSample);
+print(bb);
