@@ -102,7 +102,7 @@ Map.addLayer(tiles);
 //Get the number of pixels in each tile
 
 var pixelCounts = tiles.map(function(feature) {
-  return feature.set(gfc2000CoverMasked.reduceRegion({
+  return feature.set(gfcc00.reduceRegion({
     reducer: 'count',
     geometry: feature.geometry(),
   }));
