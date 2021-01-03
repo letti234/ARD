@@ -130,7 +130,7 @@ var pixelCounts = tiles.map(function(feature) {
 
 var counts = pixelCounts.select(["tree_canopy_cover_mean"], ["noPixels"]);
 
-//Get the sum of percent forest cover
+//Get the sum of percent forest cover for 2000
 var gfccData = counts.map(function(feature) {
  return feature.set(GFCC2000.reduceRegion({
  reducer: 'sum',
@@ -138,11 +138,36 @@ var gfccData = counts.map(function(feature) {
   }));
 });
 
-var gfccFull = gfccData.select(["noPixels", "tree_canopy_cover_mean"],
-["noPixels", "sumPctCover"]);
+var gfccfor2000 = gfccData.select(["noPixels", "tree_canopy_cover_mean"],
+["noPixels", "sumCover_2000"]);
 
 
-print(gfccFull.limit(10), "GFCC");
+//Get the sum of percent forest cover for 2005
+var gfccData2 = gfccfor2000.map(function(feature) {
+ return feature.set(GFCC2005.reduceRegion({
+ reducer: 'sum',
+ geometry: feature.geometry(),
+  }));
+});
+
+var gfccfor2005 = gfccData2.select(["noPixels", "sumCover_2000", 
+"tree_canopy_cover_mean"],
+["noPixels", "sumCover_2000", 
+"sumCover_2005"]);
+
+
+//Get the sum of percent forest cover for 2005
+var gfccData3 = gfccfor2005.map(function(feature) {
+ return feature.set(GFCC2010.reduceRegion({
+ reducer: 'sum',
+ geometry: feature.geometry(),
+  }));
+});
+
+var gfccfor2010 = gfccData3.select(["noPixels", "sumCover_2000", 
+"sumCover_2005", "tree_canopy_cover_mean"],
+["noPixels", "sumCover_2000", 
+"sumCover_2005", "sumCover_2010"]);
 
 
 //Obtain other tile data 
