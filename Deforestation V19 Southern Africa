@@ -1381,17 +1381,17 @@ Export.table.toDrive({
   ['ID', 'loss2001', 'loss2002', 'loss2003', 'loss2004', 'loss2005', 'loss2006', 
   'loss2007', 'loss2008', 'loss2009', 'loss2010', 'loss2011', 'loss2012'   ]),
   fileFormat: 'SHP',
-  description: 'ShapefileForestlossGroup2',
+  description: 'ShapefileForestlossGroup3',
   folder: "deforTilesGEE"
 });
 
 
 //Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
-Export.table.toDrive(ecosample, "biomeGroup2", "deforTilesGEE");
-Export.table.toDrive(remoteness, "remotenessADMGroup2", "deforTilesGEE");
-Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
-Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
-Export.table.toDrive(gfccFull, "GFCCdata", "deforTilesGEE");
-Export.table.toDrive(bufferID, "tileBufferID", "deforTilesGEE");
+Export.table.toDrive(ecosample, "biomeGroup3", "deforTilesGEE");
+Export.table.toDrive(remoteness, "remotenessADMGroup3", "deforTilesGEE");
+Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup3", "deforTilesGEE");
+Export.table.toDrive(DataRenamed, "GFCAdditionalGroup3", "deforTilesGEE");
+Export.table.toDrive(gfccFull, "GFCCdata3", "deforTilesGEE");
+Export.table.toDrive(bufferID, "tileBufferID3", "deforTilesGEE");
 
 
