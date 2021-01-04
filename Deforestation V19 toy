@@ -36,6 +36,8 @@ var bufferPoly = function(feature) {
 
 var buffers = campRegion.map(bufferPoly);
 
+var buffsUnion = buffers.union();
+
 //dissolve and transform to FC so that we can identify each
 //tile's buffer ID
 
@@ -97,7 +99,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Code courtesty of a kind stranger who offered it on Stack Exchange
 //!!Need to figure out how to form these tiles in meters
 //!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffDissolveFC, 0.01);
+var tiles = tile(buffsUnion, 0.1); //Change back
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
