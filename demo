@@ -33,3 +33,10 @@ Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
 
 
 
+valuesList = ee.List(valuesList); // Cast valuesList
+
+var myFeatures = ee.FeatureCollection(valuesList.map(function(el){
+  el = ee.List(el) // cast every element of the list
+  var geom = ee.Geometry.Point([ee.Number(el.get(0)), ee.Number(el.get(1))])
+  return ee.Feature(geom, {'B4':ee.Number(el.get(2)), 'B5':ee.Number(el.get(3))})
+}))
