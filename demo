@@ -16,15 +16,6 @@ Map.addLayer(buffers, {}, 'buffers');
 
 
 
-
-//Dissolve attempt 1: union//////////////////////////////////////
-
-var buffsUnion = buffers.union();
-print(buffsUnion, "Dissolve using union fnctn."); //Only contains one feature!
-Map.addLayer(buffsUnion, {}, 'Dissolve using union fnctn.');
-
-
-
 //Buffers: dissolve and transform to FC so that we can identify each
 //tile's buffer ID
 
