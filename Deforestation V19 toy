@@ -1301,7 +1301,7 @@ var pixelCounts = tiles.map(function(feature) {
   }));
 });
 
-var counts = pixelCounts.select(["tree_canopy_cover_mean"], ["noPixels"]);
+var counts = pixelCounts.select(["tree_canopy_cover_mean"], ["noPixelsGFCC"]);
 
 //Get the sum of percent forest cover for 2000
 var gfccData = counts.map(function(feature) {
