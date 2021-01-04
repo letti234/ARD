@@ -210,9 +210,9 @@ var DataRenamed = TileCounts2.map(function(feat){
     numPixelsNoNA: feat.get('number_pixels'),
     numPixelsZeroFC2000: feat.get('remapped'),
     meanPctCover2000: feat.get('treecover2000')
-  })
-})
-print(DataRenamed.limit(10), "renaming");
+  });
+});
+print(DataRenamed.limit(10), "Renaming GFC data");
 
 
 
@@ -225,7 +225,7 @@ print(DataRenamed.limit(10), "renaming");
 
 
 // indices for years you want to calculate stats for (2001 to 2014) 
-var indices = ee.List.sequence(1,12)
+var indices = ee.List.sequence(1,12);
 
 // map over feature collection 
 var tiles_new = tiles.map(function(feature){
@@ -235,10 +235,10 @@ var tiles_new = tiles.map(function(feature){
   var mdata = indices.iterate(function(i, dictin){
     
     // get year for this iteration 
-    var thisyear = i
+    var thisyear = i ;
 
     // create property name for this year (e.g. "loss2001" for first iteration)
-    var bandname = ee.String('loss').cat(ee.Number(thisyear).int())
+    var bandname = ee.String('loss').cat(ee.Number(thisyear).int()) ;
     
     var gfcLossthisyear = gfcLossYearMasked.remap([i], [1], null);
     
@@ -372,6 +372,9 @@ var campcount_1 =  pointdata_withbandcounts_1.select([
     'neighsSize13_2001', 'neighsSize14_2001', 'neighsSize15_2001',
     'neighsSize16_2001', 'neighsSize17_2001', 'neighsSize18_2001',
     'neighsSize19_2001', 'neighsSize20_2001']);
+    
+//print(campcount_1.limit(2), "Camp count data for 2001"); 
+
 //Num. camps at different distances in 2001/////////////////////
 
 var spatialFilter = ee.Filter.withinDistance({
@@ -510,7 +513,7 @@ var pointdata_withbandcounts_3 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-print(pointdata_withbandcounts_3.limit(2), "camp count 2003")  
+//print(pointdata_withbandcounts_3.limit(2), "camp count 2003")  
 
 
 
@@ -644,7 +647,7 @@ var pointdata_withbandcounts_5 = withNearestDist.map(function(pt) {
 });
 
 
-print(pointdata_withbandcounts_5.limit(2), "camp count 2005")  ;
+//print(pointdata_withbandcounts_5.limit(2), "camp count 2005")  ;
 
 
 //2006
@@ -888,7 +891,9 @@ var pointdata_withbandcounts_9 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2009', neighs.filter(filt).size());
-  filt = ee.Filter.lt('distance', 14000);
+  filt = ee.Filter.lt(
+    
+    'distance', 14000);
   pt=pt.set('neighsSize14_2009', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 15000);
   pt=pt.set('neighsSize15_2009', neighs.filter(filt).size());
@@ -1173,22 +1178,41 @@ print(SSAdata, "SSA ADM of centroid");
 //
 ///////////////////////////////////////////////////////////////////////
 
-var distanceMkt20K = ee.Image('users/salem043/traveltimetomarket_ssa_020k');
+var distanceMkt100K = ee.Image('users/salem043/traveltimetomarket_ssa_100k');
 
-print(distanceMkt20K);
+var distanceMkt50K = ee.Image('users/salem043/traveltimetomarket_ssa_050k');
+
+//print(distanceMkt100K);
 
 
 var remoteness = SSAdata.map(function(feature) {
-  return feature.set(distanceMkt20K.reduceRegion({
+  return feature.set(distanceMkt100K.reduceRegion({
     reducer: 'mean',
     geometry: feature.geometry(),
     scale: 100,
   }));
 });
 
-print(remoteness.limit(2), "travel time to nearest mkt +2k");
+///print(remoteness.limit(2), "travel time to nearest mkt +100k");
+
+var remote_100k = remoteness.select(["ADM0", "ADM1", "ADM2", "b1"], 
+["ADM0", "ADM1", "ADM2", "distMkt100k"]);
 
 
+
+var remoteness2 = remote_100k.map(function(feature) {
+  return feature.set(distanceMkt50K.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 100,
+  }));
+});
+
+
+var remotenessADM = remoteness2.select(["ADM0", "ADM1", "ADM2", "distMkt100k", "b1"], 
+["ADM0", "ADM1", "ADM2", "distMkt100k", "distMkt50k"]);
+
+print(remotenessADM.limit(1), "remoteness measures and ADMs")
 
 /////////////////////////////////////////////////////
 
