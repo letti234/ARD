@@ -39,7 +39,7 @@ print(buffsUnion, "buffers multi");
 
 
 //ESA stack of images
-var lulc = ee.Image('users/salem043/ESA_1992_2015').clip(buffsSample);
+var lulc = ee.Image('users/salem043/ESA_1992_2015').clip(buffsUnion);
 //print(lulc, "Land cover data global raw");
 
 //Subset and name bands for clarity
@@ -49,7 +49,7 @@ var lulcYrSub = lulc.select(['b9', 'b10', 'b11', 'b12', 'b13',
 'lc_2009', 'lc_2010', 'lc_2011', 'lc_2012']);
 print(lulcYrSub, "LULC subset 2000-2012");
 
-
+var lulc_2000 = lulc.select(["lc_2000"])
 ////////////////////////////////////////////////////////////////////
 //
 //  Generate tiles to correspond with other data
@@ -124,7 +124,7 @@ var lcClass = ee.List(0, 10, 11, 12, 20, 30, 40, 50, 60, 61, 62, 70, 71, 72, 80,
 81, 82, 90, 100, 110, 120, 121, 122, 130, 140, 150, 152, 153, 160, 170, 180, 190,
 200, 201, 202, 210, 220);
 
-// indices for years you want to calculate stats for (2001 to 2014) 
+// indices for lulc types we want to obtain counts for
 var indices = ee.List(0, 10, 11, 12, 20, 30, 40, 50, 60, 61, 62, 70, 71, 72, 80,
 81, 82, 90, 100, 110, 120, 121, 122, 130, 140, 150, 152, 153, 160, 170, 180, 190,
 200, 201, 202, 210, 220);
