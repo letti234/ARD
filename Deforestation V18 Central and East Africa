@@ -19,21 +19,6 @@ var filteredArea = camps.filter(campFilter);
 var campRegion=camps.filter(campFilter);
 Map.addLayer(campRegion);
 
-//Produce 50 km  buffer around the camps - this the are we are going to study
-var bufferPoly = function(feature) {
-  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
-};
-
-var buffers = campRegion.map(bufferPoly);
-//Map.addLayer(buffers, {}, 'buffers');
-
-
-
-var buffsSample=buffers.geometry().dissolve();
-Map.addLayer(buffsSample, {}, 'buffers dissolved');
-
-
-
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
@@ -42,6 +27,44 @@ var gfcSampleCover2000= gfc2014.select(["treecover2000"]);
 var gfcSampleMask=gfc2014.select(["datamask"])
 var gfcSampleLossYr = gfc2014.select(["lossyear"])
 
+///////////////////////////////////////////////////////////////////////
+//
+//  Create dissolved buffer FC 
+//
+///////////////////////////////////////////////////////////////////////
+
+//Produce 30 km  buffer around the camps - this the are we are going to study
+var bufferPoly = function(feature) {
+  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
+};
+
+var buffers = campRegion.map(bufferPoly);
+//Map.addLayer(buffers, {}, 'buffers');
+
+
+//Buffers: dissolve and transform to FC so that we can identify each
+//tile's buffer ID
+
+var buffsGeoDissolve =buffers.geometry().dissolve();
+print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
+Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
+
+
+var fc = ee.FeatureCollection([
+  ee.Feature(buffsGeoDissolve)
+]);
+print(fc);
+
+var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
+  var geomList = ee.Feature(feature).geometry().geometries();
+  var featureList = geomList.map(function(geom) {
+    return ee.Feature(ee.Geometry(geom));
+  });
+  return featureList;
+})
+.flatten();
+
+var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 
 ///////////////////////////////////////////////////////////////////////
 //
