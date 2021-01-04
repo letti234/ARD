@@ -1,4 +1,4 @@
-//Create demo data
+//Create demo data//////////////////////////////////////
 
 var region = ee.Geometry.Rectangle(-100, 34.669, -99.536, 50.064);
 
@@ -6,14 +6,18 @@ var region = ee.Geometry.Rectangle(-100, 34.669, -99.536, 50.064);
 var randomPoints = ee.FeatureCollection.randomPoints(region, 1000);
 
 //Produce 10 km buffers, these are the polygons we want to dissolve
-//var bufferPoly = function(feature) {
-  //var buffs= feature.buffer(1000);
-//};
+var bufferPoly = function(feature) {
+  return feature.buffer(10000); 
+};
 
-//var buffers = randomPoints.map(bufferPoly);
-//Map.addLayer(buffers, {}, 'buffers');
+var buffers = randomPoints.map(bufferPoly);
+Map.addLayer(buffers, {}, 'buffers');
 //print(buffers.limit(10), "Overlapping buffers"); //Each buffer has its own ID but some overlap!
 
+//Dissolv attempt 1: union//////////////////////////////////////
+
+var buffsUnion = buffers.union();
+print(buffsUnion);
 
 //var buffsSample=buffers.geometry().dissolve();
 //Map.addLayer(buffsSample, {}, 'buffers dissolved');
