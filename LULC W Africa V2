@@ -47,9 +47,11 @@ var lulcYrSub = lulc.select(['b9', 'b10', 'b11', 'b12', 'b13',
 'b14', 'b15', 'b16', 'b17', 'b18', 'b19', 'b20', 'b21'], ["lc_2000", "lc_2001", 
 'lc_2002', 'lc_2003', 'lc_2004', 'lc_2005', 'lc_2006', 'lc_2007', 'lc_2008',
 'lc_2009', 'lc_2010', 'lc_2011', 'lc_2012']);
-print(lulcYrSub, "LULC subset 2000-2012");
+print(lulcYrSub);
 
-var lulc_2000 = lulc.select(["lc_2000"]);
+var lulc_2000 = lulcYrSub.select(["lc_2000"]);
+print(lulc_2000);
+
 ////////////////////////////////////////////////////////////////////
 //
 //  Generate tiles to correspond with other data
@@ -105,7 +107,9 @@ function tile(region, size_in_degrees) {
     )
 }
 
-print(tiles.limit(10), "Baseline tiles");
+//print(tiles.limit(10), "Baseline tiles");
+
+
 
 
 
@@ -116,44 +120,46 @@ print(tiles.limit(10), "Baseline tiles");
 //
 ////////////////////////////////////////////////////////////////////
 
-// all years in GFC image 
-var lcClass = ee.List(0, 10, 11, 12, 20, 30, 40, 50, 60, 61, 62, 70, 71, 72, 80,
-81, 82, 90, 100, 110, 120, 121, 122, 130, 140, 150, 152, 153, 160, 170, 180, 190,
-200, 201, 202, 210, 220);
-
-// indices for lulc types we want to obtain counts for
+// lulc types we want to obtain counts for
 var indices = ee.List(0, 10, 11, 12, 20, 30, 40, 50, 60, 61, 62, 70, 71, 72, 80,
 81, 82, 90, 100, 110, 120, 121, 122, 130, 140, 150, 152, 153, 160, 170, 180, 190,
 200, 201, 202, 210, 220);
 
+
 // map over feature collection 
 var tiles_new = tiles.map(function(feature){
   
-  // iterate over LULC of interest. 
+  // iterate over years of interest. could modify this so you iterate over years
+  // depending on how the GFC image is masked 
   var mdata = indices.iterate(function(i, dictin){
     
-    // get lc class for this iteration 
-    var thisLc = lcClass.get(i);
+    // get year for this iteration 
+    var thisLC = i ;
 
-    // create property name for this year (e.g. "lcType_0" for first iteration)
-    var bandname = ee.String('lcType').cat(ee.Number(thisLc).int());
+    // create property name for this year (e.g. "loss2001" for first iteration)
+    var bandname = ee.String('lulc').cat(ee.Number(thisLC).int()) ;
     
-    var countPixelsThisLc ; 
-      
-    var dict = countPixelsThisLc
+    var lulc_thisLC = lulc_2000.remap([i], [1], null);
     
-      // rename band such that the end dictionary key is unique to this lulc 
+    var dict = lulc_2000
+    
+      // rename band such that the end dictionary key is unique to this year 
       .rename(bandname)
       
       // get zonal statistics 
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100})
       
     // append zonal statistics for this year to dictionary 
-    return ee.Dictionary(dictin).combine(dict);
+    return ee.Dictionary(dictin).combine(dict)
     
-  }, ee.Dictionary()); // begin iteration with an empty dictionary  
+  }, ee.Dictionary()) // begin iteration with an empty dictionary  
 
   // return feature with zonal stats accumulated from all years 
-  return feature.set(mdata);
+  return feature.set(mdata)
 
-});
+})
+
+print(tiles_new.limit(3), "Tile results");
+
+
+
