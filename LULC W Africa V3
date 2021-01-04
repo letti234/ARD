@@ -125,11 +125,10 @@ var indices = ee.List([0, 10, 11, 12, 20, 30, 40, 50, 60, 61, 62, 70, 71, 72, 80
 81, 82, 90, 100, 110, 120, 121, 122, 130, 140, 150, 152, 153, 160, 170, 180, 190,
 200, 201, 202, 210, 220]);
 
-var years=ee.List([2000]);
 
-// map over feature collection 
+
 var tiles_new = tiles.map(function(feature){
-  var mdata = indices.iterate(function(i, j, dictin){
+  var mdata = indices.iterate(function(i, dictin){
     var thisLC = i ;
     var bandname = ee.String('lulc2000').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2000.remap([i], [1], null);
