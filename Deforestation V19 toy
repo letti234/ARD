@@ -1358,8 +1358,6 @@ var gfccFull = gfccData4.select(["noPixels", "sumCover_2000",
 "sumCover_2005", "sumCover_2010", "sumCover_2015"]);
 
 
-print(gfccFull.limit(10), "Final GFCC data");
-
 
 /////////////////////////////////////////////////////////////////////
 //
@@ -1390,3 +1388,6 @@ Export.table.toDrive(ecosample, "biomeGroup2", "deforTilesGEE");
 Export.table.toDrive(remoteness, "remotenessADMGroup2", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
+Export.table.toDrive(gfccFull, "GFCCdata", "deforTilesGEE");
+
+
