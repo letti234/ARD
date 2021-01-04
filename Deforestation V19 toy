@@ -1147,7 +1147,7 @@ var ecosample = joinAll.map(function(feature){
 /////////////////////////////////////////////////////////////////////////////
 
 //Sub-Saharan Africa administrative district shapefile
-var SSA = ee.FeatureCollection('users/salem043/Africa_Districts')
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 
 
 //Specify the properties that I want to copy from the SSA shapefile
@@ -1170,7 +1170,7 @@ var SSAdata = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-print(SSAdata, "SSA ADM of centroid");
+///print(SSAdata, "SSA ADM of centroid");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1212,7 +1212,7 @@ var remoteness2 = remote_100k.map(function(feature) {
 var remotenessADM = remoteness2.select(["ADM0", "ADM1", "ADM2", "distMkt100k", "b1"], 
 ["ADM0", "ADM1", "ADM2", "distMkt100k", "distMkt50k"]);
 
-print(remotenessADM.limit(1), "remoteness measures and ADMs")
+///print(remotenessADM.limit(1), "remoteness measures and ADMs")
 
 /////////////////////////////////////////////////////
 
@@ -1220,8 +1220,7 @@ print(remotenessADM.limit(1), "remoteness measures and ADMs")
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  Zonal statistics from biome data: includes
-//    1. Biome of centroid
+//  Zonal statistics: get tile buffer ID
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -1237,27 +1236,32 @@ var spatialFilter = ee.Filter.intersects({
 });
 
 // Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(tiles, buffs2, spatialFilter);
+var joinAll = ee.Join.saveAll('matched').apply(remotenessADM, buffs2, spatialFilter);
 
 // Since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
-var tileBuffer = joinAll.map(function(feature){
+var bufferID = joinAll.map(function(feature){
   var joinedFeat =  ee.List(feature.get('matched'));
   var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
 
-print('sample extract', tileBuffer.limit(20));
+//print('sample extract', bufferID.limit(2));
 
-/////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////
+//
 //Export
-///////////////////////////////////////////////////
+//
+/////////////////////////////////////////////////////////////////////
+
 print(pointdata_withbandcounts_12.limit(1)); ///Camp counts by buffers and years
 print(ecosample.limit(1)); ///Biome
-print(remoteness.limit(1)); ///Distance to nearest market and 
-print(tiles_new.limit(1)); ///Polygons
-print(DataRenamed.limit(1)); //print as CSV and merge
+print(remotenessADM.limit(1)); ///Distance to nearest market and ADM
+print(tiles_new.limit(1)); ///GFC number pixels transition to zero FC by year
+print(DataRenamed.limit(1)); //GFC 2000 and within-tile pixel counts
+print(bufferID.limit(1)); //ID of buffer that tile falls in
 
 Export.table.toDrive({
   collection: tiles_new.select(['system:index', 'loss1', 'loss2', 'loss3',
