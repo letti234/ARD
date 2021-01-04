@@ -1214,8 +1214,6 @@ var remotenessADM = remoteness2.select(["ADM0", "ADM1", "ADM2", "distMkt100k", "
 
 ///print(remotenessADM.limit(1), "remoteness measures and ADMs")
 
-/////////////////////////////////////////////////////
-
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -1248,6 +1246,119 @@ var bufferID = joinAll.map(function(feature){
 
 
 //print('sample extract', bufferID.limit(2));
+
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Get GFCC data for tiles
+//
+///////////////////////////////////////////////////////////////////////
+
+
+var gfcc15 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2015-01-01', '2015-12-31'));
+    
+var gfcc10 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2010-01-01', '2010-12-31'));
+      
+var gfcc05 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2005-01-01', '2005-12-31'));
+      
+var gfcc00 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2000-01-01', '2000-12-31'))
+      .select('tree_canopy_cover');
+
+
+//Use a reducer to convert from an image collection to an image with 1 band
+var gfcc2000 = gfcc00.reduce(ee.Reducer.mean());
+var gfcc2005 = gfcc05.reduce(ee.Reducer.mean());
+var gfcc2010 = gfcc10.reduce(ee.Reducer.mean());
+var gfcc2015 = gfcc15.reduce(ee.Reducer.mean());
+
+//Clip GFCC data to SSA
+var g00 = gfcc2000.clip(SSA);
+var g05 = gfcc2000.clip(SSA);
+var g10 = gfcc2000.clip(SSA);
+var g15 = gfcc2000.clip(SSA);
+
+//Reproject GFCC data
+var proj = ee.Projection("EPSG:4326");
+
+var GFCC2000 = g00.reproject(proj, null, 30);
+var GFCC2005 = g05.reproject(proj, null, 30);
+var GFCC2010 = g10.reproject(proj, null, 30);
+var GFCC2015 = g15.reproject(proj, null, 30);
+
+
+
+//Get the number of pixels in each tile
+
+var pixelCounts = tiles.map(function(feature) {
+ return feature.set(GFCC2000.reduceRegion({
+ reducer: 'count',
+ geometry: feature.geometry(),
+  }));
+});
+
+var counts = pixelCounts.select(["tree_canopy_cover_mean"], ["noPixels"]);
+
+//Get the sum of percent forest cover for 2000
+var gfccData = counts.map(function(feature) {
+ return feature.set(GFCC2000.reduceRegion({
+ reducer: 'sum',
+ geometry: feature.geometry(),
+  }));
+});
+
+var gfccfor2000 = gfccData.select(["noPixels", "tree_canopy_cover_mean"],
+["noPixels", "sumCover_2000"]);
+
+
+//Get the sum of percent forest cover for 2005
+var gfccData2 = gfccfor2000.map(function(feature) {
+ return feature.set(GFCC2005.reduceRegion({
+ reducer: 'sum',
+ geometry: feature.geometry(),
+  }));
+});
+
+var gfccfor2005 = gfccData2.select(["noPixels", "sumCover_2000", 
+"tree_canopy_cover_mean"],
+["noPixels", "sumCover_2000", 
+"sumCover_2005"]);
+
+
+//Get the sum of percent forest cover for 2010
+var gfccData3 = gfccfor2005.map(function(feature) {
+ return feature.set(GFCC2010.reduceRegion({
+ reducer: 'sum',
+ geometry: feature.geometry(),
+  }));
+});
+
+var gfccfor2010 = gfccData3.select(["noPixels", "sumCover_2000", 
+"sumCover_2005", "tree_canopy_cover_mean"],
+["noPixels", "sumCover_2000", 
+"sumCover_2005", "sumCover_2010"]);
+
+
+
+//Get the sum of percent forest cover for 2015
+var gfccData4 = gfccfor2010.map(function(feature) {
+ return feature.set(GFCC2015.reduceRegion({
+ reducer: 'sum',
+ geometry: feature.geometry(),
+  }));
+});
+
+var gfccFull = gfccData4.select(["noPixels", "sumCover_2000", 
+"sumCover_2005", "sumCover_2010", "tree_canopy_cover_mean"],
+["noPixels", "sumCover_2000", 
+"sumCover_2005", "sumCover_2010", "sumCover_2015"]);
+
+
+print(gfccFull.limit(10), "Final GFCC data");
 
 
 /////////////////////////////////////////////////////////////////////
