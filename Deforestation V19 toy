@@ -7,17 +7,13 @@
 //Read in camp data - this is saved in wide format, with binary indicators
 //of whether a camp was open 1999-2016
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
-//Map.addLayer(camps);
 
-
-var campFilter = ee.Filter.inList('country', ['Chad',
-'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
-'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
+var campFilter = ee.Filter.inList('country', ['CAR' //Add here when expanding
 ]);
 var filteredArea = camps.filter(campFilter);
 
 var campRegion=camps.filter(campFilter);
-Map.addLayer(campRegion);
+
 
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
@@ -39,21 +35,19 @@ var bufferPoly = function(feature) {
 };
 
 var buffers = campRegion.map(bufferPoly);
-//Map.addLayer(buffers, {}, 'buffers');
 
-
-//Buffers: dissolve and transform to FC so that we can identify each
+//dissolve and transform to FC so that we can identify each
 //tile's buffer ID
 
 var buffsGeoDissolve =buffers.geometry().dissolve();
-print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
+//print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
 Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
 
 
 var fc = ee.FeatureCollection([
   ee.Feature(buffsGeoDissolve)
 ]);
-print(fc);
+//print(fc);
 
 var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
   var geomList = ee.Feature(feature).geometry().geometries();
@@ -152,7 +146,7 @@ function tile(region, size_in_degrees) {
     )
 }
 
-//print(tiles, "Tile example");
+print(tiles.limit(10), "Baseline tiles");
 
 //Map.addLayer(tiles, {}, "tiles");
 
@@ -1196,25 +1190,39 @@ print(remoteness.limit(2), "travel time to nearest mkt +2k");
 
 /////////////////////////////////////////////////////
 
-var toyFilter = ee.Filter.equals({
-  leftField: 'system:index',
-  rightField: 'system:index'
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Zonal statistics from biome data: includes
+//    1. Biome of centroid
+//
+///////////////////////////////////////////////////////////////////////
+
+var buffs2 = buffDissolveFC.select(["system:index"], ["Buffer ID"]);
+
+
+var properties = ["Buffer ID"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
 });
 
-// Define the join.
-var innerJoin = ee.Join.inner();
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(tiles, buffs2, spatialFilter);
 
-// Apply the join.
-var df1 = innerJoin.apply(tiles_new, campcount_1,  toyFilter);
-print('Preliminary feature collection', df1.limit(10));
-
-var df1_1=df1.map(function(pair) {
-  var f1 = ee.Feature(pair.get('primary'));
-  var f2 = ee.Feature(pair.get('secondary'));
-  return f1.set(f2.toDictionary());
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var tileBuffer = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-print(df1_1.limit(1));
+
+print('sample extract', tileBuffer.limit(20));
 
 /////////////////////////////////////////////////////
 //Export
