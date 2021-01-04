@@ -32,11 +32,35 @@ print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
 Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
 
 
-var coordList = buffsGeoDissolve.coordinates();
-print(coordList, "List of coordinates");
 
-var coordFeat = ee.Feature(coordList);
-print(coordFeat, "As feature");
 
-var coordFC = ee.FeatureCollection(coordFeat);
-print(coordFC);
+
+
+
+
+var fc = ee.FeatureCollection([
+  ee.Feature(buffsGeoDissolve)
+]);
+print(fc);
+
+// Make feature collection a list and map over the elements (features)
+var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
+  // Cast the input as a feature since it is coming from a list, get its
+  // geometry, then split geometries into a list.
+  var geomList = ee.Feature(feature).geometry().geometries();
+  // Map over the geometry list.
+  var featureList = geomList.map(function(geom) {
+    // Return a feature representation of the geometry.
+    return ee.Feature(ee.Geometry(geom));
+  });
+  // Return a list of all the features making up a potential multi-geometry,
+  // this is a list. 
+  return featureList;
+})
+// The result is a list of feature lists - flatten to a single list of features.
+.flatten();
+
+// Convert the list of features to a featureCollection.
+var multiGeomExplodeFc = ee.FeatureCollection(multiGeomExplodeList);
+print(multiGeomExplodeFc);
+Map.addLayer(multiGeomExplodeFc);
