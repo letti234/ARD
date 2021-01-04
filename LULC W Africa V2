@@ -141,7 +141,7 @@ var tiles_new = tiles.map(function(feature){
     
     var lulc_thisLC = lulc_2000.remap([i], [1], null);
     
-    var dict = lulc_2000
+    var dict = lulc_thisLC
     
       // rename band such that the end dictionary key is unique to this year 
       .rename(bandname)
