@@ -49,7 +49,7 @@ var lulcYrSub = lulc.select(['b9', 'b10', 'b11', 'b12', 'b13',
 'lc_2009', 'lc_2010', 'lc_2011', 'lc_2012']);
 print(lulcYrSub, "LULC subset 2000-2012");
 
-var lulc_2000 = lulc.select(["lc_2000"])
+var lulc_2000 = lulc.select(["lc_2000"]);
 ////////////////////////////////////////////////////////////////////
 //
 //  Generate tiles to correspond with other data
@@ -109,9 +109,6 @@ print(tiles.limit(10), "Baseline tiles");
 
 
 
-
-
-
 ////////////////////////////////////////////////////////////////////
 //
 //  Calculate number of pixels in each tile that have different
@@ -132,32 +129,31 @@ var indices = ee.List(0, 10, 11, 12, 20, 30, 40, 50, 60, 61, 62, 70, 71, 72, 80,
 // map over feature collection 
 var tiles_new = tiles.map(function(feature){
   
-  // iterate over years of interest. could modify this so you iterate over years
-  // depending on how the GFC image is masked 
+  // iterate over LULC of interest. 
   var mdata = indices.iterate(function(i, dictin){
     
-    // get year for this iteration 
-    var thisLc = lcClass.get(i)
+    // get lc class for this iteration 
+    var thisLc = lcClass.get(i);
 
-    // create property name for this year (e.g. "loss2001" for first iteration)
-    var bandname = ee.String('loss').cat(ee.Number(thisLc).int())
+    // create property name for this year (e.g. "lcType_0" for first iteration)
+    var bandname = ee.String('lcType').cat(ee.Number(thisLc).int());
     
-    var countPixelsThisLc // assign to this variable GFC image masked to this year 
+    var countPixelsThisLc ; 
       
     var dict = countPixelsThisLc
     
-      // rename band such that the end dictionary key is unique to this year 
+      // rename band such that the end dictionary key is unique to this lulc 
       .rename(bandname)
       
       // get zonal statistics 
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100})
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
       
     // append zonal statistics for this year to dictionary 
-    return ee.Dictionary(dictin).combine(dict)
+    return ee.Dictionary(dictin).combine(dict);
     
-  }, ee.Dictionary()) // begin iteration with an empty dictionary  
+  }, ee.Dictionary()); // begin iteration with an empty dictionary  
 
   // return feature with zonal stats accumulated from all years 
-  return feature.set(mdata)
+  return feature.set(mdata);
 
-})
+});
