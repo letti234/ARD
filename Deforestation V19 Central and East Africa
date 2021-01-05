@@ -9,8 +9,6 @@
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 
 
-
-
 var campFilter = ee.Filter.inList('country', ['Chad',
 'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
 'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
@@ -1363,7 +1361,7 @@ var gfccFull = gfccData4.select(["noPixels", "sumCover_2000",
 ["noPixels", "sumCover_2000", 
 "sumCover_2005", "sumCover_2010", "sumCover_2015"]);
 
-
+print(gfccFull.limit(1), "GFCC data");
 
 /////////////////////////////////////////////////////////////////////
 //
