@@ -103,7 +103,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Code courtesty of a kind stranger who offered it on Stack Exchange
 //!!Need to figure out how to form these tiles in meters
 //!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffsUnion, 1); 
+var tiles = tile(buffsUnion, 0.01); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -1315,9 +1315,9 @@ var gfccData = counts.map(function(feature) {
   }));
 });
 
-var gfccfor2000 = gfccData.select(["noPixels", "tree_canopy_cover_mean"],
-["noPixels", "sumCover_2000"]);
 
+var gfccfor2000 = gfccData.select(["noPixelsGFCC", "tree_canopy_cover_mean"],
+["noPixelsGFCC", "sumCover_2000"]);
 
 //Get the sum of percent forest cover for 2005
 var gfccData2 = gfccfor2000.map(function(feature) {
@@ -1327,9 +1327,9 @@ var gfccData2 = gfccfor2000.map(function(feature) {
   }));
 });
 
-var gfccfor2005 = gfccData2.select(["noPixels", "sumCover_2000", 
+var gfccfor2005 = gfccData2.select(["noPixelsGFCC", "sumCover_2000", 
 "tree_canopy_cover_mean"],
-["noPixels", "sumCover_2000", 
+["noPixelsGFCC", "sumCover_2000", 
 "sumCover_2005"]);
 
 
@@ -1341,9 +1341,9 @@ var gfccData3 = gfccfor2005.map(function(feature) {
   }));
 });
 
-var gfccfor2010 = gfccData3.select(["noPixels", "sumCover_2000", 
+var gfccfor2010 = gfccData3.select(["noPixelsGFCC", "sumCover_2000", 
 "sumCover_2005", "tree_canopy_cover_mean"],
-["noPixels", "sumCover_2000", 
+["noPixelsGFCC", "sumCover_2000", 
 "sumCover_2005", "sumCover_2010"]);
 
 
@@ -1356,12 +1356,14 @@ var gfccData4 = gfccfor2010.map(function(feature) {
   }));
 });
 
-var gfccFull = gfccData4.select(["noPixels", "sumCover_2000", 
+var gfccFull = gfccData4.select(["noPixelsGFCC", "sumCover_2000", 
 "sumCover_2005", "sumCover_2010", "tree_canopy_cover_mean"],
-["noPixels", "sumCover_2000", 
+["noPixelsGFCC", "sumCover_2000", 
 "sumCover_2005", "sumCover_2010", "sumCover_2015"]);
 
-print(gfccfor2000.limit(1), "GFCC data");
+
+print(gfccFull.limit(1), "GFCC data clean");
+
 
 /////////////////////////////////////////////////////////////////////
 //
@@ -1392,7 +1394,7 @@ Export.table.toDrive(ecosample, "biomeGroup2", "deforTilesGEE");
 Export.table.toDrive(remoteness, "remotenessADMGroup2", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
-Export.table.toDrive(gfccFull, "GFCCdata", "deforTilesGEE");
-Export.table.toDrive(bufferID, "tileBufferID", "deforTilesGEE");
+Export.table.toDrive(gfccFull, "GFCCdataGroup2", "deforTilesGEE");
+Export.table.toDrive(bufferID, "tileBufferIDGroup2", "deforTilesGEE");
 
 
