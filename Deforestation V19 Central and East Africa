@@ -9,7 +9,11 @@
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 
 
-var campFilter = ee.Filter.inList('country', ['Chad'
+
+
+var campFilter = ee.Filter.inList('country', ['Chad',
+'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
+'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
 ]);
 
 var filteredArea = camps.filter(campFilter);
