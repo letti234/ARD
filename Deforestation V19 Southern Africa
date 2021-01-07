@@ -7,6 +7,7 @@
 //Read in camp data - this is saved in wide format, with binary indicators
 //of whether a camp was open 1999-2016
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
+Map.addLayer(camps);
 
 var campFilter = ee.Filter.inList('country', ['Angola', 
 'Zambia', 'Zimbabwe', 'Malawi', 'Mozambique', 'Zimbabwe', 'Botswana',
@@ -1389,7 +1390,7 @@ Export.table.toDrive({
 
 //Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
 Export.table.toDrive(ecosample, "biomeGroup3", "deforTilesGEE");
-Export.table.toDrive(remoteness, "remotenessADMGroup3", "deforTilesGEE");
+Export.table.toDrive(remotenessADM, "remotenessADMGroup3", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup3", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup3", "deforTilesGEE");
 Export.table.toDrive(gfccFull, "GFCCdataGroup3", "deforTilesGEE");
