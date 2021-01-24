@@ -1391,7 +1391,8 @@ Export.table.toDrive({
 
 //Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
 Export.table.toDrive(ecosample, "biomeGroup2", "deforTilesGEE");
-Export.table.toDrive(remoteness2, "remotenessADMGroup2", "deforTilesGEE");
+Export.table.toDrive(remoteness, "remoteness50kADMGroup2", "deforTilesGEE");
+Export.table.toDrive(remoteness2, "remoteness100kADMGroup2", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
 Export.table.toDrive(gfccFull, "GFCCdataGroup2", "deforTilesGEE");
