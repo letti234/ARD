@@ -1204,7 +1204,7 @@ var remote_100k = remoteness.select(["ADM0", "ADM1", "ADM2", "b1"],
 
 
 
-var remoteness2 = remote_100k.map(function(feature) {
+var remoteness2 = SSAdata.map(function(feature) {
   return feature.set(distanceMkt50K.reduceRegion({
     reducer: 'mean',
     geometry: feature.geometry(),
