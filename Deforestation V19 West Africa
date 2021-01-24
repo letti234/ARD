@@ -1204,7 +1204,7 @@ var remote_100k = remoteness.select(["ADM0", "ADM1", "ADM2", "b1"],
 
 
 
-var remoteness2 = remote_100k.map(function(feature) {
+var remoteness2 = SSAdata.map(function(feature) {
   return feature.set(distanceMkt50K.reduceRegion({
     reducer: 'mean',
     geometry: feature.geometry(),
@@ -1389,7 +1389,8 @@ Export.table.toDrive({
 
 //Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
 Export.table.toDrive(ecosample, "biomeGroup1", "deforTilesGEE");
-Export.table.toDrive(remoteness2, "remotenessADMGroup1", "deforTilesGEE");
+Export.table.toDrive(remoteness, "remoteness100kADMGroup1", "deforTilesGEE");
+Export.table.toDrive(remoteness2, "remoteness50kADMGroup1", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup1", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1", "deforTilesGEE");
 Export.table.toDrive(gfccFull, "GFCCdataGroup1", "deforTilesGEE");
