@@ -128,7 +128,7 @@ function tile(region, size_in_degrees) {
     )
 }
 
-//print(tiles.limit(10), "Baseline tiles");
+print(tiles.limit(10), "Baseline tiles");
 
 
 
@@ -1369,9 +1369,16 @@ print(bufferID.limit(2), "buffer ID");
 
 
 //Export as shapefile
-tiles_2012
+
+Export.table.toDrive({
+  collection: tiles.select(['system:index'], ['ID']),
+  fileFormat: 'SHP',
+  description: 'lulcTilesShp',
+  folder: "deforTilesGEE"
+});
 
 //Export LULC as csv
+Export.table.toDrive(ecosample, "biomeGroup2", "deforTilesGEE");
 
 //Export camp counts as csv
 
