@@ -145,7 +145,6 @@ var indices = ee.List([0, 10, 11, 12, 20, 30, 40, 50, 60, 61, 62, 70, 71, 72, 80
 
 
 var lulc_2000 = lulcYrSub.select(["lc_2000"]);
-Map.addLayer(lulc_2000);
 
 var tiles_2000 = tiles.map(function(feature){
   var mdata = indices.iterate(function(i, dictin){
@@ -159,20 +158,84 @@ var tiles_2000 = tiles.map(function(feature){
   return feature.set(mdata);
 });
 
-print(tiles_2000.limit(3), "Tile results: 2000 data");
 
+var lulc_2001 = lulcYrSub.select(["lc_2001"]);
 
-
-var tiles_2001 = tiles.map(function(feature){
+var tiles_2001 = tiles_2000.map(function(feature){
   var mdata = indices.iterate(function(i, dictin){
     var thisLC = i ;
     var bandname = ee.String('lulc_2001_').cat(ee.Number(thisLC).int());
-    var lulc_thisLC = lulc_2000.remap([i], [1], null);
+    var lulc_thisLC = lulc_2001.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
       .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
 });
+
+print(tiles_2001.limit(3), "Tile results");
+
+
+var lulc_2002 = lulcYrSub.select(["lc_2002"]);
+
+var tiles_2002 = tiles_2001.map(function(feature){
+  var mdata = indices.iterate(function(i, dictin){
+    var thisLC = i ;
+    var bandname = ee.String('lulc_2002_').cat(ee.Number(thisLC).int());
+    var lulc_thisLC = lulc_2002.remap([i], [1], null);
+    var dict = lulc_thisLC.rename(bandname)
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+    return ee.Dictionary(dictin).combine(dict);
+  }, ee.Dictionary()) ;
+  return feature.set(mdata);
+});
+
+print(tiles_2002.limit(3), "Tile results");
+
+
+var lulc_2003 = lulcYrSub.select(["lc_2003"]);
+
+var tiles_2003 = tiles_2002.map(function(feature){
+  var mdata = indices.iterate(function(i, dictin){
+    var thisLC = i ;
+    var bandname = ee.String('lulc_2003_').cat(ee.Number(thisLC).int());
+    var lulc_thisLC = lulc_2003.remap([i], [1], null);
+    var dict = lulc_thisLC.rename(bandname)
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+    return ee.Dictionary(dictin).combine(dict);
+  }, ee.Dictionary()) ;
+  return feature.set(mdata);
+});
+
+
+var lulc_2004 = lulcYrSub.select(["lc_2004"]);
+
+var tiles_2004 = tiles_2003.map(function(feature){
+  var mdata = indices.iterate(function(i, dictin){
+    var thisLC = i ;
+    var bandname = ee.String('lulc_2004_').cat(ee.Number(thisLC).int());
+    var lulc_thisLC = lulc_2004.remap([i], [1], null);
+    var dict = lulc_thisLC.rename(bandname)
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+    return ee.Dictionary(dictin).combine(dict);
+  }, ee.Dictionary()) ;
+  return feature.set(mdata);
+});
+
+
+var lulc_2005 = lulcYrSub.select(["lc_2005"]);
+
+var tiles_2005 = tiles_2004.map(function(feature){
+  var mdata = indices.iterate(function(i, dictin){
+    var thisLC = i ;
+    var bandname = ee.String('lulc_2005_').cat(ee.Number(thisLC).int());
+    var lulc_thisLC = lulc_2005.remap([i], [1], null);
+    var dict = lulc_thisLC.rename(bandname)
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+    return ee.Dictionary(dictin).combine(dict);
+  }, ee.Dictionary()) ;
+  return feature.set(mdata);
+});
+
 
 
