@@ -1275,26 +1275,35 @@ var lightImg2001 = light2001.toBands();
 //Use reducer function to obtain mean lights per governorate
 var lightTile2001 = lightImg2001.reduceRegions(tiles, ee.Reducer.mean());
 
-//print("lights 2001", lightTile2001.limit(10));
-
-
 var   light2002 = lights.filterMetadata('system:index', 'equals', 'F152002');
-print(light2002);
 var lightImg2002 = light2002.toBands();
 var lightTile2002 = lightImg2002.reduceRegions(lightTile2001, ee.Reducer.mean());
 
 
 var   light2003 = lights.filterMetadata('system:index', 'equals', 'F152003');
-print(light2003);
 var lightImg2003 = light2003.toBands();
 var lightTile2003 = lightImg2003.reduceRegions(lightTile2002, ee.Reducer.mean());
 
 
 var   light2004 = lights.filterMetadata('system:index', 'equals', 'F152004');
-print(light2004);
 var lightImg2004 = light2004.toBands();
 var lightTile2004 = lightImg2004.reduceRegions(lightTile2003, ee.Reducer.mean());
 
+var   light2005 = lights.filterMetadata('system:index', 'equals', 'F152005');
+var lightImg2005 = light2005.toBands();
+var lightTile2005 = lightImg2005.reduceRegions(lightTile2004, ee.Reducer.mean());
+
+
+var   light2006 = lights.filterMetadata('system:index', 'equals', 'F152006');
+var lightImg2006 = light2006.toBands();
+var lightTile2006 = lightImg2006.reduceRegions(lightTile2005, ee.Reducer.mean());
+
+
+var   light2007 = lights.filterMetadata('system:index', 'equals', 'F152007');
+var lightImg2007 = light2007.toBands();
+var lightTile2007 = lightImg2007.reduceRegions(lightTile2006, ee.Reducer.mean());
+
+print("lights 2007", lightTile2007.limit(10));
 
 
 ////////////////////////////////////////////////////////////////////
