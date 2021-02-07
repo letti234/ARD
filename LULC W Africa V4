@@ -1193,6 +1193,28 @@ print(pointdata_withbandcounts_12.limit(1), "camp count 2012")  ;
 ////////////////////////////////////////////////////////////////////
 
 
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+});
+
+var joined = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+}).apply({
+  primary: tiles, 
+  secondary: campRegion, 
+  condition: spatialFilter
+});
+
+var inTileCamps = joined.map(function(pt) {
+  var neighs = ee.List(pt.get('neighbors'));
+  var filt = ee.Filter.bounds(tiles);
+  pt=pt.set('camps', neighs.filter(filt).size());
+  return(pt);
+});
+
+print("Tiles with camp counts", inTileCamps.limit(10));
 
 
 ////////////////////////////////////////////////////////////////////
@@ -1219,7 +1241,7 @@ print(pointdata_withbandcounts_12.limit(1), "camp count 2012")  ;
 
 //Export camp counts as csv
 
-
+//Export number of camps within tile
 
 //Export biome as csv
 
