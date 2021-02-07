@@ -15,6 +15,9 @@ var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 //Map.addLayer(camps);
 
+//Nighttime lights
+var lights = ee.ImageCollection("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS")
+print(lights, "Nighttime lights");
 
 var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
 'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
@@ -1256,6 +1259,41 @@ print(ecosample.limit(2), "biome");
 //  Tile's mean night lights 2000-2012
 //
 ////////////////////////////////////////////////////////////////////
+
+/////Sum population counts in the pixels to the grid
+///var Syr_gridpop = pop_Syria.reduceRegions(grid,ee.Reducer.sum());
+
+
+//Save a subset of the lights data: just the stable lights band for 2013
+var light2001 = lights.filterMetadata('system:index', 'equals', 'F152001');
+print(light2001);
+
+//Transform from image collection into simple image with one band
+var lightImg2001 = light2001.toBands();
+//print(lightsImage);
+
+//Use reducer function to obtain mean lights per governorate
+var lightTile2001 = lightImg2001.reduceRegions(tiles, ee.Reducer.mean());
+
+//print("lights 2001", lightTile2001.limit(10));
+
+
+var   light2002 = lights.filterMetadata('system:index', 'equals', 'F152002');
+print(light2002);
+var lightImg2002 = light2002.toBands();
+var lightTile2002 = lightImg2002.reduceRegions(lightTile2001, ee.Reducer.mean());
+
+
+var   light2003 = lights.filterMetadata('system:index', 'equals', 'F152003');
+print(light2003);
+var lightImg2003 = light2003.toBands();
+var lightTile2003 = lightImg2003.reduceRegions(lightTile2002, ee.Reducer.mean());
+
+
+var   light2004 = lights.filterMetadata('system:index', 'equals', 'F152004');
+print(light2004);
+var lightImg2004 = light2004.toBands();
+var lightTile2004 = lightImg2004.reduceRegions(lightTile2003, ee.Reducer.mean());
 
 
 
