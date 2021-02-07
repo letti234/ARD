@@ -11,13 +11,17 @@ var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 //Ecoregions data
 var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 
+//Nighttime lights
+var lights = ee.ImageCollection("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS");
+print(lights, "Nighttime lights");
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
+
 //Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 //Map.addLayer(camps);
 
-//Nighttime lights
-var lights = ee.ImageCollection("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS")
-print(lights, "Nighttime lights");
 
 var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
 'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
@@ -1186,6 +1190,35 @@ var pointdata_withbandcounts_12 = withNearestDist.map(function(pt) {
 
 
 print(pointdata_withbandcounts_12.limit(1), "camp count 2012")  ;
+
+
+
+////////////////////////////////////////////////////////////////////
+//
+//  Get tile's country
+//
+////////////////////////////////////////////////////////////////////
+
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["ADM0"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(tiles, SSA, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var SSAdata = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
 
 
 
