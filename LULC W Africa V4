@@ -20,24 +20,43 @@ var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
 'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
 'Burkina Faso', 'Ghana',
 'Togo', 'Benin', 'Niger', 'Nigeria']);
-var filteredArea = camps.filter(campFilter);
+var campRegion = camps.filter(campFilter);
 
 
 
-//30 km buffers around camps
+
+//Produce 30 km  buffer around the camps - this the are we are going to study
 var bufferPoly = function(feature) {
-  return feature.buffer(30000);  
+  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
 };
 
-var buffers = filteredArea.map(bufferPoly);
+var buffers = campRegion.map(bufferPoly);
 
-var buffsUnion=buffers.union();
-print(buffsUnion, "buffers multi");
+var buffsUnion = buffers.union();
+
+//dissolve and transform to FC so that we can identify each
+//tile's buffer ID
+
+var buffsGeoDissolve =buffers.geometry().dissolve();
+//print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
+Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
 
 
-//Map.addLayer(buffsSample, {}, 'buffers');
-//print(buffers, "camp buffers");
+var fc = ee.FeatureCollection([
+  ee.Feature(buffsGeoDissolve)
+]);
+//print(fc);
 
+var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
+  var geomList = ee.Feature(feature).geometry().geometries();
+  var featureList = geomList.map(function(geom) {
+    return ee.Feature(ee.Geometry(geom));
+  });
+  return featureList;
+})
+.flatten();
+
+var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 
 //ESA stack of images
 var lulc = ee.Image('users/salem043/ESA_1992_2015').clip(buffsUnion);
@@ -50,8 +69,6 @@ var lulcYrSub = lulc.select(['b9', 'b10', 'b11', 'b12', 'b13',
 'lc_2009', 'lc_2010', 'lc_2011', 'lc_2012']);
 print(lulcYrSub);
 
-var lulc_2000 = lulcYrSub.select(["lc_2000"]);
-print(lulc_2000);
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -59,7 +76,7 @@ print(lulc_2000);
 //
 ////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 0.1); 
+var tiles = tile(buffDissolveFC , 0.1); //Change to 0.02 when done 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -127,11 +144,13 @@ var indices = ee.List([0, 10, 11, 12, 20, 30, 40, 50, 60, 61, 62, 70, 71, 72, 80
 200, 201, 202, 210, 220]);
 
 
+var lulc_2000 = lulcYrSub.select(["lc_2000"]);
+Map.addLayer(lulc_2000);
 
-var tiles_new = tiles.map(function(feature){
+var tiles_2000 = tiles.map(function(feature){
   var mdata = indices.iterate(function(i, dictin){
     var thisLC = i ;
-    var bandname = ee.String('lulc2000').cat(ee.Number(thisLC).int());
+    var bandname = ee.String('lulc_2000_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2000.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
       .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
@@ -140,7 +159,20 @@ var tiles_new = tiles.map(function(feature){
   return feature.set(mdata);
 });
 
-print(tiles_new.limit(3), "Tile results");
+print(tiles_2000.limit(3), "Tile results: 2000 data");
 
+
+
+var tiles_2001 = tiles.map(function(feature){
+  var mdata = indices.iterate(function(i, dictin){
+    var thisLC = i ;
+    var bandname = ee.String('lulc_2001_').cat(ee.Number(thisLC).int());
+    var lulc_thisLC = lulc_2000.remap([i], [1], null);
+    var dict = lulc_thisLC.rename(bandname)
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+    return ee.Dictionary(dictin).combine(dict);
+  }, ee.Dictionary()) ;
+  return feature.set(mdata);
+});
 
 
