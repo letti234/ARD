@@ -15,9 +15,6 @@ var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 var lights = ee.ImageCollection("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS");
 print(lights, "Nighttime lights");
 
-//Sub-Saharan Africa administrative district shapefile
-var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
-
 //Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 //Map.addLayer(camps);
@@ -1220,7 +1217,7 @@ var SSAdata = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-
+print(SSAdata.limit(2), "SSA");
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -1264,7 +1261,7 @@ var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 //print('ecoregions', ecodata.limit(10));
 
 
-//Specify the properties that I want to copy from the SSA shapefile
+//Specify the properties that I want to copy from the shapefile
 var properties = ["BIOME_NAME","ECO_NAME", "systemindex"];
 
 // Define a spatial filter as geometries that intersect.
@@ -1428,4 +1425,7 @@ Export.table.toDrive(lightTile2012, "lulcLightsGroup1", "deforTilesGEE");
 
 //Export buffer id as CSV
 Export.table.toDrive(bufferID, "lulcBufferIDGroup1", "deforTilesGEE");
+
+//Export SSA country as CSV
+Export.table.toDrive(SSAdata, "lulcCountryGroup1", "deforTilesGEE");
 
