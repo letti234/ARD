@@ -1303,7 +1303,32 @@ var   light2007 = lights.filterMetadata('system:index', 'equals', 'F152007');
 var lightImg2007 = light2007.toBands();
 var lightTile2007 = lightImg2007.reduceRegions(lightTile2006, ee.Reducer.mean());
 
-print("lights 2007", lightTile2007.limit(10));
+
+var   light2008 = lights.filterMetadata('system:index', 'equals', 'F152008');
+var lightImg2008 = light2008.toBands();
+var lightTile2008 = lightImg2008.reduceRegions(lightTile2007, ee.Reducer.mean());
+
+
+var   light2009 = lights.filterMetadata('system:index', 'equals', 'F162009');
+var lightImg2009 = light2009.toBands();
+var lightTile2009 = lightImg2009.reduceRegions(lightTile2008, ee.Reducer.mean());
+
+
+var   light2010 = lights.filterMetadata('system:index', 'equals', 'F182010');
+var lightImg2010 = light2010.toBands();
+var lightTile2010 = lightImg2010.reduceRegions(lightTile2009, ee.Reducer.mean());
+
+
+var   light2011 = lights.filterMetadata('system:index', 'equals', 'F182011');
+var lightImg2011 = light2011.toBands();
+var lightTile2011 = lightImg2011.reduceRegions(lightTile2010, ee.Reducer.mean());
+
+
+var   light2012 = lights.filterMetadata('system:index', 'equals', 'F182012');
+var lightImg2012 = light2012.toBands();
+var lightTile2012 = lightImg2012.reduceRegions(lightTile2011, ee.Reducer.mean());
+
+print("lights 2012", lightTile2012.limit(10));
 
 
 ////////////////////////////////////////////////////////////////////
@@ -1343,8 +1368,10 @@ print(bufferID.limit(2), "buffer ID");
 ////////////////////////////////////////////////////////////////////
 
 
-//Export LULC as csv and shapefile
+//Export as shapefile
+tiles_2012
 
+//Export LULC as csv
 
 //Export camp counts as csv
 
