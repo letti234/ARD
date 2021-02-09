@@ -1481,5 +1481,6 @@ Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "def
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
 Export.table.toDrive(gfccFull, "GFCCdataGroup2", "deforTilesGEE");
 Export.table.toDrive(bufferID, "tileBufferIDGroup2", "deforTilesGEE");
+Export.table.toDrive(camps2000, "cmps2000Group2", "deforTilesGEE");
 
 
