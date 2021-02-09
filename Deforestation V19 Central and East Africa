@@ -463,7 +463,7 @@ var campcount_1 =  pointdata_withbandcounts_1.select([
     
 //print(campcount_1.limit(2), "Camp count data for 2001"); 
 
-//Num. camps at different distances in 2001/////////////////////
+//Num. camps at different distances in 2002/////////////////////
 
 var spatialFilter = ee.Filter.withinDistance({
   distance: 80000000,
