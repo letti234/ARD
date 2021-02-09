@@ -306,7 +306,7 @@ var spatialFilter = ee.Filter.withinDistance({
   maxError: 10
 });
 
-//2001
+//2000
 var joined_1 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
@@ -379,6 +379,7 @@ var cmps2000 =  pointdata_withbandcounts_0.select([
     'neighsSize19_2000', 'neighsSize20_2000']);
     
 print(cmps2000.limit(2), "Camp count data for 2000"); 
+Export.table.toDrive(cmps2000, "camps2000Group2", "deforTilesGEE");
 
 //Num. camps at different distances in 2001/////////////////////
 
@@ -1481,6 +1482,6 @@ Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "def
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
 Export.table.toDrive(gfccFull, "GFCCdataGroup2", "deforTilesGEE");
 Export.table.toDrive(bufferID, "tileBufferIDGroup2", "deforTilesGEE");
-Export.table.toDrive(camps2000, "cmps2000Group2", "deforTilesGEE");
+Export.table.toDrive(cmps2000, "camps2000Group2", "deforTilesGEE");
 
 
