@@ -1,0 +1,4 @@
+//Get Bangladesh shapefile
+
+var data = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017");
+print(data);
