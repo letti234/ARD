@@ -8,6 +8,7 @@
 //of whether a camp was open 1999-2016
 var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 
+Map.addLayer(camps);
 
 var campFilter = ee.Filter.inList('country', ['Chad',
 'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
@@ -378,7 +379,7 @@ var cmps2000 =  pointdata_withbandcounts_0.select([
     'neighsSize16_2000', 'neighsSize17_2000', 'neighsSize18_2000',
     'neighsSize19_2000', 'neighsSize20_2000']);
     
-print(pointdata_withbandcounts_0.limit(2), "Camp count data for 2000"); 
+print(cmps2000.limit(2), "Camp count data for 2000"); 
 Export.table.toDrive(cmps2000, "camps2000Group2", "deforTilesGEE");
 
 //Num. camps at different distances in 2001/////////////////////
