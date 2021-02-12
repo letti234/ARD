@@ -152,7 +152,7 @@ function tile(region, size_in_degrees) {
     )
 }
 
-print(tiles.limit(10), "Baseline tiles");
+///print(tiles.limit(10), "Baseline tiles");
 
 //Map.addLayer(tiles, {}, "tiles");
 
@@ -216,7 +216,7 @@ var DataRenamed = TileCounts2.map(function(feat){
     meanPctCover2000: feat.get('treecover2000')
   });
 });
-print(DataRenamed.limit(10), "Renaming GFC data");
+///print(DataRenamed.limit(10), "Renaming GFC data");
 
 
 
@@ -264,7 +264,7 @@ var tiles_new = tiles.map(function(feature){
 
 })
 
-print(tiles_new.limit(3), "Tile results");
+///print(tiles_new.limit(3), "Tile results");
 
 
 
@@ -670,7 +670,7 @@ var pointdata_withbandcounts_4 = withNearestDist.map(function(pt) {
 });
 
 
-print(pointdata_withbandcounts_4.limit(2))
+///print(pointdata_withbandcounts_4.limit(2))
 
 //2005
 var joined_5 = ee.Join.saveAll({
@@ -1447,7 +1447,7 @@ var gfccFull = gfccData4.select(["noPixelsGFCC", "sumCover_2000",
 "sumCover_2005", "sumCover_2010", "sumCover_2015"]);
 
 
-print(gfccFull.limit(1), "GFCC data clean");
+///print(gfccFull.limit(1), "GFCC data clean");
 
 
 /////////////////////////////////////////////////////////////////////
@@ -1456,12 +1456,12 @@ print(gfccFull.limit(1), "GFCC data clean");
 //
 /////////////////////////////////////////////////////////////////////
 
-print(pointdata_withbandcounts_12.limit(1)); ///Camp counts by buffers and years
-print(ecosample.limit(1)); ///Biome
-print(remotenessADM.limit(1)); ///Distance to nearest market and ADM
-print(tiles_new.limit(1)); ///GFC number pixels transition to zero FC by year
-print(DataRenamed.limit(1)); //GFC 2000 and within-tile pixel counts
-print(bufferID.limit(1)); //ID of buffer that tile falls in
+///print(pointdata_withbandcounts_12.limit(1)); ///Camp counts by buffers and years
+///print(ecosample.limit(1)); ///Biome
+///print(remotenessADM.limit(1)); ///Distance to nearest market and ADM
+///print(tiles_new.limit(1)); ///GFC number pixels transition to zero FC by year
+///print(DataRenamed.limit(1)); //GFC 2000 and within-tile pixel counts
+///print(bufferID.limit(1)); //ID of buffer that tile falls in
 
 Export.table.toDrive({
   collection: tiles_new.select(['system:index', 'loss1', 'loss2', 'loss3',
