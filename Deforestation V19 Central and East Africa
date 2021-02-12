@@ -462,7 +462,7 @@ var campcount_1 =  pointdata_withbandcounts_1.select([
     'neighsSize16_2001', 'neighsSize17_2001', 'neighsSize18_2001',
     'neighsSize19_2001', 'neighsSize20_2001']);
     
-//print(campcount_1.limit(2), "Camp count data for 2001"); 
+print(campcount_1.limit(2), "Camp count data for 2001"); 
 
 //Num. camps at different distances in 2002/////////////////////
 
