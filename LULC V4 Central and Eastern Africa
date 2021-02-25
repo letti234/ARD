@@ -1407,12 +1407,23 @@ Export.table.toDrive({
   folder: "deforTilesGEE"
 });
 
-//Export LULC as csv
-Export.table.toDrive(tiles_2012, "lulcCoverGroup2", "deforTilesGEE");
+//Export LULC as csv in chunks
+var chunk = 50000;
+var collectionSize = 300000;
+for (var i = 0; i<collectionSize;i=i+chunk){
+  var subset = ee.FeatureCollection(tiles_2012.toList(chunk, i));
+  Export.table.toDrive(subset, "lulcCover2_Chunk_", "Deforestation");
+}
 
-//Export camp counts as csv
-Export.table.toDrive(
-pointdata_withbandcounts_12, "lulcCampsGroup2", "deforTilesGEE");
+
+var chunk = 50000;
+var collectionSize = 300000;
+for (var i = 0; i<collectionSize;i=i+chunk){
+  var subset = ee.FeatureCollection(pointdata_withbandcounts_12.toList(chunk, i));
+  Export.table.toDrive(subset, "lulcCamps2_Chunk_", "Deforestation");
+}
+
+
 
 //Export number of camps within tile
 Export.table.toDrive(inTileCamps, "lulcCampsInTileGroup2", "deforTilesGEE");
