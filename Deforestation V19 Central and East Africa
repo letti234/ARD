@@ -1451,6 +1451,16 @@ var gfccFull = gfccData4.select(["noPixelsGFCC", "sumCover_2000",
 "sumCover_2005", "sumCover_2010", "sumCover_2015"]);
 
 
+//Get number of pixels >=50 pct FC and >=10 pct FC for 2000
+  //Create two rasters: one where pixels are 1 if FC>=50, otherwise zero, 
+  //and one where pixels are 1 if FC>=10, otherwise zero
+  
+var gt50in2000 = ee.Image(1)
+          .where(GFCC2000.gte(50), 1)
+          .where(GFCC2000.lt(50), 0);
+
+Map.addLayer(gt50in2000);
+
 ///print(gfccFull.limit(1), "GFCC data clean");
 
 
