@@ -1416,7 +1416,7 @@ for (var i = 0; i<collectionSize;i=i+chunk){
 }
 
 
-var chunk = 50000;
+var chunk = 25000;
 var collectionSize = 300000;
 for (var i = 0; i<collectionSize;i=i+chunk){
   var subset = ee.FeatureCollection(pointdata_withbandcounts_12.toList(chunk, i));
