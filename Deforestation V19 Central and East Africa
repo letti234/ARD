@@ -107,7 +107,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Code courtesty of a kind stranger who offered it on Stack Exchange
 //!!Need to figure out how to form these tiles in meters
 //!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffsUnion, 0.01); 
+var tiles = tile(buffsUnion, 0.1); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -1459,9 +1459,16 @@ var gt50in2000 = ee.Image(1)
           .where(GFCC2000.gte(50), 1)
           .where(GFCC2000.lt(50), 0);
 
-Map.addLayer(gt50in2000);
 
-///print(gfccFull.limit(1), "GFCC data clean");
+//Get the sum of pixels with 50 pct FC or more
+var gfccData5 = gfccFull.map(function(feature) {
+ return feature.set(gt50in2000.reduceRegion({
+ reducer: 'sum',
+ geometry: feature.geometry(),
+  }));
+});
+
+print(gfccData5.limit(1), "GFCC data with 2000 qual count 1");
 
 
 /////////////////////////////////////////////////////////////////////
