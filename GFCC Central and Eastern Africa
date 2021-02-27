@@ -246,6 +246,38 @@ var tiles5 = count10_5.select(['pct_2000', 'plus50_2000',
 ['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
 'plus10_2005']);
 
-print(tiles5.limit(5), "2005 done");
+print(tiles5.limit(20), "2005 done");
 
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  GFCC DATA 2005
+//
+///////////////////////////////////////////////////////////////////////
+
+var gfcc10 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2010-01-01', '2010-12-31'))
+      .select('tree_canopy_cover');
+
+//Use a reducer to convert from an image collection to an image with 1 band
+var gfcc2010 = gfcc10.reduce(ee.Reducer.mean());
+
+//Mean pct FC per tile 2000
+var mean10 = tiles5.map(function(feature) {
+  return feature.set(gfcc2010.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+
+var tiles6 = mean10.select(['pct_2000', 'plus50_2000', 
+'plus10_2000', 'pct_2005', 'plus50_2005', 'tree_canopy_cover_mean',
+'plus10_2005'], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
+'plus10_2005', 'pct_2010']);
+
+print(tiles6);
 
