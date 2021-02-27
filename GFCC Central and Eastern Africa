@@ -212,39 +212,40 @@ print(tiles3.limit(5), "2005 mean");
 
 
 //Number of tiles with 50+ FC 2000
-var fifty00 = gfcc2000.gte(50).and(gfcc2000.lte(100));
+var fifty05 = gfcc2005.gte(50).and(gfcc2005.lte(100));
 
-var count50 = tiles1.map(function(feature) {
-  return feature.set(fifty00.reduceRegion({
+var count50_5 = tiles3.map(function(feature) {
+  return feature.set(fifty05.reduceRegion({
     reducer: ee.Reducer.sum(),
     geometry: feature.geometry(),
     scale: 30
   }));
 });
 
-print(count50.limit(5));
 
-var tiles2 = count50.select(['pct_2000', 'tree_canopy_cover_mean'], 
-['pct_2000', 'plus50_2000']);
+var tiles4 = count50_5.select(['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005']);
+
+print(tiles4.limit(5), "2005 halfway");
 
 
-//Number of tiles with 50+ FC 2000
-var ten00 = gfcc2000.gte(10).and(gfcc2000.lte(100));
+//Number of tiles with 10+ FC 2000
+var ten05 = gfcc2005.gte(10).and(gfcc2005.lte(100));
 
-var count10 = tiles2.map(function(feature) {
-  return feature.set(ten00.reduceRegion({
+var count10_5 = tiles4.map(function(feature) {
+  return feature.set(ten05.reduceRegion({
     reducer: ee.Reducer.sum(),
     geometry: feature.geometry(),
     scale: 30
   }));
 });
 
-print(count10.limit(5));
 
-var tiles2 = count10.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover_mean'], 
-['pct_2000', 'plus50_2000', 'plus10_2000']);
+var tiles5 = count10_5.select(['pct_2000', 'plus50_2000', 
+'plus10_2000', 'pct_2005', 'plus50_2005', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
+'plus10_2005']);
 
-print(tiles2.limit(5));
-
+print(tiles5.limit(5), "2005 done");
 
 
