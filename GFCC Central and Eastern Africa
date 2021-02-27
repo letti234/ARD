@@ -169,7 +169,7 @@ var mean00 = tiles.map(function(feature) {
 
 var tiles1 = mean00.select(['tree_canopy_cover_mean'], ['pct_2000']);
 
-print(tiles1);
+print(tiles1.limit(5));
 
 //Number of tiles with 50+ FC 2000
 var fifty00 = ee.Image(1)
@@ -178,24 +178,40 @@ var fifty00 = ee.Image(1)
  
 var fifty002 = fifty00.remap([1, 0], [1, 0], null);
 
-var ten00 = ee.Image(1)
-          .where(gfcc2000.gte(10).and(gfcc2000.lte(100)), 1)
-          .where(gfcc2000.lt(10), 0)
-          .where(gfcc2000.gt(100), 0);
-
 Map.addLayer(fifty002);
 
-//Mean pct FC per tile 2000
 var count50 = tiles1.map(function(feature) {
   return feature.set(fifty002.reduceRegion({
-    reducer: 'sum',
+    reducer: 'count',
     geometry: feature.geometry(),
     scale: 30
   }));
 });
 
+var tiles2 = count50.select(['pct_2000', 'remapped'], ['pct_2000', "plus50_2000"]);
 
-print(count50.limit(20));
+print(tiles2.limit(5));
+
+
+//Number of tiles with 10+ FC 2000
+var ten00 = ee.Image(1)
+          .where(gfcc2000.gte(10).and(gfcc2000.lte(100)), 1)
+          .where(gfcc2000.lt(10), 0);
+ 
+var ten002 = ten00.remap([1, 0], [1, 0], null);
+
+Map.addLayer(ten002);
+
+var count10 = tiles2.map(function(feature) {
+  return feature.set(ten002.reduceRegion({
+    reducer: 'count',
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+print(count10.limit(10));
+
 /////////////////////////////////////////////////////////////////////
 //
 //Export
