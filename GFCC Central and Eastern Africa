@@ -320,4 +320,5 @@ var tiles8 = count10_10.select(['pct_2000', 'plus50_2000', 'plus10_2000',
 
 print(tiles8.limit(10));
 
+Export.table.toDrive(tiles8, "gfccAllGroup2", "deforTilesGEE");
 
