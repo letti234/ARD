@@ -1393,19 +1393,19 @@ print(bufferID.limit(2), "buffer ID");
 Export.table.toDrive({
   collection: tiles.select(['system:index'], ['ID']),
   fileFormat: 'SHP',
-  description: 'lulcTilesGroup2',
+  description: 'lulcTilesGroup4',
   folder: "deforTilesGEE"
 });
 
 
 //Export number of camps within tile
 Export.table.toDrive(tiles_2012,
-"lulcCoverGroup2", "deforTilesGEE");
+"lulcCoverGroup4", "deforTilesGEE");
 
 
 //Export number of camps within tile
 Export.table.toDrive(pointdata_withbandcounts_12,
-"lulcCampsGroup2", "deforTilesGEE");
+"lulcCampsGroup4", "deforTilesGEE");
 
 
 //Export number of camps within tile
