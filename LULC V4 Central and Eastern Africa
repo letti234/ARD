@@ -19,8 +19,8 @@ print(lights, "Nighttime lights");
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 
 
-var campFilter = ee.Filter.inList('country', ['CAR', 'South Sudan', 'Ethiopia',
-'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
+var campFilter = ee.Filter.inList('country', ['Chad', 'CAR', 'Sudan',
+'South Sudan', 'Ethiopia', 'DRC', 'Rep. Congo',
 ]);
 var campRegion = camps.filter(campFilter);
 
@@ -1398,22 +1398,15 @@ Export.table.toDrive({
   folder: "deforTilesGEE"
 });
 
-//Export LULC as csv in chunks
-var chunk = 25000;
-var collectionSize = 200000;
-for (var i = 0; i<collectionSize;i=i+chunk){
-  var subset = ee.FeatureCollection(tiles_2012.toList(chunk, i));
-  Export.table.toDrive(subset, "lulcCover2_Chunk_", "deforTilesGEE");
-}
+
+//Export number of camps within tile
+Export.table.toDrive(tiles_2012,
+"lulcCoverGroup2", "deforTilesGEE");
 
 
-var chunk = 25000;
-var collectionSize = 200000;
-for (var i = 0; i<collectionSize;i=i+chunk){
-  var subset = ee.FeatureCollection(pointdata_withbandcounts_12.toList(chunk, i));
-  Export.table.toDrive(subset, "lulcCamps2_Chunk_", "deforTilesGEE");
-}
-
+//Export number of camps within tile
+Export.table.toDrive(pointdata_withbandcounts_12,
+"lulcCampsGroup2", "deforTilesGEE");
 
 
 //Export number of camps within tile
