@@ -16,10 +16,12 @@ var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 //Sub-Saharan Africa administrative district shapefile
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 
-var campFilter = ee.Filter.inList('country', ['Angola', 
-'Zambia', 'Zimbabwe', 'Malawi', 'Mozambique', 'Zimbabwe', 'Botswana',
-'Namibia', 'Swaziland', 'Cameroon', 'Kenya'
-]);
+
+var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
+'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
+'Burkina Faso', 'Ghana',
+'Togo', 'Benin', 'Niger', 'Nigeria']);
+
 
 var filteredArea = camps.filter(campFilter);
 
@@ -321,5 +323,5 @@ var tiles8 = count10_10.select(['pct_2000', 'plus50_2000', 'plus10_2000',
 
 print(tiles8.limit(10));
 
-Export.table.toDrive(tiles8, "gfccAllGroup3", "deforTilesGEE");
+Export.table.toDrive(tiles8, "gfccAllGroup1", "deforTilesGEE");
 
