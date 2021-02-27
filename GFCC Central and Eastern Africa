@@ -17,7 +17,7 @@ var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 
 
-var campFilter = ee.Filter.inList('country', ['Burundi',]);
+var campFilter = ee.Filter.inList('country', ['Rwanda',]);
 
 var filteredArea = camps.filter(campFilter);
 
@@ -134,29 +134,12 @@ function tile(region, size_in_degrees) {
 //
 ///////////////////////////////////////////////////////////////////////
 
-
-var gfcc15 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2015-01-01', '2015-12-31'));
-    
-var gfcc10 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2010-01-01', '2010-12-31'));
-      
-var gfcc05 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2005-01-01', '2005-12-31'));
-      
 var gfcc00 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
       .filter(ee.Filter.date('2000-01-01', '2000-12-31'))
       .select('tree_canopy_cover');
 
-
 //Use a reducer to convert from an image collection to an image with 1 band
 var gfcc2000 = gfcc00.reduce(ee.Reducer.mean());
-var gfcc2005 = gfcc05.reduce(ee.Reducer.mean());
-var gfcc2010 = gfcc10.reduce(ee.Reducer.mean());
-var gfcc2015 = gfcc15.reduce(ee.Reducer.mean());
-
-print(gfcc2000);
-
 
 //Mean pct FC per tile 2000
 var mean00 = tiles.map(function(feature) {
@@ -174,56 +157,20 @@ print(tiles1.limit(5));
 //Number of tiles with 50+ FC 2000
 var fifty00 = ee.Image(1)
           .where(gfcc2000.gte(50).and(gfcc2000.lte(100)), 1)
-          .where(gfcc2000.lt(50), 0);
+          .where(gfcc2000.lt(50), 0)
+          .where(gfcc2000.gt(100), 0);
  
-var fifty002 = fifty00.remap([1, 0], [1, 0], null);
-
-Map.addLayer(fifty002);
 
 var count50 = tiles1.map(function(feature) {
-  return feature.set(fifty002.reduceRegion({
-    reducer: 'count',
+  return feature.set(fifty00.reduceRegion({
+    reducer: ee.Reducer.sum(),
     geometry: feature.geometry(),
     scale: 30
   }));
 });
 
-var tiles2 = count50.select(['pct_2000', 'remapped'], ['pct_2000', "plus50_2000"]);
+print(count50.limit(5));
 
-print(tiles2.limit(5));
-
-
-//Number of tiles with 10+ FC 2000
-var ten00 = ee.Image(1)
-          .where(gfcc2000.gte(10).and(gfcc2000.lte(100)), 1)
-          .where(gfcc2000.lt(10), 0);
- 
-var ten002 = ten00.remap([1, 0], [1, 0], null);
-
-Map.addLayer(ten002);
-
-var count10 = tiles2.map(function(feature) {
-  return feature.set(ten002.reduceRegion({
-    reducer: 'count',
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-print(count10.limit(10));
-
-/////////////////////////////////////////////////////////////////////
-//
-//Export
-//
-/////////////////////////////////////////////////////////////////////
-
-///print(pointdata_withbandcounts_12.limit(1)); ///Camp counts by buffers and years
-///print(ecosample.limit(1)); ///Biome
-///print(remotenessADM.limit(1)); ///Distance to nearest market and ADM
-///print(tiles_new.limit(1)); ///GFC number pixels transition to zero FC by year
-///print(DataRenamed.limit(1)); //GFC 2000 and within-tile pixel counts
-///print(bufferID.limit(1)); //ID of buffer that tile falls in
 
 
 
