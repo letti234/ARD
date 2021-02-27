@@ -17,17 +17,14 @@ print(lights, "Nighttime lights");
 
 //Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
-//Map.addLayer(camps);
 
 
-var campFilter = ee.Filter.inList('country', ['Chad',
-'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
+var campFilter = ee.Filter.inList('country', ['CAR', 'South Sudan', 'Ethiopia',
 'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
 ]);
 var campRegion = camps.filter(campFilter);
 
-
-
+Map.addLayer(campRegion);
 
 //Produce 30 km  buffer around the camps - this the are we are going to study
 var bufferPoly = function(feature) {
@@ -63,7 +60,7 @@ var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
 var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 
 //ESA stack of images
-var lulc = ee.Image('users/salem043/ESA_1992_2015').clip(buffsUnion);
+var lulc = ee.Image('users/salem043/ESA_1992_2015');
 //print(lulc, "Land cover data global raw");
 
 //Subset and name bands for clarity
@@ -76,7 +73,7 @@ print(lulcYrSub);
 
 ////////////////////////////////////////////////////////////////////
 //
-//  Generate tiles to correspond with other data
+//  Generate tiles - 0.02 degree
 //
 ////////////////////////////////////////////////////////////////////
 
@@ -131,10 +128,6 @@ function tile(region, size_in_degrees) {
 
 print(tiles.limit(10), "Baseline tiles");
 
-
-
-
-
 ////////////////////////////////////////////////////////////////////
 //
 //  Calculate number of pixels in each tile that have different
@@ -146,7 +139,6 @@ print(tiles.limit(10), "Baseline tiles");
 var indices = ee.List([0, 10, 11, 12, 20, 30, 40, 50, 60, 61, 62, 70, 71, 72, 80,
 81, 82, 90, 100, 110, 120, 121, 122, 130, 140, 150, 152, 153, 160, 170, 180, 190,
 200, 201, 202, 210, 220]);
-
 
 var lulc_2000 = lulcYrSub.select(["lc_2000"]);
 
@@ -161,7 +153,6 @@ var tiles_2000 = tiles.map(function(feature){
   }, ee.Dictionary()) ;
   return feature.set(mdata);
 });
-
 
 var lulc_2001 = lulcYrSub.select(["lc_2001"]);
 
