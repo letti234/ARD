@@ -184,7 +184,7 @@ var count10 = tiles2.map(function(feature) {
 
 print(count10.limit(5));
 
-var tiles2 = count50.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover_mean'], 
+var tiles2 = count10.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover_mean'], 
 ['pct_2000', 'plus50_2000', 'plus10_2000']);
 
 print(tiles2.limit(5));
