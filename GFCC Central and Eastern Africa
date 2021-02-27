@@ -16,9 +16,10 @@ var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 //Sub-Saharan Africa administrative district shapefile
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 
-
-var campFilter = ee.Filter.inList('country', ['Rwanda',]);
-
+var campFilter = ee.Filter.inList('country', ['Chad',
+'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
+'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
+]);
 var filteredArea = camps.filter(campFilter);
 
 var campRegion=camps.filter(campFilter);
@@ -292,12 +293,31 @@ var count50_10 = tiles6.map(function(feature) {
 });
 
 
-var tiles7 = mean10.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
+var tiles7 = count50_10.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
 'pct_2005', 'plus50_2005', 'plus10_2005',
-'pct_2010', 'tree_canopy_cover_mean',], 
+'pct_2010', 'tree_canopy_cover_mean'], 
 ['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
 'plus10_2005', 'pct_2010', 'plus50_2010']);
 
-print(tiles7.limit(10));
+
+
+//Number of tiles with 50+ FC 2000
+var ten10 = gfcc2010.gte(10).and(gfcc2010.lte(100));
+
+var count10_10 = tiles7.map(function(feature) {
+  return feature.set(ten10.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles8 = count10_10.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
+'pct_2005', 'plus50_2005', 'plus10_2005',
+'pct_2010', 'plus50_2010', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
+'plus10_2005', 'pct_2010', 'plus50_2010', 'plus10_2010']);
+
+print(tiles8.limit(10));
 
 
