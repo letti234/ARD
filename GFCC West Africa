@@ -1,0 +1,327 @@
+//Refugees and deforestation analysis
+//Tabular data export: Group 2
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Initial data prep
+//
+///////////////////////////////////////////////////////////////////////
+
+//Read in camp data - this is saved in wide format, with binary indicators
+//of whether a camp was open 1999-2016
+var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
+
+//Map.addLayer(camps);
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
+
+
+var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
+'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
+'Burkina Faso', 'Ghana',
+'Togo', 'Benin', 'Niger', 'Nigeria']);
+
+
+var filteredArea = camps.filter(campFilter);
+
+var campRegion=camps.filter(campFilter);
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Create dissolved buffer FC 
+//
+///////////////////////////////////////////////////////////////////////
+
+//Produce 30 km  buffer around the camps - this the are we are going to study
+var bufferPoly = function(feature) {
+  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
+};
+
+var buffers = campRegion.map(bufferPoly);
+
+var buffsUnion = buffers.union();
+
+//dissolve and transform to FC so that we can identify each
+//tile's buffer ID
+
+var buffsGeoDissolve =buffers.geometry().dissolve();
+//print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
+//Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
+
+
+var fc = ee.FeatureCollection([
+  ee.Feature(buffsGeoDissolve)
+]);
+//print(fc);
+
+var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
+  var geomList = ee.Feature(feature).geometry().geometries();
+  var featureList = geomList.map(function(geom) {
+    return ee.Feature(ee.Geometry(geom));
+  });
+  return featureList;
+})
+.flatten();
+
+var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Tile production - we'll use these tiles to calculate zonal stats.
+//  The tiles are the unit of analysis in our regression
+//
+///////////////////////////////////////////////////////////////////////
+
+//Tiles below are measured in degrees. (Ugh, but I want meters!)
+//0.1 degrees is about 11 km at equator. Kept large for training
+//Code courtesty of a kind stranger who offered it on Stack Exchange
+//!!Need to figure out how to form these tiles in meters
+//!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
+var tiles = tile(buffsUnion, 0.01); 
+
+function tile(region, size_in_degrees) {
+  function tile_geometry(geometry) {
+    var coords = ee.List(geometry.bounds().coordinates().get(0))
+    var min_point = ee.List(coords.get(0))
+    var max_point = ee.List(coords.get(2))
+  
+    function sequence(direction) {
+      var start = min_point.get(direction)  
+      var stop = ee.Number(max_point.get(direction))
+      return ee.List.sequence(start, stop, size_in_degrees)
+    }
+  
+    var tiles = sequence(0).map(function (x) {
+      return sequence(1).map(function (y) { 
+          return ee.Feature(ee.Geometry.Rectangle([
+            [ee.Number(x), ee.Number(y)],
+            [
+              ee.Number(x).add(size_in_degrees).min(max_point.get(0)),
+              ee.Number(y).add(size_in_degrees).min(max_point.get(1))
+            ]
+        ]).intersection(geometry, 30))
+      })
+  	}).flatten()
+    return ee.FeatureCollection(tiles).filterBounds(geometry)
+  }
+
+  function tile_feature_collection(feature_collection) {
+    return ee.FeatureCollection(
+      feature_collection.iterate(
+        function (feature, acc) {
+          return ee.FeatureCollection(acc).merge(tile_geometry(ee.Feature(feature).geometry()))
+        }, ee.FeatureCollection([]))
+    )
+  }
+
+  if (region instanceof ee.FeatureCollection)
+    return tile_feature_collection(region)
+  else if (region instanceof ee.Feature)
+    return tile_geometry(region.geometry())
+  else if (region instanceof ee.Geometry)
+    return tile_geometry(region)
+  else
+    throw Error(
+      'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
+    )
+}
+
+///print(tiles.limit(10), "Baseline tiles");
+
+//Map.addLayer(tiles, {}, "tiles");
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  GFCC DATA 2000
+//
+///////////////////////////////////////////////////////////////////////
+
+var gfcc00 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2000-01-01', '2000-12-31'))
+      .select('tree_canopy_cover');
+
+//Use a reducer to convert from an image collection to an image with 1 band
+var gfcc2000 = gfcc00.reduce(ee.Reducer.mean());
+
+//Mean pct FC per tile 2000
+var mean00 = tiles.map(function(feature) {
+  return feature.set(gfcc2000.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles1 = mean00.select(['tree_canopy_cover_mean'], ['pct_2000']);
+
+//Number of tiles with 50+ FC 2000
+var fifty00 = gfcc2000.gte(50).and(gfcc2000.lte(100));
+
+var count50 = tiles1.map(function(feature) {
+  return feature.set(fifty00.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles2 = count50.select(['pct_2000', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000']);
+
+//Number of tiles with 50+ FC 2000
+var ten00 = gfcc2000.gte(10).and(gfcc2000.lte(100));
+
+var count10 = tiles2.map(function(feature) {
+  return feature.set(ten00.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles2 = count10.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000']);
+
+
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  GFCC DATA 2005
+//
+///////////////////////////////////////////////////////////////////////
+
+var gfcc05 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2005-01-01', '2005-12-31'))
+      .select('tree_canopy_cover');
+
+//Use a reducer to convert from an image collection to an image with 1 band
+var gfcc2005 = gfcc05.reduce(ee.Reducer.mean());
+
+//Mean pct FC per tile 2000
+var mean05 = tiles2.map(function(feature) {
+  return feature.set(gfcc2005.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles3 = mean05.select(['pct_2000', 'plus50_2000', 'plus10_2000', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005']);
+
+print(tiles3.limit(5), "2005 mean");
+
+
+//Number of tiles with 50+ FC 2000
+var fifty05 = gfcc2005.gte(50).and(gfcc2005.lte(100));
+
+var count50_5 = tiles3.map(function(feature) {
+  return feature.set(fifty05.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+
+var tiles4 = count50_5.select(['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005']);
+
+print(tiles4.limit(5), "2005 halfway");
+
+
+//Number of tiles with 10+ FC 2000
+var ten05 = gfcc2005.gte(10).and(gfcc2005.lte(100));
+
+var count10_5 = tiles4.map(function(feature) {
+  return feature.set(ten05.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+
+var tiles5 = count10_5.select(['pct_2000', 'plus50_2000', 
+'plus10_2000', 'pct_2005', 'plus50_2005', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
+'plus10_2005']);
+
+print(tiles5.limit(20), "2005 done");
+
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  GFCC DATA 2005
+//
+///////////////////////////////////////////////////////////////////////
+
+var gfcc10 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2010-01-01', '2010-12-31'))
+      .select('tree_canopy_cover');
+
+//Use a reducer to convert from an image collection to an image with 1 band
+var gfcc2010 = gfcc10.reduce(ee.Reducer.mean());
+
+//Mean pct FC per tile 2000
+var mean10 = tiles5.map(function(feature) {
+  return feature.set(gfcc2010.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+
+var tiles6 = mean10.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
+'pct_2005', 'plus50_2005', 'plus10_2005',
+'tree_canopy_cover_mean',], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
+'plus10_2005', 'pct_2010']);
+
+
+//Number of tiles with 50+ FC 2000
+var fifty10 = gfcc2010.gte(50).and(gfcc2010.lte(100));
+
+var count50_10 = tiles6.map(function(feature) {
+  return feature.set(fifty10.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+
+var tiles7 = count50_10.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
+'pct_2005', 'plus50_2005', 'plus10_2005',
+'pct_2010', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
+'plus10_2005', 'pct_2010', 'plus50_2010']);
+
+
+
+//Number of tiles with 50+ FC 2000
+var ten10 = gfcc2010.gte(10).and(gfcc2010.lte(100));
+
+var count10_10 = tiles7.map(function(feature) {
+  return feature.set(ten10.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles8 = count10_10.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
+'pct_2005', 'plus50_2005', 'plus10_2005',
+'pct_2010', 'plus50_2010', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
+'plus10_2005', 'pct_2010', 'plus50_2010', 'plus10_2010']);
+
+print(tiles8.limit(10));
+
+Export.table.toDrive(tiles8, "gfccAllGroup1", "deforTilesGEE");
+
