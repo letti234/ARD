@@ -130,7 +130,7 @@ function tile(region, size_in_degrees) {
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  Get GFCC data for tiles
+//  GFCC DATA 2000
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -152,7 +152,64 @@ var mean00 = tiles.map(function(feature) {
 
 var tiles1 = mean00.select(['tree_canopy_cover_mean'], ['pct_2000']);
 
-print(tiles1.limit(5));
+//Number of tiles with 50+ FC 2000
+var fifty00 = gfcc2000.gte(50).and(gfcc2000.lte(100));
+
+var count50 = tiles1.map(function(feature) {
+  return feature.set(fifty00.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles2 = count50.select(['pct_2000', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000']);
+
+//Number of tiles with 50+ FC 2000
+var ten00 = gfcc2000.gte(10).and(gfcc2000.lte(100));
+
+var count10 = tiles2.map(function(feature) {
+  return feature.set(ten00.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles2 = count10.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000']);
+
+
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  GFCC DATA 2005
+//
+///////////////////////////////////////////////////////////////////////
+
+var gfcc05 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2005-01-01', '2005-12-31'))
+      .select('tree_canopy_cover');
+
+//Use a reducer to convert from an image collection to an image with 1 band
+var gfcc2005 = gfcc05.reduce(ee.Reducer.mean());
+
+//Mean pct FC per tile 2000
+var mean05 = tiles2.map(function(feature) {
+  return feature.set(gfcc2005.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles3 = mean05.select(['pct_2000', 'plus50_2000', 'plus10_2000', 'tree_canopy_cover_mean'], 
+['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005']);
+
+print(tiles3.limit(5), "2005 mean");
+
 
 //Number of tiles with 50+ FC 2000
 var fifty00 = gfcc2000.gte(50).and(gfcc2000.lte(100));
@@ -188,5 +245,6 @@ var tiles2 = count10.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover_mean'
 ['pct_2000', 'plus50_2000', 'plus10_2000']);
 
 print(tiles2.limit(5));
+
 
 
