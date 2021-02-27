@@ -1409,17 +1409,17 @@ Export.table.toDrive(pointdata_withbandcounts_12,
 
 
 //Export number of camps within tile
-Export.table.toDrive(inTileCamps, "lulcCampsInTileGroup2", "deforTilesGEE");
+Export.table.toDrive(inTileCamps, "lulcCampsInTileGroup4", "deforTilesGEE");
 
 //Export biome as csv
-Export.table.toDrive(ecosample, "lulcBiomeGroup2", "deforTilesGEE");
+Export.table.toDrive(ecosample, "lulcBiomeGroup4", "deforTilesGEE");
 
 //Export night lights as CSV
-Export.table.toDrive(lightTile2012, "lulcLightsGroup2", "deforTilesGEE");
+Export.table.toDrive(lightTile2012, "lulcLightsGroup4", "deforTilesGEE");
 
 //Export buffer id as CSV
-Export.table.toDrive(bufferID, "lulcBufferIDGroup2", "deforTilesGEE");
+Export.table.toDrive(bufferID, "lulcBufferIDGroup4", "deforTilesGEE");
 
 //Export SSA country as CSV
-Export.table.toDrive(SSAdata, "lulcCountryGroup2", "deforTilesGEE");
+Export.table.toDrive(SSAdata, "lulcCountryGroup4", "deforTilesGEE");
 
