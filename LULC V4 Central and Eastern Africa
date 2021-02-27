@@ -1408,19 +1408,19 @@ Export.table.toDrive({
 });
 
 //Export LULC as csv in chunks
-var chunk = 50000;
-var collectionSize = 300000;
+var chunk = 25000;
+var collectionSize = 200000;
 for (var i = 0; i<collectionSize;i=i+chunk){
   var subset = ee.FeatureCollection(tiles_2012.toList(chunk, i));
-  Export.table.toDrive(subset, "lulcCover2_Chunk_", "Deforestation");
+  Export.table.toDrive(subset, "lulcCover2_Chunk_", "deforTilesGEE");
 }
 
 
 var chunk = 25000;
-var collectionSize = 300000;
+var collectionSize = 200000;
 for (var i = 0; i<collectionSize;i=i+chunk){
   var subset = ee.FeatureCollection(pointdata_withbandcounts_12.toList(chunk, i));
-  Export.table.toDrive(subset, "lulcCamps2_Chunk_", "Deforestation");
+  Export.table.toDrive(subset, "lulcCamps2_Chunk_", "deforTilesGEE");
 }
 
 
