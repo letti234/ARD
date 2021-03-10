@@ -16,10 +16,10 @@ var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 //Sub-Saharan Africa administrative district shapefile
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 
-var campFilter = ee.Filter.inList('country', ['Chad',
-'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
-'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
+var campFilter = ee.Filter.inList('country', [
+'Burundi'
 ]);
+
 var filteredArea = camps.filter(campFilter);
 
 var campRegion=camps.filter(campFilter);
@@ -39,6 +39,7 @@ var buffers = campRegion.map(bufferPoly);
 
 var buffsUnion = buffers.union();
 
+Map.addLayer(buffsUnion);
 ///////////////////////////////////////////////////////////////////////
 //
 //  Tile production - we'll use these tiles to calculate zonal stats.
@@ -47,7 +48,7 @@ var buffsUnion = buffers.union();
 ///////////////////////////////////////////////////////////////////////
 
 
-var tiles = tile(buffsUnion, 0.5); 
+var tiles = tile(buffsUnion, 0.01); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -107,15 +108,15 @@ function tile(region, size_in_degrees) {
 //
 ///////////////////////////////////////////////////////////////////////
 
-var gfcc00 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+var gfcc_2000 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
       .filter(ee.Filter.date('2000-01-01', '2000-12-31'))
       .select('tree_canopy_cover');
 
 //Use a reducer to convert from an image collection to an image with 1 band
-var gfcc2000 = gfcc00.reduce(ee.Reducer.mean());
+var gfcc2000 = gfcc_2000.reduce(ee.Reducer.mean());
 
 //Mean pct FC per tile 2000
-var mean00 = tiles.map(function(feature) {
+var mean_2000 = tiles.map(function(feature) {
   return feature.set(gfcc2000.reduceRegion({
     reducer: 'mean',
     geometry: feature.geometry(),
@@ -123,36 +124,37 @@ var mean00 = tiles.map(function(feature) {
   }));
 });
 
-var tiles1 = mean00.select(['tree_canopy_cover_mean'], ['pct_2000']);
+var tiles1_2000 = mean_2000.select(['tree_canopy_cover_mean'], ['pct_2000']);
 
 //Number of tiles with 50+ FC 2000
-var fifty00 = gfcc2000.gte(50).and(gfcc2000.lte(100));
+var fifty_2000 = gfcc2000.gte(50).and(gfcc2000.lte(100));
 
-var count50 = tiles1.map(function(feature) {
-  return feature.set(fifty00.reduceRegion({
+var count50_2000 = tiles1_2000.map(function(feature) {
+  return feature.set(fifty_2000.reduceRegion({
     reducer: ee.Reducer.sum(),
     geometry: feature.geometry(),
     scale: 30
   }));
 });
 
-var tiles2 = count50.select(['pct_2000', 'tree_canopy_cover_mean'], 
+var tiles2_2000 = count50_2000.select(['pct_2000', 'tree_canopy_cover_mean'], 
 ['pct_2000', 'plus50_2000']);
 
 //Number of tiles with 50+ FC 2000
-var ten00 = gfcc2000.gte(10).and(gfcc2000.lte(100));
+var ten_2000 = gfcc2000.gte(10).and(gfcc2000.lte(100));
 
-var count10 = tiles2.map(function(feature) {
-  return feature.set(ten00.reduceRegion({
+var count10_2000 = tiles2_2000.map(function(feature) {
+  return feature.set(ten_2000.reduceRegion({
     reducer: ee.Reducer.sum(),
     geometry: feature.geometry(),
     scale: 30
   }));
 });
 
-var gfccFull2000 = count10.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover_mean'], 
+var gfccFull2000 = count10_2000.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover_mean'], 
 ['pct_2000', 'plus50_2000', 'plus10_2000']);
 
+print(gfccFull2000.limit(5));
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -161,15 +163,15 @@ var gfccFull2000 = count10.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover
 //
 ///////////////////////////////////////////////////////////////////////
 
-var gfcc05 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+var gfcc_2005 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
       .filter(ee.Filter.date('2005-01-01', '2005-12-31'))
       .select('tree_canopy_cover');
 
 //Use a reducer to convert from an image collection to an image with 1 band
-var gfcc2005 = gfcc05.reduce(ee.Reducer.mean());
+var gfcc2005 = gfcc_2005.reduce(ee.Reducer.mean());
 
-//Mean pct FC per tile 2000
-var mean05 = tiles.map(function(feature) {
+//Mean pct FC per tile 2005
+var mean_2005 = tiles.map(function(feature) {
   return feature.set(gfcc2005.reduceRegion({
     reducer: 'mean',
     geometry: feature.geometry(),
@@ -177,6 +179,158 @@ var mean05 = tiles.map(function(feature) {
   }));
 });
 
-var tiles3 = mean05.select(['tree_canopy_cover_mean'], ['pct_2005']);
+var tiles1_2005 = mean_2005.select(['tree_canopy_cover_mean'], ['pct_2005']);
 
-print(tiles3.limit(5), "2005 mean");
+//Number of tiles with 50+ FC 2005
+var fifty_2005 = gfcc2005.gte(50).and(gfcc2005.lte(100));
+
+var count50_2005 = tiles1_2005.map(function(feature) {
+  return feature.set(fifty_2005.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles2_2005 = count50_2005.select(['pct_2005', 'tree_canopy_cover_mean'], 
+['pct_2005', 'plus50_2005']);
+
+//Number of tiles with 50+ FC 2005
+var ten_2005 = gfcc2005.gte(10).and(gfcc2005.lte(100));
+
+var count10_2005 = tiles2_2005.map(function(feature) {
+  return feature.set(ten_2005.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var gfccFull2005 = count10_2005.select(['pct_2005', 'plus50_2005', 'tree_canopy_cover_mean'], 
+['pct_2005', 'plus50_2005', 'plus10_2005']);
+
+print(gfccFull2005.limit(5));
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  GFCC DATA 2010
+//
+///////////////////////////////////////////////////////////////////////
+
+var gfcc_2010 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
+      .filter(ee.Filter.date('2010-01-01', '2010-12-31'))
+      .select('tree_canopy_cover');
+
+//Use a reducer to convert from an image collection to an image with 1 band
+var gfcc2010 = gfcc_2010.reduce(ee.Reducer.mean());
+
+//Mean pct FC per tile 2010
+var mean_2010 = tiles.map(function(feature) {
+  return feature.set(gfcc2010.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles1_2010 = mean_2010.select(['tree_canopy_cover_mean'], ['pct_2010']);
+
+//Number of tiles with 50+ FC 2010
+var fifty_2010 = gfcc2010.gte(50).and(gfcc2010.lte(100));
+
+var count50_2010 = tiles1_2010.map(function(feature) {
+  return feature.set(fifty_2010.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var tiles2_2010 = count50_2010.select(['pct_2010', 'tree_canopy_cover_mean'], 
+['pct_2010', 'plus50_2010']);
+
+//Number of tiles with 50+ FC 2010
+var ten_2010 = gfcc2010.gte(10).and(gfcc2010.lte(100));
+
+var count10_2010 = tiles2_2010.map(function(feature) {
+  return feature.set(ten_2010.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var gfccFull2010 = count10_2010.select(['pct_2010', 'plus50_2010', 'tree_canopy_cover_mean'], 
+['pct_2010', 'plus50_2010', 'plus10_2010']);
+
+print(gfccFull2010.limit(5));
+
+
+Export.table.toDrive(gfccFull2000, "gfcc2000Group2", "deforTilesGEE");
+
+Export.table.toDrive(gfccFull2005, "gfcc2005Group2", "deforTilesGEE");
+
+Export.table.toDrive(gfccFull2010, "gfcc2010Group2", "deforTilesGEE");
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  NIGHTTIME LIGHTS DATA 2001-2012 
+//
+///////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  WORLDPOP DATA 2001-2012 
+//
+///////////////////////////////////////////////////////////////////////
+
+var pop = ee.ImageCollection("WorldPop/GP/100m/pop")
+.filter(ee.Filter.date('2001-01-01', '2012-12-31'));
+print(pop);
+
+//This function converts our image collection into a stack of bands
+function newCollectionToImage(collection){
+var stack = ee.Image(collection.iterate(function(img, prev) {
+return ee.Image(prev).addBands(img);
+}, ee.Image(1)));
+ 
+stack = stack.select(ee.List.sequence(1, stack.bandNames().size().subtract(1)));
+return stack;
+}
+
+//Apply the function
+var tch = pop.map(function(img){
+var y = ee.String(ee.Date(img.get('system:time_start')).get("year"));
+return img.set("year",y).rename(y);
+});
+
+var tchImg = newCollectionToImage(tch)
+
+var pop_plus = 
+tchImg.select(['2001', '2002', '2003', '2004', '2005', '2006',
+'2007', '2008', '2009', '2010', '2011', '2012'],
+['pop_01', 'pop_02', 'pop_03', 'pop_04', 'pop_05', 'pop_06',
+'pop_07', 'pop_08', 'pop_09', 'pop_10', 'pop_11', 'pop_12']);
+
+print(pop_plus);
+
+var pop_2001 = pop_plus.select('pop_01');
+Map.addLayer(pop_2001, {}, "2001 population");
+
+//Sum population counts in the pixels to the grid
+var gridpop = pop_plus.reduceRegions(tiles, ee.Reducer.sum());
+
+print("population grids", gridpop.limit(20));
+
+
