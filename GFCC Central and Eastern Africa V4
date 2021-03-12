@@ -22,7 +22,9 @@ var campFilter = ee.Filter.inList('country', [
 
 var filteredArea = camps.filter(campFilter);
 
-var campRegion=camps
+var campRegion=camps.filter(campFilter);
+
+
 ///////////////////////////////////////////////////////////////////////
 //
 //  Create dissolved buffer FC 
@@ -415,4 +417,20 @@ var light_2002 = light_2001.map(function(feature) {
     reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-print(light_2002)
+var lt_2003 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F142003').toBands();
+
+var light_2003 = light_2002.map(function(feature) {
+  return feature.set(lt_2003.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+var lt_2004 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F142004').toBands();
+
+var light_2004 = light_2003.map(function(feature) {
+  return feature.set(lt_2004.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+print(light_2004);
