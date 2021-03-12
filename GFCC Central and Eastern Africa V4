@@ -450,4 +450,57 @@ var light_2006 = light_2005.map(function(feature) {
     reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-print(light_2006, "2006 and before");
+var lt_2007 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152007').toBands();
+
+var light_2007 = light_2006.map(function(feature) {
+  return feature.set(lt_2007.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+var lt_2008 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152008').toBands();
+
+var light_2008 = light_2007.map(function(feature) {
+  return feature.set(lt_2008.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+var lt_2009 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F162009').toBands();
+
+var light_2009 = light_2008.map(function(feature) {
+  return feature.set(lt_2009.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+print(light_2009, "2009 and before");
+
+
+var lt_2010 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F182010').toBands();
+
+var light_2010 = light_2009.map(function(feature) {
+  return feature.set(lt_2010.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+
+var lt_2011 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F182011').toBands();
+
+var light_2011 = light_2010.map(function(feature) {
+  return feature.set(lt_2011.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+var lt_2012 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F182012').toBands();
+
+var light_2012 = light_2011.map(function(feature) {
+  return feature.set(lt_2012.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+print(light_2012, "2012 and before");
+
