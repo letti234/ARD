@@ -401,8 +401,9 @@ Export.table.toDrive(sumPop_2012, "worldPopGroup2", "deforTilesGEE");
 var light = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
                   .filter(ee.Filter.date('2001-01-01', '2012-12-31'));
 
+print(light, "raw light data");
 var lt_2001 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F142001').toBands();
+filterMetadata('system:index', 'equals', 'F152001').toBands();
 
 var light_2001 = tiles.map(function(feature) {
   return feature.set(lt_2001.reduceRegion({
@@ -410,7 +411,7 @@ var light_2001 = tiles.map(function(feature) {
 });
 
 var lt_2002 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F142002').toBands();
+filterMetadata('system:index', 'equals', 'F152002').toBands();
 
 var light_2002 = light_2001.map(function(feature) {
   return feature.set(lt_2002.reduceRegion({
@@ -418,7 +419,7 @@ var light_2002 = light_2001.map(function(feature) {
 });
 
 var lt_2003 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F142003').toBands();
+filterMetadata('system:index', 'equals', 'F152003').toBands();
 
 var light_2003 = light_2002.map(function(feature) {
   return feature.set(lt_2003.reduceRegion({
@@ -426,11 +427,21 @@ var light_2003 = light_2002.map(function(feature) {
 });
 
 var lt_2004 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F142004').toBands();
+filterMetadata('system:index', 'equals', 'F152004').toBands();
 
 var light_2004 = light_2003.map(function(feature) {
   return feature.set(lt_2004.reduceRegion({
     reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-print(light_2004);
+print(light_2004, "2004 and before");
+
+var lt_2005 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152005').toBands();
+
+var light_2005 = light_2004.map(function(feature) {
+  return feature.set(lt_2005.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+print(light_2005, "2005 and before");
