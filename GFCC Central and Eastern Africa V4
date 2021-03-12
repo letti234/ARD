@@ -434,8 +434,6 @@ var light_2004 = light_2003.map(function(feature) {
     reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-print(light_2004, "2004 and before");
-
 var lt_2005 = light.select('stable_lights').
 filterMetadata('system:index', 'equals', 'F152005').toBands();
 
@@ -444,4 +442,12 @@ var light_2005 = light_2004.map(function(feature) {
     reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-print(light_2005, "2005 and before");
+var lt_2006 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152006').toBands();
+
+var light_2006 = light_2005.map(function(feature) {
+  return feature.set(lt_2006.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+print(light_2006, "2006 and before");
