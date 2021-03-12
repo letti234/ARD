@@ -22,8 +22,7 @@ var campFilter = ee.Filter.inList('country', [
 
 var filteredArea = camps.filter(campFilter);
 
-var campRegion=camps.filter(campFilter);
-
+var campRegion=camps
 ///////////////////////////////////////////////////////////////////////
 //
 //  Create dissolved buffer FC 
@@ -47,7 +46,7 @@ var buffsUnion = buffers.union();
 ///////////////////////////////////////////////////////////////////////
 
 
-var tiles = tile(buffsUnion, 0.01); 
+var tiles = tile(buffsUnion, 0.5); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -399,8 +398,21 @@ Export.table.toDrive(sumPop_2012, "worldPopGroup2", "deforTilesGEE");
 
 var light = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
                   .filter(ee.Filter.date('2001-01-01', '2012-12-31'));
-var lightS = light.select('stable_lights');
 
-Map.addLayer(light_2001);
+var lt_2001 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F142001').toBands();
 
+var light_2001 = tiles.map(function(feature) {
+  return feature.set(lt_2001.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
 
+var lt_2002 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F142002').toBands();
+
+var light_2002 = light_2001.map(function(feature) {
+  return feature.set(lt_2002.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+print(light_2002)
