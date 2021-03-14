@@ -16,8 +16,9 @@ var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 //Sub-Saharan Africa administrative district shapefile
 var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 
-var campFilter = ee.Filter.inList('country', [
-'Rwanda'
+var campFilter = ee.Filter.inList('country', ['Chad',
+'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
+'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
 ]);
 
 var filteredArea = camps.filter(campFilter);
@@ -48,7 +49,7 @@ var buffsUnion = buffers.union();
 ///////////////////////////////////////////////////////////////////////
 
 
-var tiles = tile(buffsUnion, 0.5); 
+var tiles = tile(buffsUnion, 0.01); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -97,7 +98,6 @@ function tile(region, size_in_degrees) {
     )
 }
 
-///print(tiles.limit(10), "Baseline tiles");
 
 //Map.addLayer(tiles, {}, "tiles");
 
@@ -401,7 +401,6 @@ Export.table.toDrive(sumPop_2012, "worldPopGroup2", "deforTilesGEE");
 var light = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
                   .filter(ee.Filter.date('2001-01-01', '2012-12-31'));
 
-print(light, "raw light data");
 var lt_2001 = light.select('stable_lights').
 filterMetadata('system:index', 'equals', 'F152001').toBands();
 
@@ -474,9 +473,6 @@ var light_2009 = light_2008.map(function(feature) {
     reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-print(light_2009, "2009 and before");
-
-
 var lt_2010 = light.select('stable_lights').
 filterMetadata('system:index', 'equals', 'F182010').toBands();
 
@@ -502,5 +498,6 @@ var light_2012 = light_2011.map(function(feature) {
     reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-print(light_2012, "2012 and before");
+Export.table.toDrive(light_2012, "nightLightsGroup2", "deforTilesGEE");
+
 
