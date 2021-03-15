@@ -11,7 +11,7 @@
 //of whether a camp was open 1999-2016
 var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 
-Map.addLayer(camps);
+//Map.addLayer(camps);
 
 
 var campFilter = ee.Filter.inList('country', ['Chad', 'CAR', 'Sudan',
@@ -373,18 +373,6 @@ var pointdata_withbandcounts_0 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var cmps2000 =  pointdata_withbandcounts_0.select([
-  'neighsSize1_2000', 'neighsSize2_2000', 'neighsSize3_2000',
-    'neighsSize4_2000', 'neighsSize5_2000', 'neighsSize6_2000',
-    'neighsSize7_2000', 'neighsSize8_2000', 'neighsSize9_2000',
-    'neighsSize10_2000', 'neighsSize11_2000', 'neighsSize12_2000',
-    'neighsSize13_2000', 'neighsSize14_2000', 'neighsSize15_2000',
-    'neighsSize16_2000', 'neighsSize17_2000', 'neighsSize18_2000',
-    'neighsSize19_2000', 'neighsSize20_2000']);
-    
-print(cmps2000.limit(2), "Camp count data for 2000"); 
-Export.table.toDrive(cmps2000, "camps2000Group2", "deforTilesGEE");
-
 //Num. camps at different distances in 2001/////////////////////
 
 var spatialFilter = ee.Filter.withinDistance({
@@ -400,7 +388,7 @@ var joined_1 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: tileCentroids, 
+  primary: pointdata_withbandcounts_0, 
   secondary: camps.filterMetadata('open_2001', 'equals', 1), 
   condition: spatialFilter
 });
@@ -457,16 +445,6 @@ var pointdata_withbandcounts_1 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-var campcount_1 =  pointdata_withbandcounts_1.select([
-  'neighsSize1_2001', 'neighsSize2_2001', 'neighsSize3_2001',
-    'neighsSize4_2001', 'neighsSize5_2001', 'neighsSize6_2001',
-    'neighsSize7_2001', 'neighsSize8_2001', 'neighsSize9_2001',
-    'neighsSize10_2001', 'neighsSize11_2001', 'neighsSize12_2001',
-    'neighsSize13_2001', 'neighsSize14_2001', 'neighsSize15_2001',
-    'neighsSize16_2001', 'neighsSize17_2001', 'neighsSize18_2001',
-    'neighsSize19_2001', 'neighsSize20_2001']);
-    
-print(campcount_1.limit(2), "Camp count data for 2001"); 
 
 //Num. camps at different distances in 2002/////////////////////
 
@@ -485,7 +463,7 @@ var joined_2 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: campcount_1, 
+  primary: pointdata_withbandcounts_1, 
   secondary: camps.filterMetadata('open_2002', 'equals', 1), 
   condition: spatialFilter
 });
@@ -1197,6 +1175,7 @@ var pointdata_withbandcounts_12 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
+print(pointdata_withbandcounts_12.limit(5));
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1219,7 +1198,7 @@ var spatialFilter = ee.Filter.intersects({
 });
 
 // Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(campcount_1, ecodata, spatialFilter);
+var joinAll = ee.Join.saveAll('matched').apply(tileCentroids, ecodata, spatialFilter);
 
 // Since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
@@ -1373,8 +1352,6 @@ Export.table.toDrive(remoteness2, "remoteness50kADMGroup2", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
 Export.table.toDrive(bufferID, "tileBufferIDGroup2", "deforTilesGEE");
-Export.table.toDrive(cmps2000, "camps2000Group2", "deforTilesGEE");
-
 
 
 
