@@ -1,3 +1,20 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var geometry = /* color: #d63000 */ee.Geometry.Polygon(
+        [[[-9.296745941769622, 35.20109186155553],
+          [-21.502792523037932, 19.897236085214804],
+          [-19.243106529843352, 4.860529984869669],
+          [-4.410319016110442, -4.967646573574095],
+          [6.421192004549958, -5.763147917266015],
+          [7.044172599184968, -26.090034442462763],
+          [22.191572501528718, -41.796867220061415],
+          [37.45008023010538, -37.0524406832316],
+          [39.57119257675455, -25.87680714814889],
+          [52.00196535812662, -26.60019705268237],
+          [54.46640045868204, -6.191514330696447],
+          [53.48014147506998, 14.772398805006329],
+          [32.40385802017496, 34.32523510666948],
+          [13.792031123507478, 37.86987005004644]]]);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
 //Refugees and deforestation analysis
 //Tabular data export: Group 2
 
@@ -11,11 +28,9 @@
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
-//Sub-Saharan Africa administrative district shapefile
-var SSA = ee.FeatureCollection('users/salem043/Africa');
 
 //The bands we rely on for our analysis
-var gfcSampleCover2000= gfc2014.select(["treecover2000"]).clip(SSA);
+var gfcSampleCover2000= gfc2014.select(["treecover2000"]).clip(geometry);
 
 
 Map.addLayer(gfcSampleCover2000);
@@ -24,7 +39,7 @@ Map.addLayer(gfcSampleCover2000);
 
 Export.image.toDrive({
   image: gfcSampleCover2000,
-  scale: 300,
+  scale: 1000,
   description: 'GFCShp2000',
   fileFormat: 'GEOTIFF',
   folder: "deforTilesGEE"
