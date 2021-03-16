@@ -7,100 +7,16 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-//Read in camp data - this is saved in wide format, with binary indicators
-//of whether a camp was open 1999-2016
-var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 
-//Map.addLayer(camps);
+var tilesAll = ee.FeatureCollection('users/salem043/deforSample');
 
-//Sub-Saharan Africa administrative district shapefile
-var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
+var groupFilter = ee.Filter.equals('group', 2);
 
-var campFilter = ee.Filter.inList('country', ['Chad',
-'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
-'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
-]);
+var tiles=tilesAll.filter(groupFilter);
 
-var filteredArea = camps.filter(campFilter);
-
-var campRegion=camps.filter(campFilter);
-
-
-///////////////////////////////////////////////////////////////////////
-//
-//  Create dissolved buffer FC 
-//
-///////////////////////////////////////////////////////////////////////
-
-//Produce 30 km  buffer around the camps - this the are we are going to study
-var bufferPoly = function(feature) {
-  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
-};
-
-var buffers = campRegion.map(bufferPoly);
-
-var buffsUnion = buffers.union();
-
-///////////////////////////////////////////////////////////////////////
-//
-//  Tile production - we'll use these tiles to calculate zonal stats.
-//  The tiles are the unit of analysis in our regression
-//
-///////////////////////////////////////////////////////////////////////
-
-
-var tiles = tile(buffsUnion, 0.01); 
-
-function tile(region, size_in_degrees) {
-  function tile_geometry(geometry) {
-    var coords = ee.List(geometry.bounds().coordinates().get(0))
-    var min_point = ee.List(coords.get(0))
-    var max_point = ee.List(coords.get(2))
-  
-    function sequence(direction) {
-      var start = min_point.get(direction)  
-      var stop = ee.Number(max_point.get(direction))
-      return ee.List.sequence(start, stop, size_in_degrees)
-    }
-  
-    var tiles = sequence(0).map(function (x) {
-      return sequence(1).map(function (y) { 
-          return ee.Feature(ee.Geometry.Rectangle([
-            [ee.Number(x), ee.Number(y)],
-            [
-              ee.Number(x).add(size_in_degrees).min(max_point.get(0)),
-              ee.Number(y).add(size_in_degrees).min(max_point.get(1))
-            ]
-        ]).intersection(geometry, 30))
-      })
-  	}).flatten()
-    return ee.FeatureCollection(tiles).filterBounds(geometry)
-  }
-
-  function tile_feature_collection(feature_collection) {
-    return ee.FeatureCollection(
-      feature_collection.iterate(
-        function (feature, acc) {
-          return ee.FeatureCollection(acc).merge(tile_geometry(ee.Feature(feature).geometry()))
-        }, ee.FeatureCollection([]))
-    )
-  }
-
-  if (region instanceof ee.FeatureCollection)
-    return tile_feature_collection(region)
-  else if (region instanceof ee.Feature)
-    return tile_geometry(region.geometry())
-  else if (region instanceof ee.Geometry)
-    return tile_geometry(region)
-  else
-    throw Error(
-      'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
-    )
-}
-
-
-//Map.addLayer(tiles, {}, "tiles");
-
+print(tilesAll.limit(5));
+print(tiles.limit(5));
+Map.addLayer(tiles.limit(10000));
 
 ///////////////////////////////////////////////////////////////////////
 //
