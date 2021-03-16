@@ -10,7 +10,9 @@
 
 var tilesAll = ee.FeatureCollection('users/salem043/deforSample');
 
-var groupFilter = ee.Filter.equals('group', 2);
+//var groupFilter = ee.Filter.equals('group', 2);
+var groupFilter = ee.Filter.equals('ID', '2_829');
+
 
 var tiles=tilesAll.filter(groupFilter);
 
@@ -37,7 +39,8 @@ var mean_2000 = tiles.map(function(feature) {
   }));
 });
 
-var pct_2000 = mean_2000.select(['tree_canopy_cover'], ['pct_2000']);
+var pct_2000 = mean_2000.select(['ID', 'group', 'tree_canopy_cover'], 
+['ID', 'group', 'pct_2000']);
 
 //Number of tiles with 50+ FC 2000
 var fifty_2000 = gfcc_2000.gte(50).and(gfcc_2000.lte(100));
@@ -50,8 +53,8 @@ var count50_2000 = pct_2000.map(function(feature) {
   }));
 });
 
-var pct50_2000 = count50_2000.select(['pct_2000', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000']);
+var pct50_2000 = count50_2000.select(['ID', 'group', 'pct_2000', 'tree_canopy_cover'], 
+['ID', 'group', 'pct_2000', 'plus50_2000']);
 
 //Number of tiles with 10+ FC 2000
 var ten_2000 = gfcc_2000.gte(10).and(gfcc_2000.lte(100));
@@ -64,8 +67,10 @@ var count10_2000 = pct50_2000.map(function(feature) {
   }));
 });
 
-var gfccFull_2000 = count10_2000.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000']);
+var gfccFull_2000 = count10_2000.select(['ID', 'group', 'pct_2000', 'plus50_2000', 'tree_canopy_cover'], 
+['ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000']);
+
+print(gfccFull_2000);
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -86,8 +91,8 @@ var mean_2005 = gfccFull_2000.map(function(feature) {
   }));
 });
 
-var pct_2005 = mean_2005.select(['pct_2000', 'plus50_2000', 'plus10_2000', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005']);
+var pct_2005 = mean_2005.select(['ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000', 'tree_canopy_cover'], 
+['ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005']);
 
 //Number of tiles with 50+ FC 2000
 var fifty_2005 = gfcc_2005.gte(50).and(gfcc_2005.lte(100));
@@ -100,8 +105,8 @@ var count50_2005 = pct_2005.map(function(feature) {
   }));
 });
 
-var pct50_2005 = count50_2005.select(['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005']);
+var pct50_2005 = count50_2005.select(['ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'tree_canopy_cover'], 
+['ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005']);
 
 
 //Number of tiles with 10+ FC 2000
@@ -115,9 +120,9 @@ var count10_2005 = pct50_2005.map(function(feature) {
   }));
 });
 
-var gfccFull_2005 = count10_2005.select(['pct_2000', 'plus50_2000', 
+var gfccFull_2005 = count10_2005.select(['ID', 'group', 'pct_2000', 'plus50_2000', 
 'plus10_2000', 'pct_2005', 'plus50_2005', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
+['ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
 'plus10_2005']);
 
 ///////////////////////////////////////////////////////////////////////
@@ -156,10 +161,10 @@ var count50_2010 = pct_2010.map(function(feature) {
   }));
 });
 
-var pct50_2010 = count50_2010.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
+var pct50_2010 = count50_2010.select(['ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000', 
 'pct_2005', 'plus50_2005', 'plus10_2005',
 'pct_2010', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
+['ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
 'plus10_2005', 'pct_2010', 'plus50_2010']);
 
 
@@ -174,16 +179,18 @@ var count10_2010 = pct50_2010.map(function(feature) {
   }));
 });
 
-var gfccFull_2010 = count10_2010.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
-'pct_2005', 'plus50_2005', 'plus10_2005',
-'pct_2010', 'plus50_2010', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
-'plus10_2005', 'pct_2010', 'plus50_2010', 'plus10_2010']);
+var gfccFull_2010 = count10_2010.select([
+  'ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000', 
+'pct_2005', 'plus50_2005', 'plus10_2005', 'pct_2010', 'plus50_2010', 
+'tree_canopy_cover'], 
+['ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000', 
+'pct_2005', 'plus50_2005', 'plus10_2005','pct_2010', 'plus50_2010', 
+'plus10_2010']);
 
 
 Export.table.toDrive(gfccFull_2010, "gfccGroup2", "deforTilesGEE");
 
-
+print(count10_2010);
 
 ///////////////////////////////////////////////////////////////////////
 //
