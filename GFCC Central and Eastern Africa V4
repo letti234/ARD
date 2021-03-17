@@ -10,8 +10,8 @@
 
 var tilesAll = ee.FeatureCollection('users/salem043/deforSample');
 
-//var groupFilter = ee.Filter.equals('group', 2);
-var groupFilter = ee.Filter.equals('ID', '2_829');
+var groupFilter = ee.Filter.equals('group', 2);
+//var groupFilter = ee.Filter.equals('ID', '2_829');
 
 
 var tiles=tilesAll.filter(groupFilter);
