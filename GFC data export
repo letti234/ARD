@@ -42,7 +42,8 @@ Export.image.toDrive({
   scale: 1000,
   description: 'GFCShp2000',
   fileFormat: 'GEOTIFF',
-  folder: "deforTilesGEE"
+  folder: "deforTilesGEE",
+  maxPixels: 1e12
 });
 
 
