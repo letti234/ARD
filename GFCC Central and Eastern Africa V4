@@ -10,8 +10,8 @@
 
 var tilesAll = ee.FeatureCollection('users/salem043/deforSample');
 
-var groupFilter = ee.Filter.equals('group', 2);
-//var groupFilter = ee.Filter.equals('ID', '2_829');
+//var groupFilter = ee.Filter.equals('group', 2);
+var groupFilter = ee.Filter.equals('ID', '2_829');
 
 
 var tiles=tilesAll.filter(groupFilter);
@@ -39,13 +39,14 @@ var mean_2000 = tiles.map(function(feature) {
   }));
 });
 
-var pct_2000 = mean_2000.select(['ID', 'group', 'tree_canopy_cover'], 
-['ID', 'group', 'pct_2000']);
+
+Export.table.toDrive(mean_2000, "gfccMeanGroup2_2000", "deforTilesGEE");
+
 
 //Number of tiles with 50+ FC 2000
 var fifty_2000 = gfcc_2000.gte(50).and(gfcc_2000.lte(100));
 
-var count50_2000 = pct_2000.map(function(feature) {
+var count50_2000 = tiles.map(function(feature) {
   return feature.set(fifty_2000.reduceRegion({
     reducer: ee.Reducer.sum(),
     geometry: feature.geometry(),
@@ -53,8 +54,7 @@ var count50_2000 = pct_2000.map(function(feature) {
   }));
 });
 
-var pct50_2000 = count50_2000.select(['ID', 'group', 'pct_2000', 'tree_canopy_cover'], 
-['ID', 'group', 'pct_2000', 'plus50_2000']);
+Export.table.toDrive(count50_2000, "gfcc50countGroup2_2000", "deforTilesGEE");
 
 //Number of tiles with 10+ FC 2000
 var ten_2000 = gfcc_2000.gte(10).and(gfcc_2000.lte(100));
@@ -67,11 +67,8 @@ var count10_2000 = pct50_2000.map(function(feature) {
   }));
 });
 
-var gfccFull_2000 = count10_2000.select([
-  'ID', 'group', 'pct_2000', 'plus50_2000', 'tree_canopy_cover'], 
- ['ID', 'group', 'pct_2000', 'plus50_2000', 'plus10_2000']);
 
-print(gfccFull_2000);
+Export.table.toDrive(coun10_2000, "gfcc10countGroup2_2000", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -83,7 +80,7 @@ var gfcc_2005 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
       .filter(ee.Filter.date('2005-01-01', '2005-12-31'))
       .select('tree_canopy_cover').mosaic();
 
-//Mean pct FC per tile 2000
+//Mean pct FC per tile 2005
 var mean_2005 = tiles.map(function(feature) {
   return feature.set(gfcc_2005.reduceRegion({
     reducer: 'mean',
@@ -92,13 +89,14 @@ var mean_2005 = tiles.map(function(feature) {
   }));
 });
 
-var pct_2005 = mean_2005.select(['ID', 'group', 'tree_canopy_cover'], 
-['ID', 'group', 'pct_2005']);
 
-//Number of tiles with 50+ FC 2000
+Export.table.toDrive(mean_2005, "gfccMeanGroup2_2005", "deforTilesGEE");
+
+
+//Number of tiles with 50+ FC 2005
 var fifty_2005 = gfcc_2005.gte(50).and(gfcc_2005.lte(100));
 
-var count50_2005 = pct_2005.map(function(feature) {
+var count50_2005 = tiles.map(function(feature) {
   return feature.set(fifty_2005.reduceRegion({
     reducer: ee.Reducer.sum(),
     geometry: feature.geometry(),
@@ -106,11 +104,9 @@ var count50_2005 = pct_2005.map(function(feature) {
   }));
 });
 
-var pct50_2005 = count50_2005.select(['ID', 'group', 'pct_2005', 'tree_canopy_cover'], 
-['ID', 'group', 'pct_2005', 'plus50_2005']);
+Export.table.toDrive(count50_2005, "gfcc50countGroup2_2005", "deforTilesGEE");
 
-
-//Number of tiles with 10+ FC 2000
+//Number of tiles with 10+ FC 2005
 var ten_2005 = gfcc_2005.gte(10).and(gfcc_2005.lte(100));
 
 var count10_2005 = pct50_2005.map(function(feature) {
@@ -121,11 +117,8 @@ var count10_2005 = pct50_2005.map(function(feature) {
   }));
 });
 
-var gfccFull_2005 = count10_2005.select([
-  'ID', 'group', 'pct_2005', 'plus50_2005', 'tree_canopy_cover'], 
-['ID', 'group', 'pct_2005', 'plus50_2005', 'plus10_2005']);
 
-print(gfccFull_2005);
+Export.table.toDrive(coun10_2005, "gfcc10countGroup2_2005", "deforTilesGEE")
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -137,7 +130,7 @@ var gfcc_2010 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
       .filter(ee.Filter.date('2010-01-01', '2010-12-31'))
       .select('tree_canopy_cover').mosaic();
 
-//Mean pct FC per tile 2000
+//Mean pct FC per tile 2010
 var mean_2010 = tiles.map(function(feature) {
   return feature.set(gfcc_2010.reduceRegion({
     reducer: 'mean',
@@ -146,27 +139,24 @@ var mean_2010 = tiles.map(function(feature) {
   }));
 });
 
-var pct_2010 = mean_2010.select(['ID', 'group',
-'tree_canopy_cover',], 
-['ID', 'group', 'pct_2010']);
 
-//Number of tiles with 50+ FC 2000
+Export.table.toDrive(mean_2010, "gfccMeanGroup2_2010", "deforTilesGEE");
+
+
+//Number of tiles with 50+ FC 2010
 var fifty_2010 = gfcc_2010.gte(50).and(gfcc_2010.lte(100));
 
-var count50_2010 = pct_2010.map(function(feature) {
-  return feature.set(fifty_2005.reduceRegion({
+var count50_2010 = tiles.map(function(feature) {
+  return feature.set(fifty_2010.reduceRegion({
     reducer: ee.Reducer.sum(),
     geometry: feature.geometry(),
     scale: 30
   }));
 });
 
-var pct50_2010 = count50_2010.select(['ID', 'group', 
-'pct_2010', 'tree_canopy_cover'], 
-['ID', 'group', 'pct_2010', 'plus50_2010']);
+Export.table.toDrive(count50_2010, "gfcc50countGroup2_2010", "deforTilesGEE");
 
-
-//Number of tiles with 10+ FC 2000
+//Number of tiles with 10+ FC 2010
 var ten_2010 = gfcc_2010.gte(10).and(gfcc_2010.lte(100));
 
 var count10_2010 = pct50_2010.map(function(feature) {
@@ -177,20 +167,9 @@ var count10_2010 = pct50_2010.map(function(feature) {
   }));
 });
 
-var gfccFull_2010 = count10_2010.select([
-  'ID', 'group', 'pct_2010', 'plus50_2010', 
-'tree_canopy_cover'], 
-['ID', 'group', 'pct_2010', 'plus50_2010', 
-'plus10_2010']);
 
+Export.table.toDrive(coun10_2010, "gfcc10countGroup2_2010", "deforTilesGEE");
 
-Export.table.toDrive(gfccFull_2000, "gfccGroup2_2000", "deforTilesGEE");
-Export.table.toDrive(gfccFull_2005, "gfccGroup2_2005", "deforTilesGEE");
-Export.table.toDrive(gfccFull_2010, "gfccGroup2_2010", "deforTilesGEE");
-
-
-
-print(gfccFull_2010);
 
 ///////////////////////////////////////////////////////////////////////
 //
