@@ -1,0 +1,155 @@
+////////////////////////////////////////////////////////////////////
+//
+//  Load all data 
+//
+////////////////////////////////////////////////////////////////////
+
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
+
+//Camp data
+var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
+//Map.addLayer(camps);
+
+var campFilter = ee.Filter.inList('country', ['Senegal']);
+var campRegion = camps.filter(campFilter);
+
+//Produce 30 km  buffer around the camps - this the are we are going to study
+var bufferPoly = function(feature) {
+  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
+};
+
+var buffers = campRegion.map(bufferPoly);
+
+var buffsUnion = buffers.union();
+
+//dissolve and transform to FC so that we can identify each
+//tile's buffer ID
+
+var buffsGeoDissolve =buffers.geometry().dissolve();
+//print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
+Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
+
+
+var fc = ee.FeatureCollection([
+  ee.Feature(buffsGeoDissolve)
+]);
+//print(fc);
+
+var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
+  var geomList = ee.Feature(feature).geometry().geometries();
+  var featureList = geomList.map(function(geom) {
+    return ee.Feature(ee.Geometry(geom));
+  });
+  return featureList;
+})
+.flatten();
+
+var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
+
+//ESA stack of images
+var lulc = ee.Image('users/salem043/ESA_1992_2015').clip(buffsUnion);
+print(lulc, "Land cover data global raw");
+
+//Subset and name bands for clarity
+var lulcYrSub = lulc.select(['b9', 'b10', 'b11', 'b12', 'b13', 
+'b14', 'b15', 'b16', 'b17', 'b18', 'b19', 'b20', 'b21'], ["lc_2000", "lc_2001", 
+'lc_2002', 'lc_2003', 'lc_2004', 'lc_2005', 'lc_2006', 'lc_2007', 'lc_2008',
+'lc_2009', 'lc_2010', 'lc_2011', 'lc_2012']);
+print(lulcYrSub, "LULC data");
+
+
+////////////////////////////////////////////////////////////////////
+//
+//  Generate tiles 
+//
+////////////////////////////////////////////////////////////////////
+
+var tiles = tile(buffDissolveFC , 0.02); //Change to 0.02 when done 
+
+function tile(region, size_in_degrees) {
+  function tile_geometry(geometry) {
+    var coords = ee.List(geometry.bounds().coordinates().get(0))
+    var min_point = ee.List(coords.get(0))
+    var max_point = ee.List(coords.get(2))
+  
+    function sequence(direction) {
+      var start = min_point.get(direction)  
+      var stop = ee.Number(max_point.get(direction))
+      return ee.List.sequence(start, stop, size_in_degrees)
+    }
+  
+    var tiles = sequence(0).map(function (x) {
+      return sequence(1).map(function (y) { 
+          return ee.Feature(ee.Geometry.Rectangle([
+            [ee.Number(x), ee.Number(y)],
+            [
+              ee.Number(x).add(size_in_degrees).min(max_point.get(0)),
+              ee.Number(y).add(size_in_degrees).min(max_point.get(1))
+            ]
+        ]).intersection(geometry, 30))
+      })
+  	}).flatten()
+    return ee.FeatureCollection(tiles).filterBounds(geometry)
+  }
+
+  function tile_feature_collection(feature_collection) {
+    return ee.FeatureCollection(
+      feature_collection.iterate(
+        function (feature, acc) {
+          return ee.FeatureCollection(acc).merge(tile_geometry(ee.Feature(feature).geometry()))
+        }, ee.FeatureCollection([]))
+    )
+  }
+
+  if (region instanceof ee.FeatureCollection)
+    return tile_feature_collection(region)
+  else if (region instanceof ee.Feature)
+    return tile_geometry(region.geometry())
+  else if (region instanceof ee.Geometry)
+    return tile_geometry(region)
+  else
+    throw Error(
+      'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
+    )
+}
+
+print(tiles.limit(10), "Baseline tiles");
+
+
+////////////////////////////////////////////////////////////////////
+//
+//  Calculate the percent of each tile with ag cover
+//  Ag cover classified as 10, 11, 12, 20, 30
+//
+////////////////////////////////////////////////////////////////////
+
+var lulc_01 = lulcYrSub.select(["lc_2001"]);
+
+var ag_2001 = lulc_01.gte(10).and(lulc_01.lte(30));
+var tot_2001 = lulc_01.gte(10).and(lulc_01.lte(220));
+
+print(ag_2001, "2001 cleaned ag");
+
+Map.addLayer(ag_2001);
+
+var nAg_2001 = tiles.map(function(feature) {
+  return feature.set(ag_2001.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+var nPix_2001 = nAg_2001.map(function(feature) {
+  return feature.set(tot_2001.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+print(nAg_2001.limit(2), "No. ag pixels");
+print(nPix_2001.limit(2), "No. total pixels");
+
