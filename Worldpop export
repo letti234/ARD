@@ -7,9 +7,6 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-
-var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
-
 var tiles = ee.FeatureCollection('users/salem043/deforSample');
 
 //var groupFilter = ee.Filter.equals('group', 2);
