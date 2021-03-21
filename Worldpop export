@@ -10,18 +10,10 @@
 
 var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 
-var tilesAll = ee.FeatureCollection('users/salem043/deforSample');
+var tiles = ee.FeatureCollection('users/salem043/deforSample');
 
 //var groupFilter = ee.Filter.equals('group', 2);
 //var groupFilter = ee.Filter.equals('ID', '2_829');
-
-
-var tiles=tilesAll.filter(groupFilter);
-
-print(tilesAll.limit(5));
-print(tiles.limit(5));
-Map.addLayer(tiles.limit(10000));
-
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -141,3 +133,14 @@ var sumPop_2012 = sumPop_2011.map(function(feature) {
 });
 
 print(sumPop_2012);
+
+
+
+//Current chunk size is 100,000. Change "chunk" below if need 
+//to make smaller.
+var chunk = 50000;
+var collectionSize = 500000;
+for (var i = 0; i<collectionSize;i=i+chunk){
+  var subset = ee.FeatureCollection(sumPop_2012.toList(chunk, i));
+  Export.table.toDrive(subset, "Chunk_", "deforTilesGEE");
+}
