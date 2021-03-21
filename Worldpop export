@@ -9,19 +9,15 @@
 
 var tiles = ee.FeatureCollection('users/salem043/deforSample');
 
-//var groupFilter = ee.Filter.equals('group', 2);
-//var groupFilter = ee.Filter.equals('ID', '2_829');
-
-
 ///////////////////////////////////////////////////////////////////////
 //
-//  Worldpop data
+//  Worldpop data - mosaic to make annual images
 //
 ///////////////////////////////////////////////////////////////////////
 
-var years = ee.List.sequence(2000, 2012)
-// Make some band names from the years numbers.
-var yearBandNames = years.map(function(n) { return ee.Number(n).format("pop_%d") })
+var years = ee.List.sequence(2000, 2012);
+
+var yearBandNames = years.map(function(n) { return ee.Number(n).format("pop_%d") });
 
 var yearImages = ee.ImageCollection(
   years.map(function(year) {
@@ -32,6 +28,13 @@ var yearImages = ee.ImageCollection(
   }))
   .toBands()
   .rename(yearBandNames)
+  
+///////////////////////////////////////////////////////////////////////
+//
+//  Calculate zonal stats
+//
+///////////////////////////////////////////////////////////////////////
+
   
 var pop_2001 = yearImages.select("pop_2001");
 
