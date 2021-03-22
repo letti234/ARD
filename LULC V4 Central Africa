@@ -11,10 +11,6 @@ var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
 //Ecoregions data
 var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 
-//Nighttime lights
-var lights = ee.ImageCollection("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS");
-print(lights, "Nighttime lights");
-
 //Camp data
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 
@@ -126,8 +122,6 @@ function tile(region, size_in_degrees) {
     )
 }
 
-print(tiles.limit(10), "Baseline tiles");
-
 ////////////////////////////////////////////////////////////////////
 //
 //  Calculate number of pixels in each tile that have different
@@ -148,7 +142,7 @@ var tiles_2000 = tiles.map(function(feature){
     var bandname = ee.String('lulc_2000_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2000.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -162,7 +156,7 @@ var tiles_2001 = tiles_2000.map(function(feature){
     var bandname = ee.String('lulc_2001_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2001.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -179,7 +173,7 @@ var tiles_2002 = tiles_2001.map(function(feature){
     var bandname = ee.String('lulc_2002_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2002.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -194,7 +188,7 @@ var tiles_2003 = tiles_2002.map(function(feature){
     var bandname = ee.String('lulc_2003_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2003.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -209,7 +203,7 @@ var tiles_2004 = tiles_2003.map(function(feature){
     var bandname = ee.String('lulc_2004_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2004.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -224,7 +218,7 @@ var tiles_2005 = tiles_2004.map(function(feature){
     var bandname = ee.String('lulc_2005_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2005.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -239,7 +233,7 @@ var tiles_2006 = tiles_2005.map(function(feature){
     var bandname = ee.String('lulc_2006_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2006.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -254,7 +248,7 @@ var tiles_2007 = tiles_2006.map(function(feature){
     var bandname = ee.String('lulc_2007_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2007.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -269,7 +263,7 @@ var tiles_2008 = tiles_2007.map(function(feature){
     var bandname = ee.String('lulc_2008_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2008.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -284,7 +278,7 @@ var tiles_2009 = tiles_2008.map(function(feature){
     var bandname = ee.String('lulc_2009_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2009.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -299,7 +293,7 @@ var tiles_2010 = tiles_2009.map(function(feature){
     var bandname = ee.String('lulc_2010_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2010.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -315,7 +309,7 @@ var tiles_2011 = tiles_2010.map(function(feature){
     var bandname = ee.String('lulc_2011_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2011.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -330,7 +324,7 @@ var tiles_2012 = tiles_2011.map(function(feature){
     var bandname = ee.String('lulc_2012_').cat(ee.Number(thisLC).int());
     var lulc_thisLC = lulc_2012.remap([i], [1], null);
     var dict = lulc_thisLC.rename(bandname)
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 300});
     return ee.Dictionary(dictin).combine(dict);
   }, ee.Dictionary()) ;
   return feature.set(mdata);
@@ -338,7 +332,6 @@ var tiles_2012 = tiles_2011.map(function(feature){
 
 
 print(tiles_2012.limit(3), "Tile results");
-
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -1210,36 +1203,6 @@ var SSAdata = joinAll.map(function(feature){
 
 print(SSAdata.limit(2), "SSA");
 
-////////////////////////////////////////////////////////////////////
-//
-//  Count number of camps that fall within tile
-//
-////////////////////////////////////////////////////////////////////
-
-
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo',
-  maxError: 10
-});
-
-var joined = ee.Join.saveAll({
-  matchesKey: 'neighbors', 
-}).apply({
-  primary: tiles, 
-  secondary: campRegion, 
-  condition: spatialFilter
-});
-
-var inTileCamps = joined.map(function(pt) {
-  var neighs = ee.List(pt.get('neighbors'));
-  var filt = ee.Filter.bounds(tiles);
-  pt=pt.set('camps', neighs.filter(filt).size());
-  return(pt);
-});
-
-print("Tiles with camp counts", inTileCamps.limit(10));
-
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -1273,83 +1236,6 @@ var ecosample = joinAll.map(function(feature){
 });
 
 print(ecosample.limit(2), "biome");
-
-
-////////////////////////////////////////////////////////////////////
-//
-//  Tile's mean night lights 2000-2012
-//
-////////////////////////////////////////////////////////////////////
-
-/////Sum population counts in the pixels to the grid
-///var Syr_gridpop = pop_Syria.reduceRegions(grid,ee.Reducer.sum());
-
-
-//Save a subset of the lights data: just the stable lights band for 2013
-var light2001 = lights.filterMetadata('system:index', 'equals', 'F152001');
-print(light2001);
-
-//Transform from image collection into simple image with one band
-var lightImg2001 = light2001.toBands();
-//print(lightsImage);
-
-//Use reducer function to obtain mean lights per governorate
-var lightTile2001 = lightImg2001.reduceRegions(tiles, ee.Reducer.mean());
-
-var   light2002 = lights.filterMetadata('system:index', 'equals', 'F152002');
-var lightImg2002 = light2002.toBands();
-var lightTile2002 = lightImg2002.reduceRegions(lightTile2001, ee.Reducer.mean());
-
-
-var   light2003 = lights.filterMetadata('system:index', 'equals', 'F152003');
-var lightImg2003 = light2003.toBands();
-var lightTile2003 = lightImg2003.reduceRegions(lightTile2002, ee.Reducer.mean());
-
-
-var   light2004 = lights.filterMetadata('system:index', 'equals', 'F152004');
-var lightImg2004 = light2004.toBands();
-var lightTile2004 = lightImg2004.reduceRegions(lightTile2003, ee.Reducer.mean());
-
-var   light2005 = lights.filterMetadata('system:index', 'equals', 'F152005');
-var lightImg2005 = light2005.toBands();
-var lightTile2005 = lightImg2005.reduceRegions(lightTile2004, ee.Reducer.mean());
-
-
-var   light2006 = lights.filterMetadata('system:index', 'equals', 'F152006');
-var lightImg2006 = light2006.toBands();
-var lightTile2006 = lightImg2006.reduceRegions(lightTile2005, ee.Reducer.mean());
-
-
-var   light2007 = lights.filterMetadata('system:index', 'equals', 'F152007');
-var lightImg2007 = light2007.toBands();
-var lightTile2007 = lightImg2007.reduceRegions(lightTile2006, ee.Reducer.mean());
-
-
-var   light2008 = lights.filterMetadata('system:index', 'equals', 'F152008');
-var lightImg2008 = light2008.toBands();
-var lightTile2008 = lightImg2008.reduceRegions(lightTile2007, ee.Reducer.mean());
-
-
-var   light2009 = lights.filterMetadata('system:index', 'equals', 'F162009');
-var lightImg2009 = light2009.toBands();
-var lightTile2009 = lightImg2009.reduceRegions(lightTile2008, ee.Reducer.mean());
-
-
-var   light2010 = lights.filterMetadata('system:index', 'equals', 'F182010');
-var lightImg2010 = light2010.toBands();
-var lightTile2010 = lightImg2010.reduceRegions(lightTile2009, ee.Reducer.mean());
-
-
-var   light2011 = lights.filterMetadata('system:index', 'equals', 'F182011');
-var lightImg2011 = light2011.toBands();
-var lightTile2011 = lightImg2011.reduceRegions(lightTile2010, ee.Reducer.mean());
-
-
-var   light2012 = lights.filterMetadata('system:index', 'equals', 'F182012');
-var lightImg2012 = light2012.toBands();
-var lightTile2012 = lightImg2012.reduceRegions(lightTile2011, ee.Reducer.mean());
-
-print("lights 2012", lightTile2012.limit(10));
 
 
 ////////////////////////////////////////////////////////////////////
@@ -1389,34 +1275,16 @@ print(bufferID.limit(2), "buffer ID");
 ////////////////////////////////////////////////////////////////////
 
 
-//Export tiles as shapefile
-
-Export.table.toDrive({
-  collection: tiles.select(['system:index'], ['ID']),
-  fileFormat: 'SHP',
-  description: 'lulcTilesGroup2',
-  folder: "deforTilesGEE"
-});
-
-
 //Export number of camps within tile
 Export.table.toDrive(tiles_2012,
 "lulcCoverGroup2", "deforTilesGEE");
-
 
 //Export number of camps within tile
 Export.table.toDrive(pointdata_withbandcounts_12,
 "lulcCampsGroup2", "deforTilesGEE");
 
-
-//Export number of camps within tile
-Export.table.toDrive(inTileCamps, "lulcCampsInTileGroup2", "deforTilesGEE");
-
 //Export biome as csv
 Export.table.toDrive(ecosample, "lulcBiomeGroup2", "deforTilesGEE");
-
-//Export night lights as CSV
-Export.table.toDrive(lightTile2012, "lulcLightsGroup2", "deforTilesGEE");
 
 //Export buffer id as CSV
 Export.table.toDrive(bufferID, "lulcBufferIDGroup2", "deforTilesGEE");
