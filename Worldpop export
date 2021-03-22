@@ -40,7 +40,7 @@ var pop_2001 = yearImages.select("pop_2001");
 
 var sumPop_2001 = tiles.map(function(feature) {
   return feature.set(pop_2001.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -48,7 +48,7 @@ var pop_2002 = yearImages.select("pop_2002");
 
 var sumPop_2002 = sumPop_2001.map(function(feature) {
   return feature.set(pop_2002.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -56,7 +56,7 @@ var pop_2003 = yearImages.select("pop_2003");
 
 var sumPop_2003 = sumPop_2002.map(function(feature) {
   return feature.set(pop_2003.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -64,7 +64,7 @@ var pop_2004 = yearImages.select("pop_2004");
 
 var sumPop_2004 = sumPop_2003.map(function(feature) {
   return feature.set(pop_2004.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -72,7 +72,7 @@ var pop_2005 = yearImages.select("pop_2005");
 
 var sumPop_2005 = sumPop_2004.map(function(feature) {
   return feature.set(pop_2005.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -80,7 +80,7 @@ var pop_2006 = yearImages.select("pop_2006");
 
 var sumPop_2006 = sumPop_2005.map(function(feature) {
   return feature.set(pop_2006.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -88,7 +88,7 @@ var pop_2007 = yearImages.select("pop_2007");
 
 var sumPop_2007 = sumPop_2006.map(function(feature) {
   return feature.set(pop_2007.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -96,7 +96,7 @@ var pop_2008 = yearImages.select("pop_2008");
 
 var sumPop_2008 = sumPop_2007.map(function(feature) {
   return feature.set(pop_2008.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -104,7 +104,7 @@ var pop_2009 = yearImages.select("pop_2009");
 
 var sumPop_2009 = sumPop_2008.map(function(feature) {
   return feature.set(pop_2009.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -112,7 +112,7 @@ var pop_2010 = yearImages.select("pop_2010");
 
 var sumPop_2010 = sumPop_2009.map(function(feature) {
   return feature.set(pop_2010.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -120,7 +120,7 @@ var pop_2011 = yearImages.select("pop_2011");
 
 var sumPop_2011 = sumPop_2010.map(function(feature) {
   return feature.set(pop_2011.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
@@ -128,7 +128,7 @@ var pop_2012 = yearImages.select("pop_2012");
 
 var sumPop_2012 = sumPop_2011.map(function(feature) {
   return feature.set(pop_2012.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
+    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 100
   }));
 });
 
