@@ -1278,18 +1278,18 @@ print(bufferID.limit(2), "buffer ID");
 
 //Export number of camps within tile
 Export.table.toDrive(tiles_2012,
-"lulcCoverGroup2", "deforTilesGEE");
+"lulcCoverGroup3", "deforTilesGEE");
 
 //Export number of camps within tile
 Export.table.toDrive(pointdata_withbandcounts_12,
-"lulcCampsGroup2", "deforTilesGEE");
+"lulcCampsGroup3", "deforTilesGEE");
 
 //Export biome as csv
-Export.table.toDrive(ecosample, "lulcBiomeGroup2", "deforTilesGEE");
+Export.table.toDrive(ecosample, "lulcBiomeGroup3", "deforTilesGEE");
 
 //Export buffer id as CSV
-Export.table.toDrive(bufferID, "lulcBufferIDGroup2", "deforTilesGEE");
+Export.table.toDrive(bufferID, "lulcBufferIDGroup3", "deforTilesGEE");
 
 //Export SSA country as CSV
-Export.table.toDrive(SSAdata, "lulcCountryGroup2", "deforTilesGEE");
+Export.table.toDrive(SSAdata, "lulcCountryGroup3", "deforTilesGEE");
 
