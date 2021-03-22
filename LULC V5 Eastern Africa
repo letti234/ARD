@@ -1277,11 +1277,11 @@ print(bufferID.limit(2), "buffer ID");
 
 //Export number of camps within tile
 Export.table.toDrive(tiles_2012,
-"lulcCoverGroup2", "deforTilesGEE");
+"lulcCoverGroup4", "deforTilesGEE");
 
 //Export number of camps within tile
 Export.table.toDrive(pointdata_withbandcounts_12,
-"lulcCampsGroup2", "deforTilesGEE");
+"lulcCampsGroup4", "deforTilesGEE");
 
 //Export biome as csv
 Export.table.toDrive(ecosample, "lulcBiomeGroup4", "deforTilesGEE");
