@@ -13,8 +13,9 @@ var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 
 Map.addLayer(camps);
 
-var campFilter = ee.Filter.inList('country', [
-'Rwanda'
+var campFilter = ee.Filter.inList('country', ['Chad',
+'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
+'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
 ]);
 
 var filteredArea = camps.filter(campFilter);
@@ -30,9 +31,7 @@ var gfcSampleCover2000= gfc2014.select(["treecover2000"]);
 var gfcSampleMask=gfc2014.select(["datamask"]);
 var gfcSampleLossYr = gfc2014.select(["lossyear"]);
 
-//Parks
-var parks = ee.FeatureCollection("WCMC/WDPA/current/polygons");
-Map.addLayer(parks, {}, "Protected areas");
+
 ///////////////////////////////////////////////////////////////////////
 //
 //  Create dissolved buffer FC 
@@ -109,7 +108,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Code courtesty of a kind stranger who offered it on Stack Exchange
 //!!Need to figure out how to form these tiles in meters
 //!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffsUnion, 0.1); 
+var tiles = tile(buffsUnion, 0.01); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -1190,6 +1189,9 @@ var SSAdata = joinAll.map(function(feature){
 //
 /////////////////////////////////////////////////////////////////////////////
 
+//Parks
+var parks = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+
 //Sub-Saharan Africa administrative district shapefile
 print(parks.limit(10), "Protected areas data");
 
@@ -1214,6 +1216,8 @@ var protecteddata = joinAll.map(function(feature){
 });
 
 print(protecteddata.limit(10), "Protection status of centroid");
+
+Export.table.toDrive(protecteddata, "tileProtectedGroup2", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
