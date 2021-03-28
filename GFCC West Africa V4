@@ -530,7 +530,28 @@ var protecteddata = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-print(protecteddata.limit(10), "Protection status of centroid");
+// Use an equals filter to specify how the collections match.
+var toyFilter = ee.Filter.equals({
+  leftField: 'system:index',
+  rightField: 'system:index'
+});
 
-Export.table.toDrive(protecteddata, "tileProtectedGroup1", "deforTilesGEE");
+// Define the join.
+var innerJoin = ee.Join.inner();
+
+// Apply the join.
+var toyJoin = innerJoin.apply(tileCentroids, protecteddata,  toyFilter);
+
+// Print the result.
+print(toyJoin.limit(10), "Protection status of centroid");
+
+var protect = toyJoin.map(function(pair) {
+  var f1 = ee.Feature(pair.get('primary'));
+  var f2 = ee.Feature(pair.get('secondary'));
+  return f1.set(f2.toDictionary());
+});
+
+print(protect.limit(5));
+
+Export.table.toDrive(protect, "tileProtectedGroup1", "deforTilesGEE");
 
