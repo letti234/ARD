@@ -13,9 +13,8 @@ var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
 
 Map.addLayer(camps);
 
-var campFilter = ee.Filter.inList('country', ['Chad',
-'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
-'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
+var campFilter = ee.Filter.inList('country', [
+'Rwanda'
 ]);
 
 var filteredArea = camps.filter(campFilter);
@@ -31,6 +30,9 @@ var gfcSampleCover2000= gfc2014.select(["treecover2000"]);
 var gfcSampleMask=gfc2014.select(["datamask"]);
 var gfcSampleLossYr = gfc2014.select(["lossyear"]);
 
+//Parks
+var parks = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+Map.addLayer(parks, {}, "Protected areas");
 ///////////////////////////////////////////////////////////////////////
 //
 //  Create dissolved buffer FC 
@@ -107,7 +109,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Code courtesty of a kind stranger who offered it on Stack Exchange
 //!!Need to figure out how to form these tiles in meters
 //!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffsUnion, 0.01); 
+var tiles = tile(buffsUnion, 0.1); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -1181,6 +1183,38 @@ var SSAdata = joinAll.map(function(feature){
 
 ///print(SSAdata, "SSA ADM of centroid");
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//Determine if tile is in protected area
+//
+/////////////////////////////////////////////////////////////////////////////
+
+//Sub-Saharan Africa administrative district shapefile
+print(parks.limit(10), "Protected areas data");
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["IUCN_CAT","OWN_TYPE", "STATUS", "STATUS_YR"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(tileCentroids, parks, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var protecteddata = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print(protecteddata.limit(10), "Protection status of centroid");
+
 ///////////////////////////////////////////////////////////////////////
 //
 //  Remoteness measure - use Harvest choice to get travel time from centroid
@@ -1289,409 +1323,5 @@ Export.table.toDrive(remoteness2, "remoteness50kADMGroup2", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
 Export.table.toDrive(bufferID, "tileBufferIDGroup2", "deforTilesGEE");
-Export.table.toDrive(cmps2000, "camps2000Group2", "deforTilesGEE");
-
-
-
-
-///////////////////////////////////////////////////////////////////////
-//
-//  GFCC DATA 2000
-//
-///////////////////////////////////////////////////////////////////////
-
-var gfcc_2000 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2000-01-01', '2000-12-31'))
-      .select('tree_canopy_cover').mosaic();
-
-//Mean pct FC per tile 2000
-var mean_2000 = tiles.map(function(feature) {
-  return feature.set(gfcc_2000.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-var pct_2000 = mean_2000.select(['tree_canopy_cover'], ['pct_2000']);
-
-//Number of tiles with 50+ FC 2000
-var fifty_2000 = gfcc_2000.gte(50).and(gfcc_2000.lte(100));
-
-var count50_2000 = pct_2000.map(function(feature) {
-  return feature.set(fifty_2000.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-var pct50_2000 = count50_2000.select(['pct_2000', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000']);
-
-//Number of tiles with 10+ FC 2000
-var ten_2000 = gfcc_2000.gte(10).and(gfcc_2000.lte(100));
-
-var count10_2000 = pct50_2000.map(function(feature) {
-  return feature.set(ten_2000.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-var gfccFull_2000 = count10_2000.select(['pct_2000', 'plus50_2000', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000']);
-
-///////////////////////////////////////////////////////////////////////
-//
-//  GFCC DATA 2005
-//
-///////////////////////////////////////////////////////////////////////
-
-var gfcc_2005 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2005-01-01', '2005-12-31'))
-      .select('tree_canopy_cover').mosaic();
-
-//Mean pct FC per tile 2000
-var mean_2005 = gfccFull_2000.map(function(feature) {
-  return feature.set(gfcc_2005.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-var pct_2005 = mean_2005.select(['pct_2000', 'plus50_2000', 'plus10_2000', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005']);
-
-//Number of tiles with 50+ FC 2000
-var fifty_2005 = gfcc_2005.gte(50).and(gfcc_2005.lte(100));
-
-var count50_2005 = pct_2005.map(function(feature) {
-  return feature.set(fifty_2005.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-var pct50_2005 = count50_2005.select(['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005']);
-
-
-//Number of tiles with 10+ FC 2000
-var ten_2005 = gfcc_2005.gte(10).and(gfcc_2005.lte(100));
-
-var count10_2005 = pct50_2005.map(function(feature) {
-  return feature.set(ten_2005.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-var gfccFull_2005 = count10_2005.select(['pct_2000', 'plus50_2000', 
-'plus10_2000', 'pct_2005', 'plus50_2005', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
-'plus10_2005']);
-
-///////////////////////////////////////////////////////////////////////
-//
-//  GFCC DATA 2010
-//
-///////////////////////////////////////////////////////////////////////
-
-var gfcc_2010 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2010-01-01', '2010-12-31'))
-      .select('tree_canopy_cover').mosaic();
-
-//Mean pct FC per tile 2000
-var mean_2010 = gfccFull_2005.map(function(feature) {
-  return feature.set(gfcc_2010.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-var pct_2010 = mean_2010.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
-'pct_2005', 'plus50_2005', 'plus10_2005',
-'tree_canopy_cover',], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
-'plus10_2005', 'pct_2010']);
-
-//Number of tiles with 50+ FC 2000
-var fifty_2010 = gfcc_2010.gte(50).and(gfcc_2010.lte(100));
-
-var count50_2010 = pct_2010.map(function(feature) {
-  return feature.set(fifty_2005.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-var pct50_2010 = count50_2010.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
-'pct_2005', 'plus50_2005', 'plus10_2005',
-'pct_2010', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
-'plus10_2005', 'pct_2010', 'plus50_2010']);
-
-
-//Number of tiles with 10+ FC 2000
-var ten_2010 = gfcc_2010.gte(10).and(gfcc_2010.lte(100));
-
-var count10_2010 = pct50_2010.map(function(feature) {
-  return feature.set(ten_2010.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-var gfccFull_2010 = count10_2010.select(['pct_2000', 'plus50_2000', 'plus10_2000', 
-'pct_2005', 'plus50_2005', 'plus10_2005',
-'pct_2010', 'plus50_2010', 'tree_canopy_cover'], 
-['pct_2000', 'plus50_2000', 'plus10_2000', 'pct_2005', 'plus50_2005', 
-'plus10_2005', 'pct_2010', 'plus50_2010', 'plus10_2010']);
-
-
-Export.table.toDrive(gfccFull_2010, "gfccGroup2", "deforTilesGEE");
-
-
-
-///////////////////////////////////////////////////////////////////////
-//
-//  Worldpop data
-//
-///////////////////////////////////////////////////////////////////////
-
-var years = ee.List.sequence(2000, 2012)
-// Make some band names from the years numbers.
-var yearBandNames = years.map(function(n) { return ee.Number(n).format("pop_%d") })
-
-var yearImages = ee.ImageCollection(
-  years.map(function(year) {
-    var oneYear = ee.ImageCollection("WorldPop/GP/100m/pop")
-      .filter(ee.Filter.calendarRange(year, year, 'year'))
-      .filterBounds(tiles)
-    return oneYear.mosaic()
-  }))
-  .toBands()
-  .rename(yearBandNames)
-  
-var pop_2001 = yearImages.select("pop_2001");
-
-var sumPop_2001 = tiles.map(function(feature) {
-  return feature.set(pop_2001.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2002 = yearImages.select("pop_2002");
-
-var sumPop_2002 = sumPop_2001.map(function(feature) {
-  return feature.set(pop_2002.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2003 = yearImages.select("pop_2003");
-
-var sumPop_2003 = sumPop_2002.map(function(feature) {
-  return feature.set(pop_2003.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2004 = yearImages.select("pop_2004");
-
-var sumPop_2004 = sumPop_2003.map(function(feature) {
-  return feature.set(pop_2004.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2005 = yearImages.select("pop_2005");
-
-var sumPop_2005 = sumPop_2004.map(function(feature) {
-  return feature.set(pop_2005.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2006 = yearImages.select("pop_2006");
-
-var sumPop_2006 = sumPop_2005.map(function(feature) {
-  return feature.set(pop_2006.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2007 = yearImages.select("pop_2007");
-
-var sumPop_2007 = sumPop_2006.map(function(feature) {
-  return feature.set(pop_2007.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2008 = yearImages.select("pop_2008");
-
-var sumPop_2008 = sumPop_2007.map(function(feature) {
-  return feature.set(pop_2008.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2009 = yearImages.select("pop_2009");
-
-var sumPop_2009 = sumPop_2008.map(function(feature) {
-  return feature.set(pop_2009.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2010 = yearImages.select("pop_2010");
-
-var sumPop_2010 = sumPop_2009.map(function(feature) {
-  return feature.set(pop_2010.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2011 = yearImages.select("pop_2011");
-
-var sumPop_2011 = sumPop_2010.map(function(feature) {
-  return feature.set(pop_2011.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-var pop_2012 = yearImages.select("pop_2012");
-
-var sumPop_2012 = sumPop_2011.map(function(feature) {
-  return feature.set(pop_2012.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: feature.geometry(), scale: 30
-  }));
-});
-
-
-
-Export.table.toDrive(sumPop_2012, "worldPopGroup2", "deforTilesGEE");
-
-
-
-///////////////////////////////////////////////////////////////////////
-//
-//  Nighttime lights
-//
-///////////////////////////////////////////////////////////////////////
-
-
-var light = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
-                  .filter(ee.Filter.date('2001-01-01', '2012-12-31'));
-
-var lt_2001 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152001').toBands();
-
-var light_2001 = tiles.map(function(feature) {
-  return feature.set(lt_2001.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2002 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152002').toBands();
-
-var light_2002 = light_2001.map(function(feature) {
-  return feature.set(lt_2002.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2003 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152003').toBands();
-
-var light_2003 = light_2002.map(function(feature) {
-  return feature.set(lt_2003.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2004 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152004').toBands();
-
-var light_2004 = light_2003.map(function(feature) {
-  return feature.set(lt_2004.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2005 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152005').toBands();
-
-var light_2005 = light_2004.map(function(feature) {
-  return feature.set(lt_2005.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2006 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152006').toBands();
-
-var light_2006 = light_2005.map(function(feature) {
-  return feature.set(lt_2006.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2007 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152007').toBands();
-
-var light_2007 = light_2006.map(function(feature) {
-  return feature.set(lt_2007.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2008 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152008').toBands();
-
-var light_2008 = light_2007.map(function(feature) {
-  return feature.set(lt_2008.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2009 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F162009').toBands();
-
-var light_2009 = light_2008.map(function(feature) {
-  return feature.set(lt_2009.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2010 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F182010').toBands();
-
-var light_2010 = light_2009.map(function(feature) {
-  return feature.set(lt_2010.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-
-var lt_2011 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F182011').toBands();
-
-var light_2011 = light_2010.map(function(feature) {
-  return feature.set(lt_2011.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2012 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F182012').toBands();
-
-var light_2012 = light_2011.map(function(feature) {
-  return feature.set(lt_2012.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-Export.table.toDrive(light_2012, "nightLightsGroup2", "deforTilesGEE");
-
-
 
 
