@@ -142,7 +142,7 @@ print(sumPop_2012);
 
 
 
-Export.table.toDrive(sumPop_2012, "Pop_Group2", "deforTilesGEE");
+//Export.table.toDrive(sumPop_2012, "Pop_Group2", "deforTilesGEE");
 
 
 
