@@ -145,3 +145,10 @@ print(sumPop_2012);
 Export.table.toDrive(sumPop_2012, "Pop_Group2", "deforTilesGEE");
 
 
+
+var chunk = 50000;
+var collectionSize = 300000;
+for (var i = 0; i<collectionSize;i=i+chunk){
+  var subset = ee.FeatureCollection(sumPop_2012.toList(chunk, i));
+  Export.table.toDrive(subset, "PopGroup2_", "deforTilesGEE");
+}
