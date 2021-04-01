@@ -1157,11 +1157,11 @@ var ecosample = joinAll.map(function(feature){
 /////////////////////////////////////////////////////////////////////////////
 
 //Sub-Saharan Africa administrative district shapefile
-var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
+var SSA = ee.FeatureCollection("FAO/GAUL/2015/level0");
 
 
 //Specify the properties that I want to copy from the SSA shapefile
-var properties = ["ADM0","ADM1", "ADM2"];
+var properties = ["ADM0_NAME"];
 
 // Define a spatial filter as geometries that intersect.
 var spatialFilter = ee.Filter.intersects({
@@ -1219,49 +1219,6 @@ print(protecteddata.limit(10), "Protection status of centroid");
 
 Export.table.toDrive(protecteddata, "tileProtectedGroup2", "deforTilesGEE");
 
-///////////////////////////////////////////////////////////////////////
-//
-//  Remoteness measure - use Harvest choice to get travel time from centroid
-//
-///////////////////////////////////////////////////////////////////////
-
-var distanceMkt100K = ee.Image('users/salem043/traveltimetomarket_ssa_100k');
-
-var distanceMkt50K = ee.Image('users/salem043/traveltimetomarket_ssa_050k');
-
-//print(distanceMkt100K);
-
-
-var remoteness = SSAdata.map(function(feature) {
-  return feature.set(distanceMkt100K.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 100,
-  }));
-});
-
-///print(remoteness.limit(2), "travel time to nearest mkt +100k");
-
-var remote_100k = remoteness.select(["ADM0", "ADM1", "ADM2", "b1"], 
-["ADM0", "ADM1", "ADM2", "distMkt100k"]);
-
-
-
-var remoteness2 = SSAdata.map(function(feature) {
-  return feature.set(distanceMkt50K.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 100,
-  }));
-});
-
-
-var remotenessADM = remoteness2.select(["ADM0", "ADM1", "ADM2", "distMkt100k", "b1"], 
-["ADM0", "ADM1", "ADM2", "distMkt100k", "distMkt50k"]);
-
-///print(remotenessADM.limit(1), "remoteness measures and ADMs")
-
-
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1281,7 +1238,7 @@ var spatialFilter = ee.Filter.intersects({
 });
 
 // Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(remotenessADM, buffs2, spatialFilter);
+var joinAll = ee.Join.saveAll('matched').apply(tileCentroids, buffs2, spatialFilter);
 
 // Since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
@@ -1302,13 +1259,6 @@ var bufferID = joinAll.map(function(feature){
 //
 /////////////////////////////////////////////////////////////////////
 
-///print(pointdata_withbandcounts_12.limit(1)); ///Camp counts by buffers and years
-///print(ecosample.limit(1)); ///Biome
-///print(remotenessADM.limit(1)); ///Distance to nearest market and ADM
-///print(tiles_new.limit(1)); ///GFC number pixels transition to zero FC by year
-///print(DataRenamed.limit(1)); //GFC 2000 and within-tile pixel counts
-///print(bufferID.limit(1)); //ID of buffer that tile falls in
-
 Export.table.toDrive({
   collection: tiles_new.select(['system:index', 'loss1', 'loss2', 'loss3',
   'loss4', 'loss5', 'loss6', 'loss7', 'loss8', 'loss9', 'loss10', 'loss11', 'loss12'],
@@ -1322,8 +1272,7 @@ Export.table.toDrive({
 
 //Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
 Export.table.toDrive(ecosample, "biomeGroup2", "deforTilesGEE");
-Export.table.toDrive(remoteness, "remoteness100kADMGroup2", "deforTilesGEE");
-Export.table.toDrive(remoteness2, "remoteness50kADMGroup2", "deforTilesGEE");
+Export.table.toDrive(SSAdata, "countryGroup2", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
 Export.table.toDrive(bufferID, "tileBufferIDGroup2", "deforTilesGEE");
