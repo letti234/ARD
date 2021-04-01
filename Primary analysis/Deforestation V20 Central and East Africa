@@ -104,11 +104,6 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //
 ///////////////////////////////////////////////////////////////////////
 
-//Tiles below are measured in degrees. (Ugh, but I want meters!)
-//0.1 degrees is about 11 km at equator. Kept large for training
-//Code courtesty of a kind stranger who offered it on Stack Exchange
-//!!Need to figure out how to form these tiles in meters
-//!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
 var tiles = tile(buffsUnion, 0.01); 
 
 function tile(region, size_in_degrees) {
@@ -157,10 +152,6 @@ function tile(region, size_in_degrees) {
       'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
     )
 }
-
-///print(tiles.limit(10), "Baseline tiles");
-
-//Map.addLayer(tiles, {}, "tiles");
 
 ///////////////////////////////////////////////////////////////////////
 //
