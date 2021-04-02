@@ -13,17 +13,9 @@
 var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV1');
 
 Map.addLayer(camps);
+print(camps);
 
-var campFilter = ee.Filter.inList('COUNTRY', ['Senegal', 'Gambia',
-'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
-'Burkina Faso', 'Ghana',
-'Togo', 'Benin', 'Niger', 'Nigeria']);
-
-
-var filteredArea = camps.filter(campFilter);
-var campRegion=camps.filter(campFilter);
-
-Map.addLayer(campRegion);
+var campRegion = camps ;
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
@@ -105,7 +97,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 0.01); 
+var tiles = tile(buffsUnion, 0.1); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
