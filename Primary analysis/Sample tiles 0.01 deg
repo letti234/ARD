@@ -98,7 +98,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 0.02); 
+var tiles = tile(buffsUnion, 0.01); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
