@@ -34,7 +34,6 @@ var gfcSampleCover2000= gfc2014.select(["treecover2000"]);
 var gfcSampleMask=gfc2014.select(["datamask"]);
 var gfcSampleLossYr = gfc2014.select(["lossyear"]);
 
-
 ///////////////////////////////////////////////////////////////////////
 //
 //  Create dissolved buffer FC 
@@ -43,20 +42,18 @@ var gfcSampleLossYr = gfc2014.select(["lossyear"]);
 
 //Produce 30 km  buffer around the camps - this the are we are going to study
 var bufferPoly = function(feature) {
-  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
+  return feature.buffer(30000);  
 };
 
 var buffers = campRegion.map(bufferPoly);
 
 var buffsUnion = buffers.union();
 
-//dissolve and transform to FC so that we can identify each
-//tile's buffer ID
+//dissolve and transform to FC so that we can identify each tile's buffer ID
 
 var buffsGeoDissolve =buffers.geometry().dissolve();
 //print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
 Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
-
 
 var fc = ee.FeatureCollection([
   ee.Feature(buffsGeoDissolve)
@@ -160,16 +157,11 @@ function tile(region, size_in_degrees) {
     )
 }
 
-///print(tiles.limit(10), "Baseline tiles");
-
-//Map.addLayer(tiles, {}, "tiles");
-
 ///////////////////////////////////////////////////////////////////////
 //
 //  GFC zonal stats
 //
 ///////////////////////////////////////////////////////////////////////
-
 
 //1. Function counts the number of pixels in each tile
 
@@ -186,7 +178,6 @@ var tileCounts = pixelCounts.select(
 );
 
 //print("Number of pixels that are not NA", tileCounts);
-
 
 //2. Function to calculate the mean pct forest cover of tile in 2000
 
@@ -225,9 +216,6 @@ var DataRenamed = TileCounts2.map(function(feat){
   });
 });
 ///print(DataRenamed.limit(10), "Renaming GFC data");
-
-
-
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -273,7 +261,6 @@ var tiles_new = tiles.map(function(feature){
 })
 
 ///print(tiles_new.limit(3), "Tile results");
-
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -1128,8 +1115,6 @@ var pointdata_withbandcounts_12 = withNearestDist.map(function(pt) {
 var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 //print('ecoregions', ecodata.limit(10));
 
-
-//Specify the properties that I want to copy from the SSA shapefile
 var properties = ["BIOME_NAME","ECO_NAME", "systemindex"];
 
 // Define a spatial filter as geometries that intersect.
@@ -1184,76 +1169,6 @@ var SSAdata = joinAll.map(function(feature){
 });
 
 ///print(SSAdata, "SSA ADM of centroid");
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//Determine if tile is in protected area
-//
-/////////////////////////////////////////////////////////////////////////////
-
-//Parks
-var parks = ee.FeatureCollection("WCMC/WDPA/current/polygons");
-
-//Sub-Saharan Africa administrative district shapefile
-print(parks.limit(10), "Protected areas data");
-
-//Specify the properties that I want to copy from the SSA shapefile
-var properties = ["IUCN_CAT","OWN_TYPE", "STATUS", "STATUS_YR"];
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(tileCentroids, parks, spatialFilter);
-
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var protecteddata = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-print(protecteddata.limit(10), "Protection status of centroid");
-
-Export.table.toDrive(protecteddata, "tileProtectedGroup2", "deforTilesGEE");
-
-
-///////////////////////////////////////////////////////////////////////
-//
-//  Zonal statistics: get tile buffer ID
-//
-///////////////////////////////////////////////////////////////////////
-
-var buffs2 = buffDissolveFC.select(["system:index"], ["Buffer ID"]);
-
-
-var properties = ["Buffer ID"];
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(tileCentroids, buffs2, spatialFilter);
-
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var bufferID = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-
-//print('sample extract', bufferID.limit(2));
-
 
 
 /////////////////////////////////////////////////////////////////////
