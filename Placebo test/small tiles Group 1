@@ -1066,9 +1066,6 @@ var SSAdata = joinAll.map(function(feature){
 ///print(SSAdata, "SSA ADM of centroid");
 
 
-//print('sample extract', bufferID.limit(2));
-
-
 /////////////////////////////////////////////////////////////////////
 //
 //Export
@@ -1091,6 +1088,4 @@ Export.table.toDrive(ecosample, "biomeGroup1", "deforTilesGEE");
 Export.table.toDrive(SSAdata, "countryGroup1", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup1", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1", "deforTilesGEE");
-Export.table.toDrive(bufferID, "tileBufferIDGroup1", "deforTilesGEE");
-
 
