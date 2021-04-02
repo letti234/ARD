@@ -1,5 +1,5 @@
 //Refugees and deforestation analysis
-//Tabular data export: Group 1
+//Tabular data export: Group 2 (Central and Eastern Africa)
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -10,15 +10,15 @@
 
 //Read in camp data - this is saved in wide format, with binary indicators
 //of whether a camp was open 1999-2016
-var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV2');
+var camps = ee.FeatureCollection('users/salem043/allcampwidev3');
 
 Map.addLayer(camps);
 print(camps);
 
-var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
-'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
-'Burkina Faso', 'Ghana',
-'Togo', 'Benin', 'Niger', 'Nigeria']);
+var campFilter = ee.Filter.inList('country', ['Chad',
+'CAR', 'Sudan', 'South Sudan', 'Ethiopia',
+'Rwanda', 'Burundi', 'DRC', 'Tanzania', 'Rep. Congo',
+]);
 
 
 var filteredArea = camps.filter(campFilter);
@@ -26,8 +26,6 @@ var filteredArea = camps.filter(campFilter);
 var campRegion=camps.filter(campFilter);
 
 
-
-var campRegion = camps ;
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
@@ -51,7 +49,6 @@ var bufferPoly = function(feature) {
 var buffers = campRegion.map(bufferPoly);
 
 var buffsUnion = buffers.union();
-Map.addLayer(buffsUnion);
 
 //dissolve and transform to FC so that we can identify each
 //tile's buffer ID
@@ -109,7 +106,12 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 0.1); 
+//Tiles below are measured in degrees. (Ugh, but I want meters!)
+//0.1 degrees is about 11 km at equator. Kept large for training
+//Code courtesty of a kind stranger who offered it on Stack Exchange
+//!!Need to figure out how to form these tiles in meters
+//!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
+var tiles = tile(buffsUnion, 0.01); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -157,6 +159,10 @@ function tile(region, size_in_degrees) {
       'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
     )
 }
+
+///print(tiles.limit(10), "Baseline tiles");
+
+//Map.addLayer(tiles, {}, "tiles");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1180,6 +1186,42 @@ var SSAdata = joinAll.map(function(feature){
 ///print(SSAdata, "SSA ADM of centroid");
 
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//Determine if tile is in protected area
+//
+/////////////////////////////////////////////////////////////////////////////
+
+//Parks
+var parks = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+
+//Sub-Saharan Africa administrative district shapefile
+print(parks.limit(10), "Protected areas data");
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["IUCN_CAT","OWN_TYPE", "STATUS", "STATUS_YR"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(tileCentroids, parks, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var protecteddata = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print(protecteddata.limit(10), "Protection status of centroid");
+
+Export.table.toDrive(protecteddata, "tileProtectedGroup2", "deforTilesGEE");
+
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1226,16 +1268,16 @@ Export.table.toDrive({
   ['ID', 'loss2001', 'loss2002', 'loss2003', 'loss2004', 'loss2005', 'loss2006', 
   'loss2007', 'loss2008', 'loss2009', 'loss2010', 'loss2011', 'loss2012'   ]),
   fileFormat: 'SHP',
-  description: 'ShapefilePlaceboGroup1',
+  description: 'ShapefileGroup2',
   folder: "deforTilesGEE"
 });
 
 
 //Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
-Export.table.toDrive(ecosample, "biomeGroup1Placebo", "deforTilesGEE");
-Export.table.toDrive(SSAdata, "countryGroup1Placebo", "deforTilesGEE");
-Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup1Placebo", "deforTilesGEE");
-Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1Placebo", "deforTilesGEE");
-Export.table.toDrive(bufferID, "tileBufferIDGroup1Placebo", "deforTilesGEE");
+Export.table.toDrive(ecosample, "biomeGroup2", "deforTilesGEE");
+Export.table.toDrive(SSAdata, "countryGroup2", "deforTilesGEE");
+Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
+Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
+Export.table.toDrive(bufferID, "tileBufferIDGroup2", "deforTilesGEE");
 
 
