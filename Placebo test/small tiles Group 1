@@ -28,43 +28,6 @@ var gfcSampleLossYr = gfc2014.select(["lossyear"]);
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  Create dissolved buffer FC 
-//
-///////////////////////////////////////////////////////////////////////
-
-//Produce 30 km  buffer around the camps - this the are we are going to study
-var bufferPoly = function(feature) {
-  return feature.buffer(30000);  
-};
-
-var buffers = campRegion.map(bufferPoly);
-
-var buffsUnion = buffers.union();
-
-//dissolve and transform to FC so that we can identify each tile's buffer ID
-
-var buffsGeoDissolve =buffers.geometry().dissolve();
-//print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
-Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
-
-var fc = ee.FeatureCollection([
-  ee.Feature(buffsGeoDissolve)
-]);
-//print(fc);
-
-var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
-  var geomList = ee.Feature(feature).geometry().geometries();
-  var featureList = geomList.map(function(geom) {
-    return ee.Feature(ee.Geometry(geom));
-  });
-  return featureList;
-})
-.flatten();
-
-var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
-
-///////////////////////////////////////////////////////////////////////
-//
 //  Clean the GFC data - use the mask layer to assign all pixels
 //  with no data or in bodies of water as NA
 //
@@ -88,66 +51,6 @@ var gfc2000CoverMasked = gfcSampleCover2000.updateMask(gfcSampleMask);
 var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Map.addLayer(gfcLossYearMasked);
 
-///////////////////////////////////////////////////////////////////////
-//
-//  Tile production - we'll use these tiles to calculate zonal stats.
-//  The tiles are the unit of analysis in our regression
-//
-///////////////////////////////////////////////////////////////////////
-
-//Tiles below are measured in degrees. (Ugh, but I want meters!)
-//0.1 degrees is about 11 km at equator. Kept large for training
-//Code courtesty of a kind stranger who offered it on Stack Exchange
-//!!Need to figure out how to form these tiles in meters
-//!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffsUnion, 0.01); 
-
-function tile(region, size_in_degrees) {
-  function tile_geometry(geometry) {
-    var coords = ee.List(geometry.bounds().coordinates().get(0))
-    var min_point = ee.List(coords.get(0))
-    var max_point = ee.List(coords.get(2))
-  
-    function sequence(direction) {
-      var start = min_point.get(direction)  
-      var stop = ee.Number(max_point.get(direction))
-      return ee.List.sequence(start, stop, size_in_degrees)
-    }
-  
-    var tiles = sequence(0).map(function (x) {
-      return sequence(1).map(function (y) { 
-          return ee.Feature(ee.Geometry.Rectangle([
-            [ee.Number(x), ee.Number(y)],
-            [
-              ee.Number(x).add(size_in_degrees).min(max_point.get(0)),
-              ee.Number(y).add(size_in_degrees).min(max_point.get(1))
-            ]
-        ]).intersection(geometry, 30))
-      })
-  	}).flatten()
-    return ee.FeatureCollection(tiles).filterBounds(geometry)
-  }
-
-  function tile_feature_collection(feature_collection) {
-    return ee.FeatureCollection(
-      feature_collection.iterate(
-        function (feature, acc) {
-          return ee.FeatureCollection(acc).merge(tile_geometry(ee.Feature(feature).geometry()))
-        }, ee.FeatureCollection([]))
-    )
-  }
-
-  if (region instanceof ee.FeatureCollection)
-    return tile_feature_collection(region)
-  else if (region instanceof ee.Feature)
-    return tile_geometry(region.geometry())
-  else if (region instanceof ee.Geometry)
-    return tile_geometry(region)
-  else
-    throw Error(
-      'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
-    )
-}
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1163,37 +1066,7 @@ var SSAdata = joinAll.map(function(feature){
 ///print(SSAdata, "SSA ADM of centroid");
 
 
-///////////////////////////////////////////////////////////////////////
-//
-//  Zonal statistics: get tile buffer ID
-//
-///////////////////////////////////////////////////////////////////////
-
-var buffs2 = buffDissolveFC.select(["system:index"], ["Buffer ID"]);
-
-
-var properties = ["Buffer ID"];
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(tileCentroids, buffs2, spatialFilter);
-
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var bufferID = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-
 //print('sample extract', bufferID.limit(2));
-
 
 
 /////////////////////////////////////////////////////////////////////
