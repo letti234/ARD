@@ -1226,6 +1226,4 @@ Export.table.toDrive(SSAdata, "countryGroup2", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
 Export.table.toDrive(bufferID, "tileBufferIDGroup2", "deforTilesGEE");
-Export.table.toDrive(tiles_new, "lossGroup2", "deforTilesGEE");
-
 
