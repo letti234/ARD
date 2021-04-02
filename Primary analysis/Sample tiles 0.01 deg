@@ -1,5 +1,5 @@
 //Refugees and deforestation analysis
-//Tabular data export: Group 1
+//Sample tiles - 0.01°
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -157,7 +157,7 @@ Export.table.toDrive({
   collection: bufferID.select(['system:index', "Buffer_ID"],
   ['ID', "Buffer_ID"]),
   fileFormat: 'SHP',
-  description: 'PlaceboTiles',
+  description: 'sampleTiles',
   folder: "deforTilesGEE"
 });
 
