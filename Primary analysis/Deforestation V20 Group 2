@@ -1215,7 +1215,7 @@ Export.table.toDrive({
   ['ID', 'loss2001', 'loss2002', 'loss2003', 'loss2004', 'loss2005', 'loss2006', 
   'loss2007', 'loss2008', 'loss2009', 'loss2010', 'loss2011', 'loss2012'   ]),
   fileFormat: 'SHP',
-  description: 'ShapefileGroup2',
+  description: 'ShapefileForestlossGroup2',
   folder: "deforTilesGEE"
 });
 
