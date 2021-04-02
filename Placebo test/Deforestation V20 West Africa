@@ -14,18 +14,16 @@ var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV1');
 
 Map.addLayer(camps);
 
-var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
+var campFilter = ee.Filter.inList('COUNTRY', ['Senegal', 'Gambia',
 'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
 'Burkina Faso', 'Ghana',
 'Togo', 'Benin', 'Niger', 'Nigeria']);
 
 
-
 var filteredArea = camps.filter(campFilter);
-
 var campRegion=camps.filter(campFilter);
 
-
+Map.addLayer(campRegion);
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
@@ -49,6 +47,7 @@ var bufferPoly = function(feature) {
 var buffers = campRegion.map(bufferPoly);
 
 var buffsUnion = buffers.union();
+Map.addLayer(buffsUnion);
 
 //dissolve and transform to FC so that we can identify each
 //tile's buffer ID
