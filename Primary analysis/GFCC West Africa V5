@@ -1,4 +1,5 @@
 //Refugees and deforestation analysis
+//GFCC Data
 //Tabular data export: Group 1
 
 ///////////////////////////////////////////////////////////////////////
@@ -515,6 +516,5 @@ var pointdata_withbandcounts_99 = withNearestDist.map(function(pt) {
 });
 
 print(pointdata_withbandcounts_99.limit(2), "90s camp exposure data");
-
 
 Export.table.toDrive(pointdata_withbandcounts_99, "camps90sGroup1", "deforTilesGEE");
