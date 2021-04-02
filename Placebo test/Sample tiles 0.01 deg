@@ -17,14 +17,6 @@ print(camps);
 
 var campRegion = camps;
 
-//Import Hansen Global Forest Change data
-var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
-
-//The bands we rely on for our analysis
-var gfcSampleCover2000= gfc2014.select(["treecover2000"]);
-var gfcSampleMask=gfc2014.select(["datamask"]);
-var gfcSampleLossYr = gfc2014.select(["lossyear"]);
-
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -65,31 +57,6 @@ var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
 .flatten();
 
 var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
-
-///////////////////////////////////////////////////////////////////////
-//
-//  Clean the GFC data - use the mask layer to assign all pixels
-//  with no data or in bodies of water as NA
-//
-///////////////////////////////////////////////////////////////////////
-
-//Reclassify 2 = NA and 0 = NA in the mask layer
-
-var gfcSampleMask = gfcSampleMask
-.remap([ 1],
-       [1], null);
-       
-//Map.addLayer(gfcSampleMask);
-
-//Mask the mask layer to the two other GEE rasters so that NAs in the
-//mask layer are NAs in those rasters
-//var gfcSampleCover2000Masked=mask()
-
-var gfc2000CoverMasked = gfcSampleCover2000.updateMask(gfcSampleMask);
-//Map.addLayer(gfc2000CoverMasked);
-
-var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
-//Map.addLayer(gfcLossYearMasked);
 
 ///////////////////////////////////////////////////////////////////////
 //
