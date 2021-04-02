@@ -18,8 +18,8 @@ print(camps);
 //Load tile placebo data
 var tilesAll = ee.FeatureCollection('users/salem043/placeboTilesLabeled');
 
-//var groupFilter = ee.Filter.equals('group', 1);
-var groupFilter = ee.Filter.equals('ID', '2_8265');
+var groupFilter = ee.Filter.equals('group', 1);
+//var groupFilter = ee.Filter.equals('ID', '2_8265');
 
 var tiles=tilesAll.filter(groupFilter);
 
@@ -1165,15 +1165,15 @@ print(ecosample.limit(2), "biome");
 
 //Export number of camps within tile
 Export.table.toDrive(tiles_2012,
-"lulcCoverGroup1", "deforTilesGEE");
+"PlulcCoverGroup1", "deforTilesGEE");
 
 //Export number of camps within tile
 Export.table.toDrive(pointdata_withbandcounts_12,
-"lulcCampsGroup1", "deforTilesGEE");
+"PlulcCampsGroup1", "deforTilesGEE");
 
 //Export biome as csv
-Export.table.toDrive(ecosample, "lulcBiomeGroup1", "deforTilesGEE");
+Export.table.toDrive(ecosample, "PlulcBiomeGroup1", "deforTilesGEE");
 
 //Export SSA country as CSV
-Export.table.toDrive(SSAdata, "lulcCountryGroup1", "deforTilesGEE");
+Export.table.toDrive(SSAdata, "PlulcCountryGroup1", "deforTilesGEE");
 
