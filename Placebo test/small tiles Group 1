@@ -1510,6 +1510,5 @@ var count10_2010 = tiles.map(function(feature) {
   }));
 });
 
-
 Export.table.toDrive(count10_2010, "gfcc10countGroup1_2010", "deforTilesGEE");
 
