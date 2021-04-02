@@ -299,7 +299,7 @@ print('sample extract', bufferID.limit(2));
 /////////////////////////////////////////////////////////////////////
 
 Export.table.toDrive({
-  collection: tiles.select(['system:index', "Buffer_ID"],
+  collection: bufferID.select(['system:index', "Buffer_ID"],
   ['ID', "Buffer_ID"]),
   fileFormat: 'SHP',
   description: 'PlaceboTiles',
