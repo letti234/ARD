@@ -1,5 +1,5 @@
 //Refugees and deforestation analysis
-//Tabular data export: Group 2
+//Tabular data export: Group 1
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -8,10 +8,26 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = ee.FeatureCollection('users/salem043/placeboTilesLabeled');
-
+//Read in camp data - this is saved in wide format, with binary indicators
+//of whether a camp was open 1999-2016
 var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV2');
 
+Map.addLayer(camps);
+print(camps);
+
+var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
+'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
+'Burkina Faso', 'Ghana',
+'Togo', 'Benin', 'Niger', 'Nigeria']);
+
+
+var filteredArea = camps.filter(campFilter);
+
+var campRegion=camps.filter(campFilter);
+
+
+
+var campRegion = camps ;
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
@@ -20,6 +36,46 @@ var gfcSampleCover2000= gfc2014.select(["treecover2000"]);
 var gfcSampleMask=gfc2014.select(["datamask"]);
 var gfcSampleLossYr = gfc2014.select(["lossyear"]);
 
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Create dissolved buffer FC 
+//
+///////////////////////////////////////////////////////////////////////
+
+//Produce 30 km  buffer around the camps - this the are we are going to study
+var bufferPoly = function(feature) {
+  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
+};
+
+var buffers = campRegion.map(bufferPoly);
+
+var buffsUnion = buffers.union();
+Map.addLayer(buffsUnion);
+
+//dissolve and transform to FC so that we can identify each
+//tile's buffer ID
+
+var buffsGeoDissolve =buffers.geometry().dissolve();
+//print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
+Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
+
+
+var fc = ee.FeatureCollection([
+  ee.Feature(buffsGeoDissolve)
+]);
+//print(fc);
+
+var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
+  var geomList = ee.Feature(feature).geometry().geometries();
+  var featureList = geomList.map(function(geom) {
+    return ee.Feature(ee.Geometry(geom));
+  });
+  return featureList;
+})
+.flatten();
+
+var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -46,6 +102,61 @@ var gfc2000CoverMasked = gfcSampleCover2000.updateMask(gfcSampleMask);
 var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //Map.addLayer(gfcLossYearMasked);
 
+///////////////////////////////////////////////////////////////////////
+//
+//  Tile production - we'll use these tiles to calculate zonal stats.
+//  The tiles are the unit of analysis in our regression
+//
+///////////////////////////////////////////////////////////////////////
+
+var tiles = tile(buffsUnion, 0.1); 
+
+function tile(region, size_in_degrees) {
+  function tile_geometry(geometry) {
+    var coords = ee.List(geometry.bounds().coordinates().get(0))
+    var min_point = ee.List(coords.get(0))
+    var max_point = ee.List(coords.get(2))
+  
+    function sequence(direction) {
+      var start = min_point.get(direction)  
+      var stop = ee.Number(max_point.get(direction))
+      return ee.List.sequence(start, stop, size_in_degrees)
+    }
+  
+    var tiles = sequence(0).map(function (x) {
+      return sequence(1).map(function (y) { 
+          return ee.Feature(ee.Geometry.Rectangle([
+            [ee.Number(x), ee.Number(y)],
+            [
+              ee.Number(x).add(size_in_degrees).min(max_point.get(0)),
+              ee.Number(y).add(size_in_degrees).min(max_point.get(1))
+            ]
+        ]).intersection(geometry, 30))
+      })
+  	}).flatten()
+    return ee.FeatureCollection(tiles).filterBounds(geometry)
+  }
+
+  function tile_feature_collection(feature_collection) {
+    return ee.FeatureCollection(
+      feature_collection.iterate(
+        function (feature, acc) {
+          return ee.FeatureCollection(acc).merge(tile_geometry(ee.Feature(feature).geometry()))
+        }, ee.FeatureCollection([]))
+    )
+  }
+
+  if (region instanceof ee.FeatureCollection)
+    return tile_feature_collection(region)
+  else if (region instanceof ee.Feature)
+    return tile_geometry(region.geometry())
+  else if (region instanceof ee.Geometry)
+    return tile_geometry(region)
+  else
+    throw Error(
+      'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
+    )
+}
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1069,42 +1180,6 @@ var SSAdata = joinAll.map(function(feature){
 ///print(SSAdata, "SSA ADM of centroid");
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//Determine if tile is in protected area
-//
-/////////////////////////////////////////////////////////////////////////////
-
-//Parks
-var parks = ee.FeatureCollection("WCMC/WDPA/current/polygons");
-
-//Sub-Saharan Africa administrative district shapefile
-print(parks.limit(10), "Protected areas data");
-
-//Specify the properties that I want to copy from the SSA shapefile
-var properties = ["IUCN_CAT","OWN_TYPE", "STATUS", "STATUS_YR"];
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(tileCentroids, parks, spatialFilter);
-
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var protecteddata = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-print(protecteddata.limit(10), "Protection status of centroid");
-
-Export.table.toDrive(protecteddata, "tileProtectedGroup2", "deforTilesGEE");
-
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1151,16 +1226,16 @@ Export.table.toDrive({
   ['ID', 'loss2001', 'loss2002', 'loss2003', 'loss2004', 'loss2005', 'loss2006', 
   'loss2007', 'loss2008', 'loss2009', 'loss2010', 'loss2011', 'loss2012'   ]),
   fileFormat: 'SHP',
-  description: 'ShapefileForestlossGroup2',
+  description: 'ShapefilePlaceboGroup1',
   folder: "deforTilesGEE"
 });
 
 
 //Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
-Export.table.toDrive(ecosample, "biomeGroup2", "deforTilesGEE");
-Export.table.toDrive(SSAdata, "countryGroup2", "deforTilesGEE");
-Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
-Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
-Export.table.toDrive(bufferID, "tileBufferIDGroup2", "deforTilesGEE");
+Export.table.toDrive(ecosample, "biomeGroup1Placebo", "deforTilesGEE");
+Export.table.toDrive(SSAdata, "countryGroup1Placebo", "deforTilesGEE");
+Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup1Placebo", "deforTilesGEE");
+Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1Placebo", "deforTilesGEE");
+Export.table.toDrive(bufferID, "tileBufferIDGroup1Placebo", "deforTilesGEE");
 
 
