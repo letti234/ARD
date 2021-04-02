@@ -302,7 +302,7 @@ Export.table.toDrive({
   collection: bufferID.select(['system:index', "Buffer_ID"],
   ['ID', "Buffer_ID"]),
   fileFormat: 'SHP',
-  description: 'PlaceboTiles',
+  description: 'PlaceboTilesBig',
   folder: "deforTilesGEE"
 });
 
