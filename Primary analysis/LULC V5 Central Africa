@@ -6,7 +6,7 @@
 
 
 //Sub-Saharan Africa administrative district shapefile
-var SSA = ee.FeatureCollection('users/salem043/Africa_Districts');
+var SSA = ee.FeatureCollection("FAO/GAUL/2015/level0");
 
 //Ecoregions data
 var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
@@ -1183,7 +1183,7 @@ print(pointdata_withbandcounts_12.limit(1), "camp count 2012")  ;
 
 
 //Specify the properties that I want to copy from the SSA shapefile
-var properties = ["ADM0"];
+var properties = ["ADM0_NAME"];
 
 // Define a spatial filter as geometries that intersect.
 var spatialFilter = ee.Filter.intersects({
