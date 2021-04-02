@@ -34,7 +34,7 @@ var gfcSampleLossYr = gfc2014.select(["lossyear"]);
 
 //Produce 30 km  buffer around the camps - this the are we are going to study
 var bufferPoly = function(feature) {
-  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
+  return feature.buffer(30000); 
 };
 
 var buffers = campRegion.map(bufferPoly);
@@ -98,7 +98,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 0.1); 
+var tiles = tile(buffsUnion, 0.01); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -258,6 +258,40 @@ var tiles_new = tiles.map(function(feature){
 ///print(tiles_new.limit(3), "Tile results");
 
 
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Zonal statistics: get tile buffer ID
+//
+///////////////////////////////////////////////////////////////////////
+
+var buffs2 = buffDissolveFC.select(["system:index"], ["Buffer_ID"]);
+
+
+var properties = ["Buffer_ID"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(tiles, buffs2, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var bufferID = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+
+print('sample extract', bufferID.limit(2));
+
+
+
 /////////////////////////////////////////////////////////////////////
 //
 //Export
@@ -265,8 +299,8 @@ var tiles_new = tiles.map(function(feature){
 /////////////////////////////////////////////////////////////////////
 
 Export.table.toDrive({
-  collection: tiles.select(['system:index'],
-  ['ID']),
+  collection: tiles.select(['system:index', "Buffer_ID"],
+  ['ID', "Buffer_ID"]),
   fileFormat: 'SHP',
   description: 'PlaceboTiles',
   folder: "deforTilesGEE"
