@@ -1168,43 +1168,6 @@ var SSAdata = joinAll.map(function(feature){
 ///print(SSAdata, "SSA ADM of centroid");
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//Determine if tile is in protected area
-//
-/////////////////////////////////////////////////////////////////////////////
-
-//Parks
-var parks = ee.FeatureCollection("WCMC/WDPA/current/polygons");
-
-//Sub-Saharan Africa administrative district shapefile
-print(parks.limit(10), "Protected areas data");
-
-//Specify the properties that I want to copy from the SSA shapefile
-var properties = ["IUCN_CAT","OWN_TYPE", "STATUS", "STATUS_YR"];
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(tileCentroids, parks, spatialFilter);
-
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var protecteddata = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-print(protecteddata.limit(10), "Protection status of centroid");
-
-Export.table.toDrive(protecteddata, "tileProtectedGroup2", "deforTilesGEE");
-
-
 ///////////////////////////////////////////////////////////////////////
 //
 //  Zonal statistics: get tile buffer ID
