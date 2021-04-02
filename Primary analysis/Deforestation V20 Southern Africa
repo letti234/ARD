@@ -10,7 +10,7 @@
 
 //Read in camp data - this is saved in wide format, with binary indicators
 //of whether a camp was open 1999-2016
-var camps = ee.FeatureCollection('users/salem043/allcampwidev2');
+var camps = ee.FeatureCollection('users/salem043/allcampwidev3');
 
 Map.addLayer(camps);
 
