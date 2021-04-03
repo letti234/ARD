@@ -12,7 +12,7 @@ var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV3');
 
 Map.addLayer(camps);
 
-var campFilter = ee.Filter.inList('CODE', ['ZAI', 'DJI', 'ERI', 'ETH', 'SUD', 'GAB', 'CNG']);
+var campFilter = ee.Filter.inList('CODE', ['KEN', 'UGA', 'TAN', 'MOZ', 'MAA']);
 
 var filteredArea = camps.filter(campFilter);
 var campRegion=camps.filter(campFilter);
