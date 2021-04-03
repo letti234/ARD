@@ -1483,17 +1483,17 @@ Export.table.toDrive({
   ['ID', 'loss2001', 'loss2002', 'loss2003', 'loss2004', 'loss2005', 'loss2006', 
   'loss2007', 'loss2008', 'loss2009', 'loss2010', 'loss2011', 'loss2012'   ]),
   fileFormat: 'SHP',
-  description: 'ShapefileForestlossGroup1',
+  description: 'ShapefileForestlossGroup2',
   folder: "deforTilesGEE"
 });
 
 //Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
-Export.table.toDrive(ecosample, "biomeGroup1", "deforTilesGEE");
-Export.table.toDrive(SSAdata, "countryGroup1", "deforTilesGEE");
-Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup1", "deforTilesGEE");
-Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1", "deforTilesGEE");
-Export.table.toDrive(tiles_new, "lossGroup1", "deforTilesGEE");
-Export.table.toDrive(bufferID, "bufferIDGroup1", "deforTilesGEE");
+Export.table.toDrive(ecosample, "biomeGroup2", "deforTilesGEE");
+Export.table.toDrive(SSAdata, "countryGroup2", "deforTilesGEE");
+Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup2", "deforTilesGEE");
+Export.table.toDrive(DataRenamed, "GFCAdditionalGroup2", "deforTilesGEE");
+Export.table.toDrive(tiles_new, "lossGroup2", "deforTilesGEE");
+Export.table.toDrive(bufferID, "bufferIDGroup2", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1627,13 +1627,13 @@ var count10_2010 = tiles.map(function(feature) {
 
 
 
-Export.table.toDrive(mean_2000, "gfccMeanGroup1_2000", "deforTilesGEE");
-Export.table.toDrive(count50_2000, "gfcc50countGroup1_2000", "deforTilesGEE");
-Export.table.toDrive(count10_2000, "gfcc10countGroup1_2000", "deforTilesGEE");
-Export.table.toDrive(mean_2005, "gfccMeanGroup1_2005", "deforTilesGEE");
-Export.table.toDrive(count50_2005, "gfcc50countGroup1_2005", "deforTilesGEE");
-Export.table.toDrive(count10_2005, "gfcc10countGroup1_2005", "deforTilesGEE")
-Export.table.toDrive(mean_2010, "gfccMeanGroup1_2010", "deforTilesGEE");
-Export.table.toDrive(count50_2010, "gfcc50countGroup1_2010", "deforTilesGEE");
-Export.table.toDrive(count10_2010, "gfcc10countGroup1_2010", "deforTilesGEE");
+Export.table.toDrive(mean_2000, "gfccMeanGroup2_2000", "deforTilesGEE");
+Export.table.toDrive(count50_2000, "gfcc50countGroup2_2000", "deforTilesGEE");
+Export.table.toDrive(count10_2000, "gfcc10countGroup2_2000", "deforTilesGEE");
+Export.table.toDrive(mean_2005, "gfccMeanGroup2_2005", "deforTilesGEE");
+Export.table.toDrive(count50_2005, "gfcc50countGroup2_2005", "deforTilesGEE");
+Export.table.toDrive(count10_2005, "gfcc10countGroup2_2005", "deforTilesGEE")
+Export.table.toDrive(mean_2010, "gfccMeanGroup2_2010", "deforTilesGEE");
+Export.table.toDrive(count50_2010, "gfcc50countGroup2_2010", "deforTilesGEE");
+Export.table.toDrive(count10_2010, "gfcc10countGroup2_2010", "deforTilesGEE");
 
