@@ -8,10 +8,38 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV2');
+var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV1');
 
 Map.addLayer(camps);
 print(camps);
+
+
+//Sub-Saharan Africa administrative district shapefile
+var SSA = ee.FeatureCollection("FAO/GAUL/2015/level0");
+
+
+//Specify the properties that I want to copy from the SSA shapefile
+var properties = ["ADM0_NAME"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(camps, SSA, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var camps2 = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print(camps, "camp locations and countries");
+
 
 var tilesAll = ee.FeatureCollection('users/salem043/placeboTilesLabeled');
 
