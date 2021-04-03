@@ -12,15 +12,11 @@ var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV3');
 
 //Map.addLayer(camps);
 
-var campFilter = ee.Filter.inList('CODE', ['SEN', 
-'GIN', 'GUB', "CDI", 'MAL',
-'BUF', 'GHA', 'EQG',
-'BEN', 'NIG', 'NIR', 'CHA', 'CAM', 'CAR']);
+var campFilter = ee.Filter.inList('CODE', ['GUB']);
+///, 'GIN', 'SEN', "CDI", 'MAL', 'BUF', 'GHA', 'EQG', 'BEN', 'NIG', 'NIR', 'CHA', 'CAM', 'CAR']);
 
 var filteredArea = camps.filter(campFilter);
-
 var campRegion=camps.filter(campFilter);
-
 Map.addLayer(campRegion);
 
 //Import Hansen Global Forest Change data
@@ -31,7 +27,7 @@ var gfcSampleCover2000= gfc2014.select(["treecover2000"]);
 var gfcSampleMask=gfc2014.select(["datamask"]);
 var gfcSampleLossYr = gfc2014.select(["lossyear"]);
 
-//Buffers, for visualization
+//30 km buffers around camps
 var bufferPoly = function(feature) {
   return feature.buffer(30000);  
 };
@@ -39,14 +35,12 @@ var buffers = campRegion.map(bufferPoly);
 var buffsUnion = buffers.union();
 Map.addLayer(buffsUnion);
 
-
 ///////////////////////////////////////////////////////////////////////
 //
 //  Create dissolved buffer FC 
 //
 ///////////////////////////////////////////////////////////////////////
 
-//Produce 30 km  buffer around the camps - this the are we are going to study
 var bufferPoly = function(feature) {
   return feature.buffer(30000);  
 };
@@ -56,15 +50,12 @@ var buffers = campRegion.map(bufferPoly);
 var buffsUnion = buffers.union();
 
 //dissolve and transform to FC so that we can identify each tile's buffer ID
-
 var buffsGeoDissolve =buffers.geometry().dissolve();
-//print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
 Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
 
 var fc = ee.FeatureCollection([
   ee.Feature(buffsGeoDissolve)
 ]);
-//print(fc);
 
 var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
   var geomList = ee.Feature(feature).geometry().geometries();
@@ -84,12 +75,7 @@ var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 //
 ///////////////////////////////////////////////////////////////////////
 
-//Tiles below are measured in degrees. (Ugh, but I want meters!)
-//0.1 degrees is about 11 km at equator. Kept large for training
-//Code courtesty of a kind stranger who offered it on Stack Exchange
-//!!Need to figure out how to form these tiles in meters
-//!!Downscale tiles to finer resolution when scaling up (0.01, about 1 km)
-var tiles = tile(buffsUnion, 0.01); 
+var tiles = tile(buffsUnion, 0.5); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -138,7 +124,6 @@ function tile(region, size_in_degrees) {
     )
 }
 
-
 ///////////////////////////////////////////////////////////////////////
 //
 //  Zonal statistics: get tile buffer ID
@@ -168,7 +153,7 @@ var bufferID = joinAll.map(function(feature){
 });
 
 
-print('Buffer ID', bufferID.limit(2));
+print('Buffer ID', bufferID.limit(10));
 
 
 
@@ -1506,7 +1491,7 @@ Export.table.toDrive(SSAdata, "PcountryGroup1", "deforTilesGEE");
 Export.table.toDrive(pointdata_withbandcounts_12, "PCampDistanceDataGroup1", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "PGFCAdditionalGroup1", "deforTilesGEE");
 Export.table.toDrive(tiles_new, "PlossGroup1", "deforTilesGEE");
-
+Export.table.toDrive(bufferID, "PbufferIDGroup1", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1527,7 +1512,6 @@ var mean_2000 = tiles.map(function(feature) {
   }));
 });
 
-Export.table.toDrive(mean_2000, "PgfccMeanGroup1_2000", "deforTilesGEE");
 
 //Number of tiles with 50+ FC 2000
 var fifty_2000 = gfcc_2000.gte(50).and(gfcc_2000.lte(100));
@@ -1540,7 +1524,6 @@ var count50_2000 = tiles.map(function(feature) {
   }));
 });
 
-Export.table.toDrive(count50_2000, "Pgfcc50countGroup1_2000", "deforTilesGEE");
 
 //Number of tiles with 10+ FC 2000
 var ten_2000 = gfcc_2000.gte(10).and(gfcc_2000.lte(100));
@@ -1553,8 +1536,6 @@ var count10_2000 = tiles.map(function(feature) {
   }));
 });
 
-
-Export.table.toDrive(count10_2000, "Pgfcc10countGroup1_2000", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1576,7 +1557,6 @@ var mean_2005 = tiles.map(function(feature) {
 });
 
 
-Export.table.toDrive(mean_2005, "PgfccMeanGroup1_2005", "deforTilesGEE");
 
 
 //Number of tiles with 50+ FC 2005
@@ -1590,8 +1570,6 @@ var count50_2005 = tiles.map(function(feature) {
   }));
 });
 
-Export.table.toDrive(count50_2005, "Pgfcc50countGroup1_2005", "deforTilesGEE");
-
 //Number of tiles with 10+ FC 2005
 var ten_2005 = gfcc_2005.gte(10).and(gfcc_2005.lte(100));
 
@@ -1602,9 +1580,6 @@ var count10_2005 = tiles.map(function(feature) {
     scale: 30
   }));
 });
-
-
-Export.table.toDrive(count10_2005, "Pgfcc10countGroup1_2005", "deforTilesGEE")
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1626,9 +1601,6 @@ var mean_2010 = tiles.map(function(feature) {
 });
 
 
-Export.table.toDrive(mean_2010, "PgfccMeanGroup1_2010", "deforTilesGEE");
-
-
 //Number of tiles with 50+ FC 2010
 var fifty_2010 = gfcc_2010.gte(50).and(gfcc_2010.lte(100));
 
@@ -1639,8 +1611,6 @@ var count50_2010 = tiles.map(function(feature) {
     scale: 30
   }));
 });
-
-Export.table.toDrive(count50_2010, "Pgfcc50countGroup1_2010", "deforTilesGEE");
 
 //Number of tiles with 10+ FC 2010
 var ten_2010 = gfcc_2010.gte(10).and(gfcc_2010.lte(100));
@@ -1653,5 +1623,15 @@ var count10_2010 = tiles.map(function(feature) {
   }));
 });
 
+
+
+Export.table.toDrive(mean_2000, "PgfccMeanGroup1_2000", "deforTilesGEE");
+Export.table.toDrive(count50_2000, "Pgfcc50countGroup1_2000", "deforTilesGEE");
+Export.table.toDrive(count10_2000, "Pgfcc10countGroup1_2000", "deforTilesGEE");
+Export.table.toDrive(mean_2005, "PgfccMeanGroup1_2005", "deforTilesGEE");
+Export.table.toDrive(count50_2005, "Pgfcc50countGroup1_2005", "deforTilesGEE");
+Export.table.toDrive(count10_2005, "Pgfcc10countGroup1_2005", "deforTilesGEE")
+Export.table.toDrive(mean_2010, "PgfccMeanGroup1_2010", "deforTilesGEE");
+Export.table.toDrive(count50_2010, "Pgfcc50countGroup1_2010", "deforTilesGEE");
 Export.table.toDrive(count10_2010, "Pgfcc10countGroup1_2010", "deforTilesGEE");
 
