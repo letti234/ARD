@@ -18,8 +18,9 @@ var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 
 
-var campFilter = ee.Filter.inList('country', ['Chad', 'CAR', 'Sudan',
-'South Sudan', 'Ethiopia', 'DRC', 'Rep. Congo',
+var campFilter = ee.Filter.inList('country', ['Angola', 
+'Zambia', 'Zimbabwe', 'Malawi', 'Mozambique', 'Zimbabwe', 'Botswana',
+'Namibia', 'Swaziland', 'Cameroon', 'Kenya'
 ]);
 var campRegion = camps.filter(campFilter);
 
