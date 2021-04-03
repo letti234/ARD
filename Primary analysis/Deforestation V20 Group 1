@@ -132,6 +132,32 @@ function tile(region, size_in_degrees) {
 
 ///////////////////////////////////////////////////////////////////////
 //
+//  Clean the GFC data - use the mask layer to assign all pixels
+//  with no data or in bodies of water as NA
+//
+///////////////////////////////////////////////////////////////////////
+
+//Reclassify 2 = NA and 0 = NA in the mask layer
+
+var gfcSampleMask = gfcSampleMask
+.remap([ 1],
+       [1], null);
+       
+//Map.addLayer(gfcSampleMask);
+
+//Mask the mask layer to the two other GEE rasters so that NAs in the
+//mask layer are NAs in those rasters
+//var gfcSampleCover2000Masked=mask()
+
+var gfc2000CoverMasked = gfcSampleCover2000.updateMask(gfcSampleMask);
+//Map.addLayer(gfc2000CoverMasked);
+
+var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
+//Map.addLayer(gfcLossYearMasked);
+
+
+///////////////////////////////////////////////////////////////////////
+//
 //  GFC zonal stats
 //
 ///////////////////////////////////////////////////////////////////////
