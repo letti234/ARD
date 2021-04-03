@@ -12,8 +12,9 @@ var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV3');
 
 //Map.addLayer(camps);
 
-var campFilter = ee.Filter.inList('CODE', ['GUB']);
-///, 'GIN', 'SEN', "CDI", 'MAL', 'BUF', 'GHA', 'EQG', 'BEN', 'NIG', 'NIR', 'CHA', 'CAM', 'CAR']);
+var campFilter = ee.Filter.inList('CODE', ['GUB', 'GIN', 
+'SEN', "CDI", 'MAL', 'BUF', 'GHA', 'EQG', 'BEN', 'NIG', 
+'NIR', 'CHA', 'CAM', 'CAR']);
 
 var filteredArea = camps.filter(campFilter);
 var campRegion=camps.filter(campFilter);
@@ -75,7 +76,7 @@ var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 0.5); 
+var tiles = tile(buffsUnion, 0.01); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
