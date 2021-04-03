@@ -29,6 +29,15 @@ var gfcSampleCover2000= gfc2014.select(["treecover2000"]);
 var gfcSampleMask=gfc2014.select(["datamask"]);
 var gfcSampleLossYr = gfc2014.select(["lossyear"]);
 
+//Buffers, for visualization
+var bufferPoly = function(feature) {
+  return feature.buffer(30000);  
+};
+var buffers = camps.map(bufferPoly);
+var buffsUnion = buffers.union();
+Map.addLayer(buffsUnion);
+
+
 ///////////////////////////////////////////////////////////////////////
 //
 //  Clean the GFC data - use the mask layer to assign all pixels
