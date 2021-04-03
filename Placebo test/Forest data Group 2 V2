@@ -12,7 +12,8 @@ var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV3');
 
 Map.addLayer(camps);
 
-var campFilter = ee.Filter.inList('CODE', ['ZAI', 'DJI', 'ERI', 'ETH', 'SUD', 'GAB', 'CNG']);
+var campFilter = ee.Filter.inList('CODE', ['KEN', 'UGA', 'TAN', 'MOZ', 'MAA']);
+
 var filteredArea = camps.filter(campFilter);
 var campRegion=camps.filter(campFilter);
 Map.addLayer(campRegion);
@@ -1479,17 +1480,17 @@ Export.table.toDrive({
   ['ID', 'loss2001', 'loss2002', 'loss2003', 'loss2004', 'loss2005', 'loss2006', 
   'loss2007', 'loss2008', 'loss2009', 'loss2010', 'loss2011', 'loss2012'   ]),
   fileFormat: 'SHP',
-  description: 'ShapefileForestlossGroup1',
+  description: 'ShapefileForestlossGroup2',
   folder: "deforTilesGEE"
 });
 
 //Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
-Export.table.toDrive(ecosample, "PbiomeGroup1", "deforTilesGEE");
-Export.table.toDrive(SSAdata, "PcountryGroup1", "deforTilesGEE");
-Export.table.toDrive(pointdata_withbandcounts_12, "PCampDistanceDataGroup1", "deforTilesGEE");
-Export.table.toDrive(DataRenamed, "PGFCAdditionalGroup1", "deforTilesGEE");
-Export.table.toDrive(tiles_new, "PlossGroup1", "deforTilesGEE");
-Export.table.toDrive(bufferID, "PbufferIDGroup1", "deforTilesGEE");
+Export.table.toDrive(ecosample, "PbiomeGroup2", "deforTilesGEE");
+Export.table.toDrive(SSAdata, "PcountryGroup2", "deforTilesGEE");
+Export.table.toDrive(pointdata_withbandcounts_12, "PCampDistanceDataGroup2", "deforTilesGEE");
+Export.table.toDrive(DataRenamed, "PGFCAdditionalGroup2", "deforTilesGEE");
+Export.table.toDrive(tiles_new, "PlossGroup2", "deforTilesGEE");
+Export.table.toDrive(bufferID, "PbufferIDGroup2", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1623,13 +1624,13 @@ var count10_2010 = tiles.map(function(feature) {
 
 
 
-Export.table.toDrive(mean_2000, "PgfccMeanGroup1_2000", "deforTilesGEE");
-Export.table.toDrive(count50_2000, "Pgfcc50countGroup1_2000", "deforTilesGEE");
-Export.table.toDrive(count10_2000, "Pgfcc10countGroup1_2000", "deforTilesGEE");
-Export.table.toDrive(mean_2005, "PgfccMeanGroup1_2005", "deforTilesGEE");
-Export.table.toDrive(count50_2005, "Pgfcc50countGroup1_2005", "deforTilesGEE");
-Export.table.toDrive(count10_2005, "Pgfcc10countGroup1_2005", "deforTilesGEE")
-Export.table.toDrive(mean_2010, "PgfccMeanGroup1_2010", "deforTilesGEE");
-Export.table.toDrive(count50_2010, "Pgfcc50countGroup1_2010", "deforTilesGEE");
-Export.table.toDrive(count10_2010, "Pgfcc10countGroup1_2010", "deforTilesGEE");
+Export.table.toDrive(mean_2000, "PgfccMeanGroup2_2000", "deforTilesGEE");
+Export.table.toDrive(count50_2000, "Pgfcc50countGroup2_2000", "deforTilesGEE");
+Export.table.toDrive(count10_2000, "Pgfcc10countGroup2_2000", "deforTilesGEE");
+Export.table.toDrive(mean_2005, "PgfccMeanGroup2_2005", "deforTilesGEE");
+Export.table.toDrive(count50_2005, "Pgfcc50countGroup2_2005", "deforTilesGEE");
+Export.table.toDrive(count10_2005, "Pgfcc10countGroup2_2005", "deforTilesGEE")
+Export.table.toDrive(mean_2010, "PgfccMeanGroup2_2010", "deforTilesGEE");
+Export.table.toDrive(count50_2010, "Pgfcc50countGroup2_2010", "deforTilesGEE");
+Export.table.toDrive(count10_2010, "Pgfcc10countGroup2_2010", "deforTilesGEE");
 
