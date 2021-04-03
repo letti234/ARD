@@ -1,5 +1,5 @@
 //Refugees and deforestation analysis
-//Placebo sample tiles - 0.02°
+//Sample tiles - 0.02°
 //STEP 1 OF DATA CONSTRUCTION
 
 ///////////////////////////////////////////////////////////////////////
@@ -10,7 +10,7 @@
 
 //Read in camp data - this is saved in wide format, with binary indicators
 //of whether a camp was open 1999-2016
-var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV2');
+var camps = ee.FeatureCollection('users/salem043/allcampwidev3');
 
 Map.addLayer(camps);
 print(camps);
@@ -157,7 +157,7 @@ Export.table.toDrive({
   collection: bufferID.select(['system:index', "Buffer_ID"],
   ['ID', "Buffer_ID"]),
   fileFormat: 'SHP',
-  description: 'PlaceboTilesLULC',
+  description: 'sampleTilesLULC',
   folder: "deforTilesGEE"
 });
 
