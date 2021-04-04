@@ -1564,8 +1564,7 @@ var mean_2005 = tiles.map(function(feature) {
   }));
 });
 
-
-
+Export.table.toDrive(mean_2005, "gfccMeanGroup1_2005", "deforTilesGEE");
 
 //Number of tiles with 50+ FC 2005
 var fifty_2005 = gfcc_2005.gte(50).and(gfcc_2005.lte(100));
@@ -1578,6 +1577,8 @@ var count50_2005 = tiles.map(function(feature) {
   }));
 });
 
+Export.table.toDrive(count50_2005, "gfcc50countGroup1_2005", "deforTilesGEE");
+
 //Number of tiles with 10+ FC 2005
 var ten_2005 = gfcc_2005.gte(10).and(gfcc_2005.lte(100));
 
@@ -1588,6 +1589,8 @@ var count10_2005 = tiles.map(function(feature) {
     scale: 30
   }));
 });
+
+Export.table.toDrive(count10_2005, "gfcc10countGroup1_2005", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1608,6 +1611,7 @@ var mean_2010 = tiles.map(function(feature) {
   }));
 });
 
+Export.table.toDrive(mean_2010, "gfccMeanGroup1_2010", "deforTilesGEE");
 
 //Number of tiles with 50+ FC 2010
 var fifty_2010 = gfcc_2010.gte(50).and(gfcc_2010.lte(100));
@@ -1619,6 +1623,8 @@ var count50_2010 = tiles.map(function(feature) {
     scale: 30
   }));
 });
+
+Export.table.toDrive(count50_2010, "gfcc50countGroup1_2010", "deforTilesGEE");
 
 //Number of tiles with 10+ FC 2010
 var ten_2010 = gfcc_2010.gte(10).and(gfcc_2010.lte(100));
@@ -1632,11 +1638,5 @@ var count10_2010 = tiles.map(function(feature) {
 });
 
 
-
-Export.table.toDrive(mean_2005, "gfccMeanGroup1_2005", "deforTilesGEE");
-Export.table.toDrive(count50_2005, "gfcc50countGroup1_2005", "deforTilesGEE");
-Export.table.toDrive(count10_2005, "gfcc10countGroup1_2005", "deforTilesGEE");
-Export.table.toDrive(mean_2010, "gfccMeanGroup1_2010", "deforTilesGEE");
-Export.table.toDrive(count50_2010, "gfcc50countGroup1_2010", "deforTilesGEE");
 Export.table.toDrive(count10_2010, "gfcc10countGroup1_2010", "deforTilesGEE");
 
