@@ -1557,12 +1557,8 @@ var mean_2010 = tiles.map(function(feature) {
 });
 
 
-
-
 Export.table.toDrive(mean_2000, "gfccMeanGroup1_2000", "deforTilesGEE");
-
 Export.table.toDrive(mean_2005, "gfccMeanGroup1_2005", "deforTilesGEE");
-
 Export.table.toDrive(mean_2010, "gfccMeanGroup1_2010", "deforTilesGEE");
 
 
