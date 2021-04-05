@@ -79,7 +79,7 @@ var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 0.5); 
+var tiles = tile(buffsUnion, 0.01); 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -1497,6 +1497,7 @@ Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1", "deforTilesGEE");
 Export.table.toDrive(tiles_new, "lossGroup1", "deforTilesGEE");
 Export.table.toDrive(bufferID, "bufferIDGroup1", "deforTilesGEE");
 
+
 ///////////////////////////////////////////////////////////////////////
 //
 //  GFCC DATA 2000
@@ -1515,35 +1516,6 @@ var mean_2000 = tiles.map(function(feature) {
     scale: 30
   }));
 });
-
-Export.table.toDrive(mean_2000, "gfccMeanGroup1_2000", "deforTilesGEE");
-
-//Number of tiles with 50+ FC 2000
-var fifty_2000 = gfcc_2000.gte(50).and(gfcc_2000.lte(100));
-
-var count50_2000 = tiles.map(function(feature) {
-  return feature.set(fifty_2000.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-Export.table.toDrive(count50_2000, "gfcc50countGroup1_2000", "deforTilesGEE");
-
-//Number of tiles with 10+ FC 2000
-var ten_2000 = gfcc_2000.gte(10).and(gfcc_2000.lte(100));
-
-var count10_2000 = tiles.map(function(feature) {
-  return feature.set(ten_2000.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-
-Export.table.toDrive(count10_2000, "gfcc10countGroup1_2000", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1564,33 +1536,6 @@ var mean_2005 = tiles.map(function(feature) {
   }));
 });
 
-Export.table.toDrive(mean_2005, "gfccMeanGroup1_2005", "deforTilesGEE");
-
-//Number of tiles with 50+ FC 2005
-var fifty_2005 = gfcc_2005.gte(50).and(gfcc_2005.lte(100));
-
-var count50_2005 = tiles.map(function(feature) {
-  return feature.set(fifty_2005.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-Export.table.toDrive(count50_2005, "gfcc50countGroup1_2005", "deforTilesGEE");
-
-//Number of tiles with 10+ FC 2005
-var ten_2005 = gfcc_2005.gte(10).and(gfcc_2005.lte(100));
-
-var count10_2005 = tiles.map(function(feature) {
-  return feature.set(ten_2005.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-Export.table.toDrive(count10_2005, "gfcc10countGroup1_2005", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1611,32 +1556,15 @@ var mean_2010 = tiles.map(function(feature) {
   }));
 });
 
+
+
+
+Export.table.toDrive(mean_2000, "gfccMeanGroup1_2000", "deforTilesGEE");
+
+Export.table.toDrive(mean_2005, "gfccMeanGroup1_2005", "deforTilesGEE");
+
 Export.table.toDrive(mean_2010, "gfccMeanGroup1_2010", "deforTilesGEE");
 
-//Number of tiles with 50+ FC 2010
-var fifty_2010 = gfcc_2010.gte(50).and(gfcc_2010.lte(100));
-
-var count50_2010 = tiles.map(function(feature) {
-  return feature.set(fifty_2010.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-Export.table.toDrive(count50_2010, "gfcc50countGroup1_2010", "deforTilesGEE");
-
-//Number of tiles with 10+ FC 2010
-var ten_2010 = gfcc_2010.gte(10).and(gfcc_2010.lte(100));
-
-var count10_2010 = tiles.map(function(feature) {
-  return feature.set(ten_2010.reduceRegion({
-    reducer: ee.Reducer.sum(),
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
 
 
-Export.table.toDrive(count10_2010, "gfcc10countGroup1_2010", "deforTilesGEE");
 
