@@ -12,10 +12,9 @@ var camps = ee.FeatureCollection('users/salem043/allcampwidev3');
 
 Map.addLayer(camps);
 
-var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
-'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
-'Burkina Faso', 'Ghana',
-'Togo', 'Benin', 'Niger', 'Nigeria']);
+var campFilter = ee.Filter.inList('country', ['Senegal'])
+/// , 'Gambia', 'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
+/// 'Burkina Faso', 'Ghana', 'Togo', 'Benin', 'Niger', 'Nigeria']);
 
 var filteredArea = camps.filter(campFilter);
 
@@ -79,7 +78,7 @@ var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 0.01); 
+var tiles = tile(buffsUnion, 0.5); //TURN BACK TO 0.01 deg!
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -1517,6 +1516,7 @@ var mean_2000 = tiles.map(function(feature) {
   }));
 });
 
+print(mean_2000.limit(10), "2000 GFCC mean");
 ///////////////////////////////////////////////////////////////////////
 //
 //  GFCC DATA 2005
@@ -1555,7 +1555,6 @@ var mean_2010 = tiles.map(function(feature) {
     scale: 30
   }));
 });
-
 
 Export.table.toDrive(mean_2000, "gfccMeanGroup1_2000", "deforTilesGEE");
 Export.table.toDrive(mean_2005, "gfccMeanGroup1_2005", "deforTilesGEE");
