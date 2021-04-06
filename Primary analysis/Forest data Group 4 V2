@@ -1487,7 +1487,7 @@ Export.table.toDrive({
 //Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
 Export.table.toDrive(ecosample, "biomeGroup4", "deforTilesGEE");
 Export.table.toDrive(SSAdata, "countryGroup4", "deforTilesGEE");
-Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup3", "deforTilesGEE");
+Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup4", "deforTilesGEE");
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup4", "deforTilesGEE");
 Export.table.toDrive(tiles_new, "lossGroup4", "deforTilesGEE");
 Export.table.toDrive(bufferID, "bufferIDGroup4", "deforTilesGEE");
@@ -1557,8 +1557,8 @@ var mean_2005_2=mean_2005.filter(ee.Filter.notNull(['tree_canopy_cover']));
 var mean_2000_2=mean_2000.filter(ee.Filter.notNull(['tree_canopy_cover']));
 
 
-Export.table.toDrive(mean_2000_4, "gfccMeanGroup3_2000", "deforTilesGEE");
-Export.table.toDrive(mean_2005_4, "gfccMeanGroup3_2005", "deforTilesGEE");
-Export.table.toDrive(mean_2000_4, "gfccMeanGroup3_2010", "deforTilesGEE");
+Export.table.toDrive(mean_2000_2, "gfccMeanGroup4_2000", "deforTilesGEE");
+Export.table.toDrive(mean_2005_2, "gfccMeanGroup4_2005", "deforTilesGEE");
+Export.table.toDrive(mean_2000_2, "gfccMeanGroup4_2010", "deforTilesGEE");
 
 
