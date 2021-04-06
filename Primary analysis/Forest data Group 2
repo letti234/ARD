@@ -10,16 +10,14 @@
 
 var camps = ee.FeatureCollection('users/salem043/allcampwidev3');
 
-Map.addLayer(camps);
-
-
+//Map.addLayer(camps);
 
 var campFilter = ee.Filter.inList('country', ['Chad', 'CAR', 'Sudan',
 'South Sudan', 'Ethiopia', 'DRC', 'Rep. Congo',
 ]);
 var campRegion = camps.filter(campFilter);
 
-Map.addLayer(campRegion);
+Map.addLayer(campRegion, {}, "Camps used in this export");
 
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
@@ -35,7 +33,7 @@ var bufferPoly = function(feature) {
 };
 var buffers = campRegion.map(bufferPoly);
 var buffsUnion = buffers.union();
-Map.addLayer(buffsUnion);
+Map.addLayer(buffsUnion, {}, "buffers used in this export");
 
 ///////////////////////////////////////////////////////////////////////
 //
