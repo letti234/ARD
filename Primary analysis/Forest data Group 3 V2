@@ -1557,9 +1557,9 @@ var mean_2005_2=mean_2005.filter(ee.Filter.notNull(['tree_canopy_cover']));
 var mean_2000_2=mean_2000.filter(ee.Filter.notNull(['tree_canopy_cover']));
 
 
-Export.table.toDrive(mean_2000_3, "gfccMeanGroup3_2000", "deforTilesGEE");
-Export.table.toDrive(mean_2005_3, "gfccMeanGroup3_2005", "deforTilesGEE");
-Export.table.toDrive(mean_2000_3, "gfccMeanGroup3_2010", "deforTilesGEE");
+Export.table.toDrive(mean_2000_2, "gfccMeanGroup3_2000", "deforTilesGEE");
+Export.table.toDrive(mean_2005_2, "gfccMeanGroup3_2005", "deforTilesGEE");
+Export.table.toDrive(mean_2000_2, "gfccMeanGroup3_2010", "deforTilesGEE");
 
 
 
