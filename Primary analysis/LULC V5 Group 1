@@ -17,11 +17,9 @@ var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 
 
-var campFilter = ee.Filter.inList('country', ['Senegal', 'Gambia',
-'Guinea-Bissau', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Mali',
-'Burkina Faso', 'Ghana',
-'Togo', 'Benin', 'Niger', 'Nigeria']);
-var campRegion = camps.filter(campFilter);
+var campFilter = ee.Filter.equals('group', 1);
+
+var campRegion=camps.filter(campFilter);
 
 
 Map.addLayer(campRegion);
