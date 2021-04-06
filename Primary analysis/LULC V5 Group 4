@@ -1,5 +1,5 @@
 //Refugee camps and deforestation analysis
-//Group 4 data - eastern Africa
+//Group 4 data 
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -14,13 +14,12 @@ var SSA = ee.FeatureCollection("FAO/GAUL/2015/level0");
 var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 
 //Camp data
-var camps = ee.FeatureCollection('users/salem043/allcampwide');
+//Camp data
+var camps = ee.FeatureCollection('users/salem043/allCampWideV4');
 
+var campFilter = ee.Filter.equals('group', 4);
 
-
-var campFilter = ee.Filter.inList('country', ['Rwanda', 'Burundi', 'Tanzania'
-]);
-var campRegion = camps.filter(campFilter);
+var campRegion=camps.filter(campFilter);
 
 Map.addLayer(campRegion);
 
