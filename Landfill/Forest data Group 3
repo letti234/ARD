@@ -1,5 +1,5 @@
 //Refugees and deforestation analysis
-//Tabular data export: Group 3 - southern Africa
+//Tabular data export: Group 4
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -8,18 +8,19 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-var camps = ee.FeatureCollection('users/salem043/allcampwidev3');
+var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV2');
 
 Map.addLayer(camps);
+print(camps);
 
-var campFilter = ee.Filter.inList('country', ['Angola', 
-'Zambia', 'Zimbabwe', 'Malawi', 'Mozambique', 'Zimbabwe', 'Botswana',
-'Namibia', 'Swaziland', 'Cameroon', 'Kenya'
-]);
-var campRegion = camps.filter(campFilter);
+var tilesAll = ee.FeatureCollection('users/salem043/placeboTilesLabeled');
 
-Map.addLayer(campRegion);
+//var groupFilter = ee.Filter.equals('group', 1);
+var groupFilter = ee.Filter.equals('ID', '2_8265');
 
+var tiles=tilesAll.filter(groupFilter);
+
+print(tiles);
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
@@ -27,136 +28,6 @@ var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 var gfcSampleCover2000= gfc2014.select(["treecover2000"]);
 var gfcSampleMask=gfc2014.select(["datamask"]);
 var gfcSampleLossYr = gfc2014.select(["lossyear"]);
-
-//30 km buffers around camps
-var bufferPoly = function(feature) {
-  return feature.buffer(30000);  
-};
-var buffers = campRegion.map(bufferPoly);
-var buffsUnion = buffers.union();
-Map.addLayer(buffsUnion);
-
-///////////////////////////////////////////////////////////////////////
-//
-//  Create dissolved buffer FC 
-//
-///////////////////////////////////////////////////////////////////////
-
-var bufferPoly = function(feature) {
-  return feature.buffer(30000);  
-};
-
-var buffers = campRegion.map(bufferPoly);
-
-var buffsUnion = buffers.union();
-
-//dissolve and transform to FC so that we can identify each tile's buffer ID
-var buffsGeoDissolve =buffers.geometry().dissolve();
-Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
-
-var fc = ee.FeatureCollection([
-  ee.Feature(buffsGeoDissolve)
-]);
-
-var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
-  var geomList = ee.Feature(feature).geometry().geometries();
-  var featureList = geomList.map(function(geom) {
-    return ee.Feature(ee.Geometry(geom));
-  });
-  return featureList;
-})
-.flatten();
-
-var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
-
-///////////////////////////////////////////////////////////////////////
-//
-//  Tile production - we'll use these tiles to calculate zonal stats.
-//  The tiles are the unit of analysis in our regression
-//
-///////////////////////////////////////////////////////////////////////
-
-var tiles = tile(buffsUnion, 0.01); 
-
-function tile(region, size_in_degrees) {
-  function tile_geometry(geometry) {
-    var coords = ee.List(geometry.bounds().coordinates().get(0))
-    var min_point = ee.List(coords.get(0))
-    var max_point = ee.List(coords.get(2))
-  
-    function sequence(direction) {
-      var start = min_point.get(direction)  
-      var stop = ee.Number(max_point.get(direction))
-      return ee.List.sequence(start, stop, size_in_degrees)
-    }
-  
-    var tiles = sequence(0).map(function (x) {
-      return sequence(1).map(function (y) { 
-          return ee.Feature(ee.Geometry.Rectangle([
-            [ee.Number(x), ee.Number(y)],
-            [
-              ee.Number(x).add(size_in_degrees).min(max_point.get(0)),
-              ee.Number(y).add(size_in_degrees).min(max_point.get(1))
-            ]
-        ]).intersection(geometry, 30))
-      })
-  	}).flatten()
-    return ee.FeatureCollection(tiles).filterBounds(geometry)
-  }
-
-  function tile_feature_collection(feature_collection) {
-    return ee.FeatureCollection(
-      feature_collection.iterate(
-        function (feature, acc) {
-          return ee.FeatureCollection(acc).merge(tile_geometry(ee.Feature(feature).geometry()))
-        }, ee.FeatureCollection([]))
-    )
-  }
-
-  if (region instanceof ee.FeatureCollection)
-    return tile_feature_collection(region)
-  else if (region instanceof ee.Feature)
-    return tile_geometry(region.geometry())
-  else if (region instanceof ee.Geometry)
-    return tile_geometry(region)
-  else
-    throw Error(
-      'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
-    )
-}
-
-///////////////////////////////////////////////////////////////////////
-//
-//  Zonal statistics: get tile buffer ID
-//
-///////////////////////////////////////////////////////////////////////
-
-var buffs2 = buffDissolveFC.select(["system:index"], ["Buffer_ID"]);
-
-
-var properties = ["Buffer_ID"];
-
-// Define a spatial filter as geometries that intersect.
-var spatialFilter = ee.Filter.intersects({
-  leftField: '.geo',
-  rightField: '.geo'
-});
-
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
-var joinAll = ee.Join.saveAll('matched').apply(tiles, buffs2, spatialFilter);
-
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
-var bufferID = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
-  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
-});
-
-
-print('Buffer ID', bufferID.limit(10));
-
-
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -370,7 +241,7 @@ var pointdata_withbandcounts_96 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_1996', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_1996', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_1996', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -435,7 +306,7 @@ var pointdata_withbandcounts_97 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_1997', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_1997', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_1997', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -499,7 +370,7 @@ var pointdata_withbandcounts_98 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_1998', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_1998', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_1998', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -562,7 +433,7 @@ var pointdata_withbandcounts_99 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_1999', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_1999', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_1999', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -625,7 +496,7 @@ var pointdata_withbandcounts_0 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2000', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2000', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2000', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -688,7 +559,7 @@ var pointdata_withbandcounts_1 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2001', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2001', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2001', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -750,7 +621,7 @@ var pointdata_withbandcounts_2 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2002', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2002', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2002', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -812,7 +683,7 @@ var pointdata_withbandcounts_3 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2003', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2003', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2003', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -874,7 +745,7 @@ var pointdata_withbandcounts_4 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2004', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2004', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2004', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -937,7 +808,7 @@ var pointdata_withbandcounts_5 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2005', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2005', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2005', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -1000,7 +871,7 @@ var pointdata_withbandcounts_6 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2006', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2006', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2006', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -1063,7 +934,7 @@ var pointdata_withbandcounts_7 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2007', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2007', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2007', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -1126,7 +997,7 @@ var pointdata_withbandcounts_8 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2008', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2008', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2008', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -1190,7 +1061,7 @@ var pointdata_withbandcounts_9 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2009', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2009', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2009', neighs.filter(filt).size());
   filt = ee.Filter.lt(
@@ -1255,7 +1126,7 @@ var pointdata_withbandcounts_10 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2010', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2010', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2010', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -1318,7 +1189,7 @@ var pointdata_withbandcounts_11 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2011', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2011', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2011', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -1383,7 +1254,7 @@ var pointdata_withbandcounts_12 = withNearestDist.map(function(pt) {
     filt = ee.Filter.lt('distance', 11000);
     pt=pt.set('neighsSize11_2012', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 12000);
-  pt=pt.set('neighsSize12_2012', neighs.filter(filt).size());
+  pt=pt.set('neighsSize12', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2012', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 14000);
@@ -1486,13 +1357,12 @@ Export.table.toDrive({
   folder: "deforTilesGEE"
 });
 
-//Export.table.toDrive(tiles_new, "PctLossGroup2", "deforTilesGEE");
-Export.table.toDrive(ecosample, "biomeGroup3", "deforTilesGEE");
-Export.table.toDrive(SSAdata, "countryGroup3", "deforTilesGEE");
-Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup3", "deforTilesGEE");
-Export.table.toDrive(DataRenamed, "GFCAdditionalGroup3", "deforTilesGEE");
-Export.table.toDrive(tiles_new, "lossGroup3", "deforTilesGEE");
-Export.table.toDrive(bufferID, "bufferIDGroup3", "deforTilesGEE");
+Export.table.toDrive(ecosample, "PbiomeGroup3", "deforTilesGEE");
+Export.table.toDrive(SSAdata, "PcountryGroup3", "deforTilesGEE");
+Export.table.toDrive(pointdata_withbandcounts_12, "PCampDistanceDataGroup3", "deforTilesGEE");
+Export.table.toDrive(DataRenamed, "PGFCAdditionalGroup3", "deforTilesGEE");
+Export.table.toDrive(tiles_new, "PlossGroup3", "deforTilesGEE");
+
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1512,6 +1382,35 @@ var mean_2000 = tiles.map(function(feature) {
     scale: 30
   }));
 });
+
+Export.table.toDrive(mean_2000, "PgfccMeanGroup3_2000", "deforTilesGEE");
+
+//Number of tiles with 50+ FC 2000
+var fifty_2000 = gfcc_2000.gte(50).and(gfcc_2000.lte(100));
+
+var count50_2000 = tiles.map(function(feature) {
+  return feature.set(fifty_2000.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+Export.table.toDrive(count50_2000, "Pgfcc50countGroup3_2000", "deforTilesGEE");
+
+//Number of tiles with 10+ FC 2000
+var ten_2000 = gfcc_2000.gte(10).and(gfcc_2000.lte(100));
+
+var count10_2000 = tiles.map(function(feature) {
+  return feature.set(ten_2000.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+
+Export.table.toDrive(count10_2000, "Pgfcc10countGroup3_2000", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1533,6 +1432,36 @@ var mean_2005 = tiles.map(function(feature) {
 });
 
 
+Export.table.toDrive(mean_2005, "PgfccMeanGroup3_2005", "deforTilesGEE");
+
+
+//Number of tiles with 50+ FC 2005
+var fifty_2005 = gfcc_2005.gte(50).and(gfcc_2005.lte(100));
+
+var count50_2005 = tiles.map(function(feature) {
+  return feature.set(fifty_2005.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+Export.table.toDrive(count50_2005, "Pgfcc50countGroup3_2005", "deforTilesGEE");
+
+//Number of tiles with 10+ FC 2005
+var ten_2005 = gfcc_2005.gte(10).and(gfcc_2005.lte(100));
+
+var count10_2005 = tiles.map(function(feature) {
+  return feature.set(ten_2005.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+
+Export.table.toDrive(count10_2005, "Pgfcc10countGroup3_2005", "deforTilesGEE")
+
 ///////////////////////////////////////////////////////////////////////
 //
 //  GFCC DATA 2010
@@ -1553,12 +1482,32 @@ var mean_2010 = tiles.map(function(feature) {
 });
 
 
+Export.table.toDrive(mean_2010, "PgfccMeanGroup3_2010", "deforTilesGEE");
 
 
-Export.table.toDrive(mean_2000, "gfccMeanGroup3_2000", "deforTilesGEE");
+//Number of tiles with 50+ FC 2010
+var fifty_2010 = gfcc_2010.gte(50).and(gfcc_2010.lte(100));
 
-Export.table.toDrive(mean_2005, "gfccMeanGroup3_2005", "deforTilesGEE");
+var count50_2010 = tiles.map(function(feature) {
+  return feature.set(fifty_2010.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
 
-Export.table.toDrive(mean_2010, "gfccMeanGroup3_2010", "deforTilesGEE");
+Export.table.toDrive(count50_2010, "Pgfcc50countGroup3_2010", "deforTilesGEE");
 
+//Number of tiles with 10+ FC 2010
+var ten_2010 = gfcc_2010.gte(10).and(gfcc_2010.lte(100));
+
+var count10_2010 = tiles.map(function(feature) {
+  return feature.set(ten_2010.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: feature.geometry(),
+    scale: 30
+  }));
+});
+
+Export.table.toDrive(count10_2010, "Pgfcc10countGroup3_2010", "deforTilesGEE");
 
