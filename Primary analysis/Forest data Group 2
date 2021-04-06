@@ -32,8 +32,11 @@ var bufferPoly = function(feature) {
   return feature.buffer(30000);  
 };
 var buffers = campRegion.map(bufferPoly);
+var buffers2 = camps.map(bufferPoly);
 var buffsUnion = buffers.union();
+var buffsUnion2 = buffers2.union();
 Map.addLayer(buffsUnion, {}, "buffers used in this export");
+Map.addLayer(buffsUnion2, {}, "All buffers");
 
 ///////////////////////////////////////////////////////////////////////
 //
