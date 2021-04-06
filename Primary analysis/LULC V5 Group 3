@@ -1,5 +1,5 @@
 //Refugee camps and deforestation analysis
-//Group 3 data - southern Africa
+//Group 3 data 
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -18,11 +18,9 @@ var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
 var camps = ee.FeatureCollection('users/salem043/allcampwide');
 
 
-var campFilter = ee.Filter.inList('country', ['Angola', 
-'Zambia', 'Zimbabwe', 'Malawi', 'Mozambique', 'Zimbabwe', 'Botswana',
-'Namibia', 'Swaziland', 'Cameroon', 'Kenya'
-]);
-var campRegion = camps.filter(campFilter);
+var campFilter = ee.Filter.equals('group', 3);
+
+var campRegion=camps.filter(campFilter);
 
 
 Map.addLayer(campRegion);
