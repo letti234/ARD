@@ -17,7 +17,7 @@ var campFilter = ee.Filter.equals('group', 1);
 var campRegion=camps.filter(campFilter);
 
 Map.addLayer(campRegion, {}, "Filtered sample of camps");
-
+print(campRegion);
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
