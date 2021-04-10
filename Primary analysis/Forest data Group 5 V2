@@ -1559,7 +1559,7 @@ var mean_2000_2=mean_2000.filter(ee.Filter.notNull(['tree_canopy_cover']));
 
 Export.table.toDrive(mean_2000_2, "gfccMeanGroup5_2000", "deforTilesGEE");
 Export.table.toDrive(mean_2005_2, "gfccMeanGroup5_2005", "deforTilesGEE");
-Export.table.toDrive(mean_2000_2, "gfccMeanGroup5_2010", "deforTilesGEE");
+Export.table.toDrive(mean_2010_2, "gfccMeanGroup5_2010", "deforTilesGEE");
 
 
 
