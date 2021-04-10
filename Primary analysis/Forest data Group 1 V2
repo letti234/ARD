@@ -74,7 +74,7 @@ var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 1); //TURN BACK TO 0.01 deg!
+var tiles = tile(buffsUnion, 0.01); //TURN BACK TO 0.01 deg!
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
