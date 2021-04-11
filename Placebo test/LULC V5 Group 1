@@ -1,33 +1,59 @@
-//Refugees and deforestation analysis
-//LULC 0.02 degree tiles
-//Tabular data export: Group 1
+//Refugee camps and defor analysis
+//LULC data export - Group 1
 
-
-///////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 //
-//  Initial data prep
+//  Load all data 
 //
-///////////////////////////////////////////////////////////////////////
-
-//Load camp placebo data
-var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV2');
-
-Map.addLayer(camps);
-print(camps);
-
-//Load tile placebo data
-var tilesAll = ee.FeatureCollection('users/salem043/placeboTilesLabeled');
-
-var groupFilter = ee.Filter.equals('group', 1);
-//var groupFilter = ee.Filter.equals('ID', '2_8265');
-
-var tiles=tilesAll.filter(groupFilter);
+////////////////////////////////////////////////////////////////////
 
 //Sub-Saharan Africa administrative district shapefile
 var SSA = ee.FeatureCollection("FAO/GAUL/2015/level0");
 
 //Ecoregions data
 var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
+var camps = ee.FeatureCollection('users/salem043/allCampWideV4');
+
+Map.addLayer(camps, {}, "Full camp sample");
+
+var campFilter = ee.Filter.equals('group', 1);
+
+var campRegion=camps.filter(campFilter);
+
+Map.addLayer(campRegion);
+
+//Produce 30 km  buffer around the camps - this the are we are going to study
+var bufferPoly = function(feature) {
+  return feature.buffer(30000);  //!!Change back to 50k after making sure the border identification works 
+};
+
+var buffers = campRegion.map(bufferPoly);
+
+var buffsUnion = buffers.union();
+
+//dissolve and transform to FC so that we can identify each
+//tile's buffer ID
+
+var buffsGeoDissolve =buffers.geometry().dissolve();
+//print(buffsGeoDissolve, "Dissolve using geometry().dissolve()"); //Multipolygon!
+Map.addLayer(buffsGeoDissolve, {}, 'Dissolve using geometry().dissolve()');
+
+
+var fc = ee.FeatureCollection([
+  ee.Feature(buffsGeoDissolve)
+]);
+//print(fc);
+
+var multiGeomExplodeList = fc.toList(fc.size()).map(function(feature) {
+  var geomList = ee.Feature(feature).geometry().geometries();
+  var featureList = geomList.map(function(geom) {
+    return ee.Feature(ee.Geometry(geom));
+  });
+  return featureList;
+})
+.flatten();
+
+var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 
 //ESA stack of images
 var lulc = ee.Image('users/salem043/ESA_1992_2015');
@@ -39,6 +65,62 @@ var lulcYrSub = lulc.select(['b9', 'b10', 'b11', 'b12', 'b13',
 'lc_2002', 'lc_2003', 'lc_2004', 'lc_2005', 'lc_2006', 'lc_2007', 'lc_2008',
 'lc_2009', 'lc_2010', 'lc_2011', 'lc_2012']);
 print(lulcYrSub);
+
+
+////////////////////////////////////////////////////////////////////
+//
+//  Generate tiles - 0.02 degree
+//
+////////////////////////////////////////////////////////////////////
+
+var tiles = tile(buffDissolveFC , 0.02); //Change to 0.02 when done 
+
+function tile(region, size_in_degrees) {
+  function tile_geometry(geometry) {
+    var coords = ee.List(geometry.bounds().coordinates().get(0))
+    var min_point = ee.List(coords.get(0))
+    var max_point = ee.List(coords.get(2))
+  
+    function sequence(direction) {
+      var start = min_point.get(direction)  
+      var stop = ee.Number(max_point.get(direction))
+      return ee.List.sequence(start, stop, size_in_degrees)
+    }
+  
+    var tiles = sequence(0).map(function (x) {
+      return sequence(1).map(function (y) { 
+          return ee.Feature(ee.Geometry.Rectangle([
+            [ee.Number(x), ee.Number(y)],
+            [
+              ee.Number(x).add(size_in_degrees).min(max_point.get(0)),
+              ee.Number(y).add(size_in_degrees).min(max_point.get(1))
+            ]
+        ]).intersection(geometry, 30))
+      })
+  	}).flatten()
+    return ee.FeatureCollection(tiles).filterBounds(geometry)
+  }
+
+  function tile_feature_collection(feature_collection) {
+    return ee.FeatureCollection(
+      feature_collection.iterate(
+        function (feature, acc) {
+          return ee.FeatureCollection(acc).merge(tile_geometry(ee.Feature(feature).geometry()))
+        }, ee.FeatureCollection([]))
+    )
+  }
+
+  if (region instanceof ee.FeatureCollection)
+    return tile_feature_collection(region)
+  else if (region instanceof ee.Feature)
+    return tile_geometry(region.geometry())
+  else if (region instanceof ee.Geometry)
+    return tile_geometry(region)
+  else
+    throw Error(
+      'region must be ee.FeatureCollection, ee.Feature, or ee.Geometry. Was ' + region
+    )
+}
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -1158,22 +1240,55 @@ print(ecosample.limit(2), "biome");
 
 ////////////////////////////////////////////////////////////////////
 //
+//  Determine tile's buffer
+//
+////////////////////////////////////////////////////////////////////
+
+
+var buffs2 = buffDissolveFC.select(["system:index"], ["Buffer ID"]);
+
+var properties = ["Buffer ID"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(tiles, buffs2, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var bufferID = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print(bufferID.limit(2), "buffer ID");
+
+////////////////////////////////////////////////////////////////////
+//
 //  Exporting data
 //
 ////////////////////////////////////////////////////////////////////
 
 
-//Export LULC each year
+//Export number of camps within tile
 Export.table.toDrive(tiles_2012,
-"PlulcCoverGroup1", "deforTilesGEE/Data/Placebo");
+"lulcCoverGroup1", "deforTilesGEE");
 
 //Export number of camps within tile
 Export.table.toDrive(pointdata_withbandcounts_12,
-"PlulcCampsGroup1", "deforTilesGEE/Data/Placebo");
+"lulcCampsGroup1", "deforTilesGEE");
 
 //Export biome as csv
-Export.table.toDrive(ecosample, "PlulcBiomeGroup1", "deforTilesGEE/Data/Placebo");
+Export.table.toDrive(ecosample, "lulcBiomeGroup1", "deforTilesGEE");
+
+//Export buffer id as CSV
+Export.table.toDrive(bufferID, "lulcBufferIDGroup1", "deforTilesGEE");
 
 //Export SSA country as CSV
-Export.table.toDrive(SSAdata, "PlulcCountryGroup1", "deforTilesGEE/Data/Placebo");
+Export.table.toDrive(SSAdata, "lulcCountryGroup1", "deforTilesGEE");
 
