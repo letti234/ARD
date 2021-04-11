@@ -12,7 +12,8 @@ var SSA = ee.FeatureCollection("FAO/GAUL/2015/level0");
 
 //Ecoregions data
 var ecodata = ee.FeatureCollection('RESOLVE/ECOREGIONS/2017');
-var camps = ee.FeatureCollection('users/salem043/allCampWideV4');
+
+var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV3');
 
 Map.addLayer(camps, {}, "Full camp sample");
 
