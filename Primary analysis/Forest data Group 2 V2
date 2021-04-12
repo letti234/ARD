@@ -1600,3 +1600,4 @@ print(drought.limit(2));
 
 Export.table.toDrive(drought, "droughtGroup2", "deforTilesGEE");
 
+
