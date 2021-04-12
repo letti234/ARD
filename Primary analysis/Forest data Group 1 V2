@@ -1597,4 +1597,4 @@ reduceRegions(tiles, ee.Reducer.mean());
 
 print(drought.limit(2));
 
-Export.table.toDrive(drought, "droughtGroup1_2010", "deforTilesGEE");
+Export.table.toDrive(drought, "droughtGroup1", "deforTilesGEE");
