@@ -1,0 +1,1 @@
+var camps = ee.FeatureCollection('users/salem043/campPlaceboWideV3');
