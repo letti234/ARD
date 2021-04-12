@@ -1,2 +1,29 @@
 
 var placebo = ee.FeatureCollection('users/salem043/campPlaceboWideV3');
+var camps = ee.FeatureCollection('users/salem043/allCampWideV4');
+
+Map.addLayer(placebo, {color: 'FF0000'}, 'Placebo');
+Map.addLayer(camps, {color: '0000FF'}, 'Real camps');
+
+
+
+var bufferPoly = function(feature) {
+  return feature.buffer(30000);  
+};
+
+//30 km buffers around real camps
+var buffers = camps.map(bufferPoly);
+var buffsCamps = buffers.union();
+
+
+//30 km buffers around placebo camps
+var buffers2 = placebo.map(bufferPoly);
+var buffsPlacebo = buffers2.union();
+
+
+Map.addLayer(buffsPlacebo, {color: 'FF0000'}, 'Placebo');
+Map.addLayer(buffsCamps, {color: '0000FF'}, 'Real camps');
+
+
+
+
