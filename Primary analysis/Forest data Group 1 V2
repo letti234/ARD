@@ -1573,27 +1573,59 @@ Export.table.toDrive(mean_2010_2, "gfccMeanGroup1_2010", "deforTilesGEE");
 var drought_M_2000 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
 .filter(ee.Filter.date('2000-01-01', '2000-12-31'));
 
+print(drought_M_2000);
+
 var drought_Y_2000 = drought_M_2000.reduce(ee.Reducer.max());
 
 print(drought_Y_2000);
 
-Map.addLayer(drought_Y_2000);
+///Map.addLayer(drought_Y_2000);
 
 //Mean pct FC per tile 2000
 var drought_R_2000 = tiles.map(function(feature) {
   return feature.set(drought_Y_2000.reduceRegion({
     reducer: 'mean',
     geometry: feature.geometry(),
-    scale: 10,
+    scale: 30,
     maxPixels: 80000000
   }));
 });
 
+print(drought_R_2000.limit(20));
 
-print(drought_R_2000.limit(10));
-
-var drought_2000 = drought_R_2000.select(
-  ["pdsi_max"],
-  ["maxPdsi2000"]);
+var drought_R_2000_nonull=drought_R_2000.filter(ee.Filter.notNull(['pdsi_max']));
+var drought_2000 = drought_R_2000_nonull.select(["pdsi_max"],["maxPdsi2000"]);
 
 print(drought_2000.limit(5));
+
+
+
+
+
+var drought_M_2001 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
+.filter(ee.Filter.date('2001-01-01', '2001-12-31'));
+
+print(drought_M_2001);
+
+var drought_Y_2001 = drought_M_2001.reduce(ee.Reducer.max());
+
+print(drought_Y_2001);
+
+///Map.addLayer(drought_Y_2000);
+
+//Mean pct FC per tile 2000
+var drought_R_2001 = tiles.map(function(feature) {
+  return feature.set(drought_Y_2000.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 30,
+    maxPixels: 80000000
+  }));
+});
+
+print(drought_R_2001.limit(20));
+
+var drought_R_2001_nonull=drought_R_2001.filter(ee.Filter.notNull(['pdsi_max']));
+var drought_2001 = drought_R_2001_nonull.select(["pdsi_max"],["maxPdsi2000"]);
+
+print(drought_2001.limit(5));
