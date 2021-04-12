@@ -1564,3 +1564,39 @@ Export.table.toDrive(mean_2010_2, "gfccMeanGroup2_2010", "deforTilesGEE");
 
 
 
+
+///////////////////////////////////////////////////////////////////////
+//
+//  Drought data test
+//
+///////////////////////////////////////////////////////////////////////
+
+
+var drought_M = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
+.filter(ee.Filter.date('2000-01-01', '2012-12-31'));
+
+
+function newCollectionToImage(collection){
+var stack = ee.Image(collection.iterate(function(img, prev) {
+return ee.Image(prev).addBands(img);
+}, ee.Image(1)));
+ 
+stack = stack.select(ee.List.sequence(1, stack.bandNames().size().subtract(1)));
+return stack;
+}
+
+var tch = drought_M.map(function(img){
+var y = ee.String(ee.Date(img.get('system:time_start')).get("year"));
+return img.set("year",y).rename(y);
+});
+
+var tchImg = newCollectionToImage(tch).clip(SSA);
+
+var drought = 
+tchImg.
+reduceRegions(tiles, ee.Reducer.mean());
+
+print(drought.limit(2));
+
+Export.table.toDrive(drought, "droughtGroup2", "deforTilesGEE");
+
