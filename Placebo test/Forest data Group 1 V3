@@ -1552,6 +1552,10 @@ var mean_2010 = tiles.map(function(feature) {
   }));
 });
 
+
+
+
+
 var mean_2010_2=mean_2010.filter(ee.Filter.notNull(['tree_canopy_cover']));
 var mean_2005_2=mean_2005.filter(ee.Filter.notNull(['tree_canopy_cover']));
 var mean_2000_2=mean_2000.filter(ee.Filter.notNull(['tree_canopy_cover']));
