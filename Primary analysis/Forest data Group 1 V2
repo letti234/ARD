@@ -74,7 +74,7 @@ var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 0.01); //TURN BACK TO 0.01 deg!
+var tiles = tile(buffsUnion, 1); //TURN BACK TO 0.01 deg!
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -152,7 +152,7 @@ var bufferID = joinAll.map(function(feature){
 });
 
 
-print('Buffer ID', bufferID.limit(10));
+///print('Buffer ID', bufferID.limit(10));
 
 
 
@@ -1401,7 +1401,7 @@ var pointdata_withbandcounts_12 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
-print(pointdata_withbandcounts_12, "2012 camp data");
+///print(pointdata_withbandcounts_12, "2012 camp data");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1512,7 +1512,7 @@ var mean_2000 = tiles.map(function(feature) {
   }));
 });
 
-print(mean_2000.limit(10), "2000 GFCC mean");
+///print(mean_2000.limit(10), "2000 GFCC mean");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -1562,5 +1562,16 @@ Export.table.toDrive(mean_2000_2, "gfccMeanGroup1_2000", "deforTilesGEE");
 Export.table.toDrive(mean_2005_2, "gfccMeanGroup1_2005", "deforTilesGEE");
 Export.table.toDrive(mean_2010_2, "gfccMeanGroup1_2010", "deforTilesGEE");
 
-print(mean_2010_2.limit(2));
-print(mean_2000.limit(2));
+///print(mean_2010_2.limit(2));
+///print(mean_2000.limit(2));
+
+
+
+
+
+var drought2000 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE")
+.filter(ee.Filter.date('2000-01-01', '2000-12-31')).select("pdsi") ;
+
+print(drought2000);
+
+//spatial reducer
