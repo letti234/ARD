@@ -1569,9 +1569,31 @@ Export.table.toDrive(mean_2010_2, "gfccMeanGroup1_2010", "deforTilesGEE");
 
 
 
-var drought2000 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE")
-.filter(ee.Filter.date('2000-01-01', '2000-12-31')).select("pdsi") ;
 
-print(drought2000);
+var drought_M_2000 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
+.filter(ee.Filter.date('2000-01-01', '2000-12-31'));
 
-//spatial reducer
+var drought_Y_2000 = drought_M_2000.reduce(ee.Reducer.max());
+
+print(drought_Y_2000);
+
+Map.addLayer(drought_Y_2000);
+
+//Mean pct FC per tile 2000
+var drought_R_2000 = tiles.map(function(feature) {
+  return feature.set(drought_Y_2000.reduceRegion({
+    reducer: 'mean',
+    geometry: feature.geometry(),
+    scale: 10,
+    maxPixels: 80000000
+  }));
+});
+
+
+print(drought_R_2000.limit(10));
+
+var drought_2000 = drought_R_2000.select(
+  ["pdsi_max"],
+  ["maxPdsi2000"]);
+
+print(drought_2000.limit(5));
