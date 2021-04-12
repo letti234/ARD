@@ -1562,64 +1562,39 @@ Export.table.toDrive(mean_2000_2, "gfccMeanGroup1_2000", "deforTilesGEE");
 Export.table.toDrive(mean_2005_2, "gfccMeanGroup1_2005", "deforTilesGEE");
 Export.table.toDrive(mean_2010_2, "gfccMeanGroup1_2010", "deforTilesGEE");
 
-///print(mean_2010_2.limit(2));
-///print(mean_2000.limit(2));
 
 
+///////////////////////////////////////////////////////////////////////
+//
+//  Drought data test
+//
+///////////////////////////////////////////////////////////////////////
 
 
+var drought_M = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
+.filter(ee.Filter.date('2000-01-01', '2012-12-31'));
 
 
-var drought_M_2000 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2000-01-01', '2000-12-31'));
+function newCollectionToImage(collection){
+var stack = ee.Image(collection.iterate(function(img, prev) {
+return ee.Image(prev).addBands(img);
+}, ee.Image(1)));
+ 
+stack = stack.select(ee.List.sequence(1, stack.bandNames().size().subtract(1)));
+return stack;
+}
 
-print(drought_M_2000);
-
-var drought_Y_2000 = drought_M_2000.reduce(ee.Reducer.max());
-
-print(drought_Y_2000);
-
-///Map.addLayer(drought_Y_2000);
-
-//Mean pct FC per tile 2000
-var drought_R_2000 = tiles.map(function(feature) {
-  return feature.set(drought_Y_2000.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 30,
-    maxPixels: 80000000
-  }));
+var tch = drought_M.map(function(img){
+var y = ee.String(ee.Date(img.get('system:time_start')).get("year"));
+return img.set("year",y).rename(y);
 });
 
-print(drought_R_2000.limit(20));
+var tchImg = newCollectionToImage(tch).clip(SSA);
 
-var drought_R_2000_nonull=drought_R_2000.filter(ee.Filter.notNull(['pdsi_max']));
-var drought_2000 = drought_R_2000_nonull.select(["pdsi_max"],["maxPdsi2000"]);
+var drought = 
+tchImg.
+reduceRegions(tiles, ee.Reducer.mean());
 
-print(drought_2000.limit(5));
+print(drought.limit(2));
 
-
-
-
-
-var drought_M_2001 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2001-01-01', '2001-12-31'));
-
-print(drought_M_2001);
-
-var drought_Y_2001 = drought_M_2001.reduce(ee.Reducer.max());
-
-print(drought_Y_2001);
-
-
-//Mean pct FC per tile 2000
-var drought_R_2001 = drought_2000.map(function(feature) {
-  return feature.set(drought_Y_2001.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 30,
-    maxPixels: 80000000
-  }));
-});
-
-print(drought_R_2001.limit(5));
+Export.table.toDrive(drought, "droughtGroup1_2010", "deforTilesGEE");
