@@ -1566,203 +1566,112 @@ Export.table.toDrive(mean_2010_2, "gfccMeanGroup1_2010", "deforTilesGEE");
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  Drought data test
+//  Nighttime lights
 //
 ///////////////////////////////////////////////////////////////////////
 
-//2000
-var droughtM_2000 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2000-01-01', '2000-12-31'));
-var max_2000 = droughtM_2000.reduce(ee.Reducer.max());
 
-var droughtRisk_2000 = tiles.map(function(feature) {
-  return feature.set(max_2000.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
+var light = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
+                  .filter(ee.Filter.date('2001-01-01', '2012-12-31'));
+
+var lt_2001 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152001').toBands();
+
+var light_2001 = tiles.map(function(feature) {
+  return feature.set(lt_2001.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-//2001
-var droughtM_2001 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2001-01-01', '2001-12-31'));
-var max_2001 = droughtM_2001.reduce(ee.Reducer.max());
+var lt_2002 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152002').toBands();
 
-var droughtRisk_2001 = tiles.map(function(feature) {
-  return feature.set(max_2001.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
+var light_2002 = light_2001.map(function(feature) {
+  return feature.set(lt_2002.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-//2002
-var droughtM_2002 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2002-01-01', '2002-12-31'));
-var max_2002 = droughtM_2002.reduce(ee.Reducer.max());
+var lt_2003 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152003').toBands();
 
-var droughtRisk_2002 = tiles.map(function(feature) {
-  return feature.set(max_2002.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
+var light_2003 = light_2002.map(function(feature) {
+  return feature.set(lt_2003.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-//2003
-var droughtM_2003 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2003-01-01', '2003-12-31'));
-var max_2003 = droughtM_2003.reduce(ee.Reducer.max());
+var lt_2004 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152004').toBands();
 
-var droughtRisk_2003 = tiles.map(function(feature) {
-  return feature.set(max_2003.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
+var light_2004 = light_2003.map(function(feature) {
+  return feature.set(lt_2004.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-//2004
-var droughtM_2004 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2004-01-01', '2004-12-31'));
-var max_2004 = droughtM_2004.reduce(ee.Reducer.max());
+var lt_2005 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152005').toBands();
 
-var droughtRisk_2004 = tiles.map(function(feature) {
-  return feature.set(max_2004.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
+var light_2005 = light_2004.map(function(feature) {
+  return feature.set(lt_2005.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-//2005
-var droughtM_2005 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2005-01-01', '2005-12-31'));
-var max_2005 = droughtM_2005.reduce(ee.Reducer.max());
+var lt_2006 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152006').toBands();
 
-var droughtRisk_2005 = tiles.map(function(feature) {
-  return feature.set(max_2005.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
+var light_2006 = light_2005.map(function(feature) {
+  return feature.set(lt_2006.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-//2006
-var droughtM_2006 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2006-01-01', '2006-12-31'));
-var max_2006 = droughtM_2006.reduce(ee.Reducer.max());
+var lt_2007 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152007').toBands();
 
-var droughtRisk_2006 = tiles.map(function(feature) {
-  return feature.set(max_2006.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
+var light_2007 = light_2006.map(function(feature) {
+  return feature.set(lt_2007.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-//2007
-var droughtM_2007 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2007-01-01', '2007-12-31'));
-var max_2007 = droughtM_2007.reduce(ee.Reducer.max());
+var lt_2008 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152008').toBands();
 
-var droughtRisk_2007 = tiles.map(function(feature) {
-  return feature.set(max_2007.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
+var light_2008 = light_2007.map(function(feature) {
+  return feature.set(lt_2008.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-//2008
-var droughtM_2008 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2008-01-01', '2008-12-31'));
-var max_2008 = droughtM_2008.reduce(ee.Reducer.max());
+var lt_2009 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F162009').toBands();
 
-var droughtRisk_2008 = tiles.map(function(feature) {
-  return feature.set(max_2008.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
+var light_2009 = light_2008.map(function(feature) {
+  return feature.set(lt_2009.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
-//2009
-var droughtM_2009 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2009-01-01', '2009-12-31'));
-var max_2009 = droughtM_2009.reduce(ee.Reducer.max());
+var lt_2010 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F182010').toBands();
 
-var droughtRisk_2009 = tiles.map(function(feature) {
-  return feature.set(max_2009.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
-});
-
-//2010
-var droughtM_2010 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2010-01-01', '2010-12-31'));
-var max_2010 = droughtM_2010.reduce(ee.Reducer.max());
-
-var droughtRisk_2010 = tiles.map(function(feature) {
-  return feature.set(max_2010.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
-});
-
-//2011
-var droughtM_2011 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2011-01-01', '2011-12-31'));
-var max_2011 = droughtM_2011.reduce(ee.Reducer.max());
-
-var droughtRisk_2011 = tiles.map(function(feature) {
-  return feature.set(max_2011.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
-});
-
-//2012
-var droughtM_2012 = ee.ImageCollection("IDAHO_EPSCOR/TERRACLIMATE").select("pdsi")
-.filter(ee.Filter.date('2012-01-01', '2012-12-31'));
-var max_2012 = droughtM_2012.reduce(ee.Reducer.max());
-
-var droughtRisk_2012 = tiles.map(function(feature) {
-  return feature.set(max_2012.reduceRegion({
-    reducer: "max",
-    geometry: feature.geometry(),
-    scale: 10,
-    maxPixels: 300000000
-  }));
+var light_2010 = light_2009.map(function(feature) {
+  return feature.set(lt_2010.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
 
 
-Export.table.toDrive(droughtRisk_2000, "droughtGroup1_2000", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2001, "droughtGroup1_2001", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2002, "droughtGroup1_2002", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2003, "droughtGroup1_2003", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2004, "droughtGroup1_2004", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2005, "droughtGroup1_2005", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2006, "droughtGroup1_2006", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2007, "droughtGroup1_2007", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2008, "droughtGroup1_2008", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2009, "droughtGroup1_2009", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2010, "droughtGroup1_2010", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2011, "droughtGroup1_2011", "deforTilesGEE");
-Export.table.toDrive(droughtRisk_2012, "droughtGroup1_2012", "deforTilesGEE");
+var lt_2011 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F182011').toBands();
+
+var light_2011 = light_2010.map(function(feature) {
+  return feature.set(lt_2011.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+var lt_2012 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F182012').toBands();
+
+var light_2012 = light_2011.map(function(feature) {
+  return feature.set(lt_2012.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
+Export.table.toDrive(light_2012, "nightLightsGroup1", "deforTilesGEE");
+
+print(light_2012);
+
