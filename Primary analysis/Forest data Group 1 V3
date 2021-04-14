@@ -1609,7 +1609,7 @@ var light_2000 = tiles.map(function(feature) {
 var lt_2001 = light.select('stable_lights').
 filterMetadata('system:index', 'equals', 'F152001').toBands();
 
-var light_2001 = light_2000.map(function(feature) {
+var light_2001 = tiles.map(function(feature) {
   return feature.set(lt_2001.reduceRegion({
     reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
@@ -1704,6 +1704,8 @@ var light_2012 = light_2011.map(function(feature) {
 });
 
 Export.table.toDrive(light_2012, "nightLightsGroup1", "deforTilesGEE");
+Export.table.toDrive(light_2000, "nightLights00Group1", "deforTilesGEE");
+
 
 print(light_2012);
 
