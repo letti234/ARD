@@ -1703,6 +1703,7 @@ var light_2012 = light_2011.map(function(feature) {
 });
 
 Export.table.toDrive(light_2012, "nightLightsGroup4", "deforTilesGEE");
+Export.table.toDrive(light_2000, "nightLights00Group4", "deforTilesGEE");
 
 print(light_2012);
 
