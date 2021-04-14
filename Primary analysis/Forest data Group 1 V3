@@ -640,6 +640,8 @@ var pointdata_withbandcounts_0 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2000', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2000', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2000', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -703,6 +705,8 @@ var pointdata_withbandcounts_1 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2001', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2001', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2001', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -765,6 +769,8 @@ var pointdata_withbandcounts_2 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2002', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2002', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2002', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -827,6 +833,8 @@ var pointdata_withbandcounts_3 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2003', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2003', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2003', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -889,6 +897,8 @@ var pointdata_withbandcounts_4 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2004', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2004', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2004', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -952,6 +962,8 @@ var pointdata_withbandcounts_5 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2005', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2005', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2005', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -1015,6 +1027,8 @@ var pointdata_withbandcounts_6 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2006', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2006', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2006', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -1078,6 +1092,8 @@ var pointdata_withbandcounts_7 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2007', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2007', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2007', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -1141,6 +1157,8 @@ var pointdata_withbandcounts_8 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2008', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2008', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2008', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -1191,9 +1209,7 @@ var pointdata_withbandcounts_9 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize12_2009', neighs.filter(filt).size());
   filt = ee.Filter.lt('distance', 13000);
   pt=pt.set('neighsSize13_2009', neighs.filter(filt).size());
-  filt = ee.Filter.lt(
-    
-    'distance', 14000);
+  filt = ee.Filter.lt('distance', 14000);
   pt=pt.set('neighsSize14_2009', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 15000);
   pt=pt.set('neighsSize15_2009', neighs.filter(filt).size());
@@ -1207,6 +1223,8 @@ var pointdata_withbandcounts_9 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2009', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2009', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2009', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -1270,6 +1288,8 @@ var pointdata_withbandcounts_10 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2010', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2010', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2010', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -1333,6 +1353,8 @@ var pointdata_withbandcounts_11 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2011', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2011', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2011', neighs.filter(filt).size());
   return(pt);
 });
 
@@ -1398,10 +1420,12 @@ var pointdata_withbandcounts_12 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize19_2012', neighs.filter(filt).size());
     filt = ee.Filter.lt('distance', 20000);
   pt=pt.set('neighsSize20_2012', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_2012', neighs.filter(filt).size());
   return(pt);
 });
 
-///print(pointdata_withbandcounts_12, "2012 camp data");
+print(pointdata_withbandcounts_12, "2012 camp data");
 
 ///////////////////////////////////////////////////////////////////////
 //
