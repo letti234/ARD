@@ -1598,10 +1598,18 @@ Export.table.toDrive(mean_2010_2, "gfccMeanGroup1_2010", "deforTilesGEE");
 var light = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
                   .filter(ee.Filter.date('2001-01-01', '2012-12-31'));
 
+var lt_2000 = light.select('stable_lights').
+filterMetadata('system:index', 'equals', 'F152000').toBands();
+
+var light_2000 = tiles.map(function(feature) {
+  return feature.set(lt_2000.reduceRegion({
+    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
+});
+
 var lt_2001 = light.select('stable_lights').
 filterMetadata('system:index', 'equals', 'F152001').toBands();
 
-var light_2001 = tiles.map(function(feature) {
+var light_2001 = light_2000.map(function(feature) {
   return feature.set(lt_2001.reduceRegion({
     reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
 });
