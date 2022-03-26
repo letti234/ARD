@@ -132,7 +132,6 @@ function tile(region, size_in_degrees) {
 
 var buffs2 = buffDissolveFC.select(["system:index"], ["Buffer_ID"]);
 
-
 var properties = ["Buffer_ID"];
 
 // Define a spatial filter as geometries that intersect.
@@ -151,9 +150,6 @@ var bufferID = joinAll.map(function(feature){
   var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
-
-
-///print('Buffer ID', bufferID.limit(10));
 
 
 
@@ -203,7 +199,6 @@ var tileCounts = pixelCounts.select(
     ['treecover2000'], ['number_pixels']            
 );
 
-//print("Number of pixels that are not NA", tileCounts);
 
 //2. Function to calculate the mean pct forest cover of tile in 2000
 
@@ -214,7 +209,6 @@ var tileCountsPlusBaseline = tileCounts.map(function(feature) {
   }));
 });
 
-//print("Updated FC", tileCountsPlusBaseline);
 
 
 //2. Number of pixels with zero FC in 2000
@@ -222,8 +216,6 @@ var tileCountsPlusBaseline = tileCounts.map(function(feature) {
 var gfc2000CoverZeroes = gfc2000CoverMasked
 .remap([ 0], [1], null);
 
-//print(gfc2000CoverZeroes, "2000 pixels with zero FC");
-//Map.addLayer(gfc2000CoverZeroes);
 
 var TileCounts2 = tileCountsPlusBaseline.map(function(feature) {
   return feature.set(gfc2000CoverZeroes.reduceRegion({
@@ -232,7 +224,6 @@ var TileCounts2 = tileCountsPlusBaseline.map(function(feature) {
   }));
 });
 
-//print(TileCounts2);
 
 var DataRenamed = TileCounts2.map(function(feat){
   return ee.Feature(feat.geometry(), { 
@@ -241,7 +232,6 @@ var DataRenamed = TileCounts2.map(function(feat){
     meanPctCover2000: feat.get('treecover2000')
   });
 });
-///print(DataRenamed.limit(10), "Renaming GFC data");
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -249,7 +239,6 @@ var DataRenamed = TileCounts2.map(function(feat){
 //  forest cover to zero forest cover by year
 //
 ///////////////////////////////////////////////////////////////////////
-
 
 // indices for years you want to calculate stats for (2001 to 2014) 
 var indices = ee.List.sequence(1,12);
