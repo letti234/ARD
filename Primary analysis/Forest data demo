@@ -8,25 +8,24 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-var camps = ee.FeatureCollection('users/salem043/allCampWideV4');
+//Define a polygon where we can randomly sample points
+var countries = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017');
+var congo = countries.filter(ee.Filter.eq('country_na', 'Rep of the Congo'));
 
-Map.addLayer(camps, {}, "Full camp sample");
-
-var campFilter = ee.Filter.equals('group', 1);
-
-var campRegion=camps.filter(campFilter);
-
-Map.addLayer(campRegion, {}, "Filtered sample of camps");
+//These points stand in for the camp locations in my data, which 
+//are not yet publicly available
+var campRegion = ee.FeatureCollection.randomPoints(congo, 10);
+Map.addLayer(camps2);
 
 //Import Hansen Global Forest Change data
 var gfc2014 = ee.Image('UMD/hansen/global_forest_change_2015');
 
-//The bands we rely on for our analysis
+//GFC bands we rely on for our analysis
 var gfcSampleCover2000= gfc2014.select(["treecover2000"]);
 var gfcSampleMask=gfc2014.select(["datamask"]);
 var gfcSampleLossYr = gfc2014.select(["lossyear"]);
 
-//30 km buffers around camps
+//30 km buffers around "camps"
 var bufferPoly = function(feature) {
   return feature.buffer(30000);  
 };
@@ -36,7 +35,7 @@ Map.addLayer(buffsUnion);
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  Create dissolved buffer FC 
+//  Create dissolved buffer FC - so buffers do not overlap
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -69,12 +68,13 @@ var buffDissolveFC = ee.FeatureCollection(multiGeomExplodeList);
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  Tile production - we'll use these tiles to calculate zonal stats.
+//  Tile production - define equally sized tiles within the buffer area
+//  We'll use these tiles to calculate zonal stats.
 //  The tiles are the unit of analysis in our regression
 //
 ///////////////////////////////////////////////////////////////////////
 
-var tiles = tile(buffsUnion, 0.01); //TURN BACK TO 0.01 deg!
+var tiles = tile(buffsUnion, 0.01); //Define 0.01 degree tiles 
 
 function tile(region, size_in_degrees) {
   function tile_geometry(geometry) {
@@ -125,7 +125,9 @@ function tile(region, size_in_degrees) {
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  Zonal statistics: get tile buffer ID
+//  Zonal statistics: get tile and buffer ID
+//  I use the buffer idea to cluster standard errors
+//  The tile id helps keep data organized later on
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -184,7 +186,7 @@ var gfcLossYearMasked  = gfcSampleLossYr.updateMask(gfcSampleMask);
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  GFC zonal stats
+//  Collect GFC zonal stats
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -244,7 +246,8 @@ var DataRenamed = TileCounts2.map(function(feat){
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  Function that counts pixels that made transition by year
+//  Function that counts pixels that made transition from
+//  forest cover to zero forest cover by year
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -273,24 +276,26 @@ var tiles_new = tiles.map(function(feature){
       .rename(bandname)
       
       // get zonal statistics 
-      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100})
+      .reduceRegion({reducer:'count', geometry: feature.geometry(), scale: 100});
       
     // append zonal statistics for this year to dictionary 
-    return ee.Dictionary(dictin).combine(dict)
+    return ee.Dictionary(dictin).combine(dict);
     
-  }, ee.Dictionary()) // begin iteration with an empty dictionary  
+  }, ee.Dictionary()); // begin iteration with an empty dictionary  
 
   // return feature with zonal stats accumulated from all years 
-  return feature.set(mdata)
+  return feature.set(mdata);
 
-})
+});
 
 ///print(tiles_new.limit(3), "Tile results");
 
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  identify grid centroids
+//  identify grid centroids 
+//  use centroids to identify spatial joins and intersections with
+//  polygon data
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -312,7 +317,8 @@ var tileCentroids = tileCenter.map(function(f) {
 
 ///////////////////////////////////////////////////////////////////////
 //
-//  Annual camp counts
+//  Annual camp counts - number of "camps" at different distances
+//  from each tile centroid by year
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -1462,7 +1468,7 @@ var ecosample = joinAll.map(function(feature){
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//EXTRACTING INFORMATION FROM THE SSA SHAPEFILE 
+//EXTRACTING ADM INFORMATION FROM THE SSA SHAPEFILE 
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -1494,7 +1500,8 @@ var SSAdata = joinAll.map(function(feature){
 
 /////////////////////////////////////////////////////////////////////
 //
-//Export
+//Export data - I export it in chunks by zonal stat group and then
+//merge it back together after it exports.
 //
 /////////////////////////////////////////////////////////////////////
 
@@ -1515,197 +1522,4 @@ Export.table.toDrive(pointdata_withbandcounts_12, "CampDistanceDataGroup1", "def
 Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1", "deforTilesGEE");
 Export.table.toDrive(tiles_new, "lossGroup1", "deforTilesGEE");
 Export.table.toDrive(bufferID, "bufferIDGroup1", "deforTilesGEE");
-
-
-///////////////////////////////////////////////////////////////////////
-//
-//  GFCC DATA 2000
-//
-///////////////////////////////////////////////////////////////////////
-
-var gfcc_2000 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2000-01-01', '2000-12-31'))
-      .select('tree_canopy_cover').mosaic();
-
-//Mean pct FC per tile 2000
-var mean_2000 = tiles.map(function(feature) {
-  return feature.set(gfcc_2000.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-///print(mean_2000.limit(10), "2000 GFCC mean");
-
-///////////////////////////////////////////////////////////////////////
-//
-//  GFCC DATA 2005
-//
-///////////////////////////////////////////////////////////////////////
-
-var gfcc_2005 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2005-01-01', '2005-12-31'))
-      .select('tree_canopy_cover').mosaic();
-
-//Mean pct FC per tile 2005
-var mean_2005 = tiles.map(function(feature) {
-  return feature.set(gfcc_2005.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-
-///////////////////////////////////////////////////////////////////////
-//
-//  GFCC DATA 2010
-//
-///////////////////////////////////////////////////////////////////////
-
-var gfcc_2010 = ee.ImageCollection('NASA/MEASURES/GFCC/TC/v3')
-      .filter(ee.Filter.date('2010-01-01', '2010-12-31'))
-      .select('tree_canopy_cover').mosaic();
-
-//Mean pct FC per tile 2010
-var mean_2010 = tiles.map(function(feature) {
-  return feature.set(gfcc_2010.reduceRegion({
-    reducer: 'mean',
-    geometry: feature.geometry(),
-    scale: 30
-  }));
-});
-
-var mean_2010_2=mean_2010.filter(ee.Filter.notNull(['tree_canopy_cover']));
-var mean_2005_2=mean_2005.filter(ee.Filter.notNull(['tree_canopy_cover']));
-var mean_2000_2=mean_2000.filter(ee.Filter.notNull(['tree_canopy_cover']));
-
-
-Export.table.toDrive(mean_2000_2, "gfccMeanGroup1_2000", "deforTilesGEE");
-Export.table.toDrive(mean_2005_2, "gfccMeanGroup1_2005", "deforTilesGEE");
-Export.table.toDrive(mean_2010_2, "gfccMeanGroup1_2010", "deforTilesGEE");
-
-
-
-///////////////////////////////////////////////////////////////////////
-//
-//  Nighttime lights
-//
-///////////////////////////////////////////////////////////////////////
-
-
-var light = ee.ImageCollection('NOAA/DMSP-OLS/NIGHTTIME_LIGHTS')
-                  .filter(ee.Filter.date('2001-01-01', '2012-12-31'));
-
-var lt_2000 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152000').toBands();
-
-var light_2000 = tiles.map(function(feature) {
-  return feature.set(lt_2000.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2001 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152001').toBands();
-
-var light_2001 = tiles.map(function(feature) {
-  return feature.set(lt_2001.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2002 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152002').toBands();
-
-var light_2002 = light_2001.map(function(feature) {
-  return feature.set(lt_2002.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2003 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152003').toBands();
-
-var light_2003 = light_2002.map(function(feature) {
-  return feature.set(lt_2003.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2004 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152004').toBands();
-
-var light_2004 = light_2003.map(function(feature) {
-  return feature.set(lt_2004.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2005 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152005').toBands();
-
-var light_2005 = light_2004.map(function(feature) {
-  return feature.set(lt_2005.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2006 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152006').toBands();
-
-var light_2006 = light_2005.map(function(feature) {
-  return feature.set(lt_2006.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2007 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152007').toBands();
-
-var light_2007 = light_2006.map(function(feature) {
-  return feature.set(lt_2007.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2008 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F152008').toBands();
-
-var light_2008 = light_2007.map(function(feature) {
-  return feature.set(lt_2008.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2009 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F162009').toBands();
-
-var light_2009 = light_2008.map(function(feature) {
-  return feature.set(lt_2009.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2010 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F182010').toBands();
-
-var light_2010 = light_2009.map(function(feature) {
-  return feature.set(lt_2010.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-
-var lt_2011 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F182011').toBands();
-
-var light_2011 = light_2010.map(function(feature) {
-  return feature.set(lt_2011.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-var lt_2012 = light.select('stable_lights').
-filterMetadata('system:index', 'equals', 'F182012').toBands();
-
-var light_2012 = light_2011.map(function(feature) {
-  return feature.set(lt_2012.reduceRegion({
-    reducer: 'mean', geometry: feature.geometry(), scale: 30 }));
-});
-
-Export.table.toDrive(light_2012, "nightLightsGroup1", "deforTilesGEE");
-Export.table.toDrive(light_2000, "nightLights00Group1", "deforTilesGEE");
-
-
-print(light_2012);
 
