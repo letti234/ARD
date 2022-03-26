@@ -287,31 +287,6 @@ var tiles_new = tiles.map(function(feature){
 
 });
 
-///print(tiles_new.limit(3), "Tile results");
-
-
-///////////////////////////////////////////////////////////////////////
-//
-//  identify grid centroids 
-//  use centroids to identify spatial joins and intersections with
-//  polygon data
-//
-///////////////////////////////////////////////////////////////////////
-
-//Obtain tile centroids - basically converts our tiles into point data
-var getCentroids = function(feature) {
-  return feature.set({centralPoint: feature.centroid()});
-};
-
-var tileCenter = tiles_new.map(getCentroids);
-
-var tileCentroids = tileCenter.map(function(f) {
-  var centroid = ee.Feature(ee.List(f.get('centralPoint')));
-  return centroid;
-});
-///Map.addLayer(tileCentroids);
-
-///print(tileCentroids.limit(3), 'centroids');
 
 /////////////////////////////////////////////////////////////////////
 //
@@ -323,7 +298,7 @@ var tileCentroids = tileCenter.map(function(f) {
 //Let's take a look at what we are exporting (first two tiles))
 
 print("Exported GFC tile data", tiles_new.limit(2));
-print("Additional GFC data exported", GFCAdditionalGroup1.limit(2));
+print("Additional GFC data exported", DataRenamed.limit(2));
 print("Tile buffer ID", bufferID.limit(2));
 
 //This method renames variables for the export
