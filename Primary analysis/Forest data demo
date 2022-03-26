@@ -319,8 +319,14 @@ var tileCentroids = tileCenter.map(function(f) {
 //merge it back together after it exports.
 //
 /////////////////////////////////////////////////////////////////////
-print("Exported GFC tile data", tiles_new.limit(2));
 
+//Let's take a look at what we are exporting (first two tiles))
+
+print("Exported GFC tile data", tiles_new.limit(2));
+print("Additional GFC data exported", GFCAdditionalGroup1.limit(2));
+print("Tile buffer ID", bufferID.limit(2));
+
+//This method renames variables for the export
 Export.table.toDrive({
   collection: tiles_new.select(['system:index', 'loss1', 'loss2', 'loss3',
   'loss4', 'loss5', 'loss6', 'loss7', 'loss8', 'loss9', 'loss10', 'loss11', 'loss12'],
@@ -331,4 +337,7 @@ Export.table.toDrive({
   folder: "deforTilesGEE"
 });
 
+//Simpler export method
+Export.table.toDrive(DataRenamed, "GFCAdditionalGroup1", "deforTilesGEE");
+Export.table.toDrive(bufferID, "bufferIDGroup1", "deforTilesGEE");
 
