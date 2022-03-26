@@ -31,7 +31,6 @@ var bufferPoly = function(feature) {
 };
 var buffers = campRegion.map(bufferPoly);
 var buffsUnion = buffers.union();
-Map.addLayer(buffsUnion);
 
 ///////////////////////////////////////////////////////////////////////
 //
