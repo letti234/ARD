@@ -11,28 +11,17 @@ var dw = ee.ImageCollection('GOOGLE/DYNAMICWORLD/V1').map(function (img){
 var dwSoBGD = dw.filter(ee.Filter.inList('tileId',tiles));
 
 
-var smallCollection = dwSoBGD.filterDate('2017-12-16','2017-12-24');
-print(smallCollection);
 
-//print(smallCollection.aggregate_histogram('tileId'))
-
-
-
-
-
+//July 2017 
+var july17 = dwSoBGD.filterDate('2017-06-01','2017-07-30');
+print(july17);
 
 //Classification of colors for map
-var classification = smallCollection.select('label');
-var dwVisParams = {
-  min: 0,
-  max: 8,
-  palette: [
-    '#419BDF', '#397D49', '#88B053', '#7A87C6', '#E49635', '#DFC35A',
-    '#C4281B', '#A59B8F', '#B39FE1'
-  ]
-};
+var july17M = july17.select('label');
+var dwVisParams = {min: 0, max: 8, palette: ['#419BDF', '#397D49', '#88B053', 
+'#7A87C6', '#E49635', '#DFC35A', '#C4281B', '#A59B8F', '#B39FE1'  ]};
 
-Map.addLayer(classification, dwVisParams, 'Classified Image');
+Map.addLayer(july17M, dwVisParams, 'Classified Image');
 
 Map.addLayer
 
