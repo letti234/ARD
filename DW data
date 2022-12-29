@@ -1,19 +1,20 @@
 //Copernicus tiles for study
-var tiles = ['T46QCJ', 'T46QDJ', 'T46QDK', 'T46QCK']
+var tiles = ['T46QCJ', 'T46QDJ', 'T46QDK', 'T46QCK'];
 
 //Use image ID to create a new variable with the tile ID for each tile
 var dw = ee.ImageCollection('GOOGLE/DYNAMICWORLD/V1').map(function (img){
-    var tileId = ee.String(ee.Image(img).get('system:index')).split('_').get(2)
-    return img.set('tileId',tileId)
-  })
+    var tileId = ee.String(ee.Image(img).get('system:index')).split('_').get(2);
+    return img.set('tileId',tileId);
+  });
 
 // filter on tile ids
-var dwSoBGD = dw.filter(ee.Filter.inList('tileId',tiles))
+var dwSoBGD = dw.filter(ee.Filter.inList('tileId',tiles));
 
 
-var smallCollection = dwSoBGD.filterDate('2016-01-01','2016-04-01')
-print(smallCollection)
-print(smallCollection.aggregate_histogram('tileId'))
+var smallCollection = dwSoBGD.filterDate('2017-12-16','2017-12-20');
+print(smallCollection);
+
+//print(smallCollection.aggregate_histogram('tileId'))
 
 
 
@@ -21,7 +22,7 @@ print(smallCollection.aggregate_histogram('tileId'))
 
 
 //Classification of colors for map
-var classification = dw.select('label');
+var classification = smallCollection.select('label');
 var dwVisParams = {
   min: 0,
   max: 8,
@@ -31,7 +32,7 @@ var dwVisParams = {
   ]
 };
 
-//Map.addLayer(classification, dwVisParams, 'Classified Image');
+Map.addLayer(classification, dwVisParams, 'Classified Image');
 
 
 //Need to determine how to get full list of all data dates
