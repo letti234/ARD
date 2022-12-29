@@ -1,19 +1,18 @@
-/**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var geometry = /* color: #0000ff */ee.Geometry.Point([91.86624928564488, 21.876589315819142]);
-/***** End of imports. If edited, may not auto-convert in the playground. *****/
 
-//Tiles we want to focus on
-var tiles = ['46QCJ', '46QDJ', '46QDK', '46QCK']
+//Tiles that cover the study area but just for one date
+var tiles = [ '20151116T043132_20151116T043131_T46QCJ', 
+              '20151116T043132_20151116T043131_T46QDJ', 
+              '20151116T043132_20151116T043131_T46QDK', 
+              '20151116T043132_20151116T043131_T46QCK']
 
-
+//Call on that date of data
 var dw = ee.ImageCollection('GOOGLE/DYNAMICWORLD/V1').
-  filter(ee.Filter.inList('system:index', tiles))
+                 filter(ee.Filter.inList('system:index', tiles))
    
-var dwImage = ee.Image(dw.first());
+print(dw);
 
-print(dwImage);
-
-var classification = dwImage.select('label');
+//Classification of colors for map
+var classification = dw.select('label');
 var dwVisParams = {
   min: 0,
   max: 8,
@@ -24,3 +23,9 @@ var dwVisParams = {
 };
 
 Map.addLayer(classification, dwVisParams, 'Classified Image');
+
+
+//Need to determine how to get full list of all data dates
+
+           
+           
