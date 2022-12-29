@@ -11,7 +11,7 @@ var dw = ee.ImageCollection('GOOGLE/DYNAMICWORLD/V1').map(function (img){
 var dwSoBGD = dw.filter(ee.Filter.inList('tileId',tiles));
 
 
-var smallCollection = dwSoBGD.filterDate('2017-12-16','2017-12-20');
+var smallCollection = dwSoBGD.filterDate('2017-12-16','2017-12-24');
 print(smallCollection);
 
 //print(smallCollection.aggregate_histogram('tileId'))
@@ -34,6 +34,7 @@ var dwVisParams = {
 
 Map.addLayer(classification, dwVisParams, 'Classified Image');
 
+Map.addLayer
 
 //Need to determine how to get full list of all data dates
 
