@@ -1,0 +1,11 @@
+var parks = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+
+var settlement = ee.Image('DLR/WSF/WSF2015/v1');
+
+var palettes = require('users/gena/packages:palettes');
+
+var styling = {color: 'red', fillColor: '00000000'};
+
+Map.addLayer(parks.style(styling));
+Map.addLayer(settlement, {}, "settlement");
+
