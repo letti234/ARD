@@ -14,20 +14,25 @@
 
   //Call on a shapefile of Canada - we can directly call FAO GAUL's ADM2 data in GEE
   
-  var world = ee.FeatureCollection("FAO/GAUL/2015/level2");
+    var world = ee.FeatureCollection("FAO/GAUL/2015/level2");
   
-  //print the first 10 entries
+    //print the first 10 entries
   
-  print("FAU GAUL", world.limit(10))
+    print("FAU GAUL", world.limit(10))
   
-  //Subset to Canada using ADM0_NAME
+    //Subset to Canada using ADM0_NAME
   
-  var Canada = world.filter(ee.Filter.eq("ADM0_NAME", "Canada"));
+    var Canada = world.filter(ee.Filter.eq("ADM0_NAME", "Canada"));
   
-  //Map Canada - the 0 at the end is a Boolean operator indicating that we don't automatically put the polygons on the map.
-  //Change the operator to 1 and the polygons show up automatically.
-  Map.addLayer(Canada, {}, "Canada", 0)
+    //Map Canada - the 0 at the end is a Boolean operator indicating that we don't automatically put the polygons on the map.
+    //Change the operator to 1 and the polygons show up automatically.
+    Map.addLayer(Canada, {}, "Canada", 0)
   
-  //We can use these different polygons to calculate zonal statistics. Note that we could also call on provinces ("/level1")
-  //or even lower administrative units (but we need to get the postal code data first!)
+    //We can use these different polygons to calculate zonal statistics. Note that we could also call on provinces ("/level1")
+    //or even lower administrative units (but we need to get the postal code data first!)
+  
+  
+  //Call on shapefile of Canadian reserves
+  
+    //I uploaded the reserve polygons in GEE as an asset, which can be shared with other users.
   
