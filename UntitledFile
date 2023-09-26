@@ -1,0 +1,22 @@
+//Introduction to Earth Engine
+
+//Google Earth Engine is an incredible tool. We can use it to perform geocomputations across large spatial scales using the Google Cloud. And we can
+//directly call from an enormous repository of spatial data.
+
+//This tutorial will provide an introduction to working with images/image collections (rasters) and features/feature collections (polygons).
+
+//Note that GEE uses a Javascript API. The coding language is a mix of Javascript and Earth Engine specific tools. It's not the easiest coding language
+//to work in because user support is limited. But for the simple task of generating geocomputations and exporting, GEE is a great and not-too-difficult
+//tool
+
+
+//Working with features
+
+  //Call on a shapefile of Canada - we can directly call FAO GAUL's country border data in GEE
+  
+  var world = ee.FeatureCollection("FAO/GAUL/2015/level0");
+  
+  //print the first 10 entries
+  //and subset to Canada using ADM0_NAME
+  
+  var Canada.filter(ee.Filter.eq("ADM0_NAME", "Ethiopia"));
