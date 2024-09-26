@@ -271,6 +271,9 @@ var pointdata_withbandcounts_2005 = withNearestDist.map(function(pt) {
 });
 
 
+
+// print(pointdata_withbandcounts_2005.limit(1));
+
 //2006
 var joined_2006 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
@@ -379,13 +382,18 @@ var pointdata_withbandcounts_2008 = withNearestDist.map(function(pt) {
 });
 
 
+
+Export.table.toDrive(pointdata_withbandcounts_2008, "DHSCampProximity_1", "NutritionPaper");
+
+
+
 //2009
 var joined_2009 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: pointdata_withbandcounts_2008, 
+  primary: dhs, 
   secondary: camps.filterMetadata('open_2009', 'equals', 1), 
   condition: spatialFilter
 });
@@ -449,6 +457,9 @@ var pointdata_withbandcounts_2010 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize30_2010', neighs.filter(filt).size());
   return(pt);
 });
+
+
+// print(pointdata_withbandcounts_2010.limit(1));
 
 
 //2011
@@ -522,6 +533,7 @@ var pointdata_withbandcounts_2012 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
+// print(pointdata_withbandcounts_2012.limit(1));
 
 //2013
 var joined_2013 = ee.Join.saveAll({
@@ -631,6 +643,7 @@ var pointdata_withbandcounts_2015 = withNearestDist.map(function(pt) {
   return(pt);
 });
 
+print(pointdata_withbandcounts_2015.limit(1));
 
 //2016
 var joined_2016 = ee.Join.saveAll({
@@ -669,8 +682,6 @@ var pointdata_withbandcounts_2016 = withNearestDist.map(function(pt) {
 
 
 
-Export.table.toDrive(pointdata_withbandcounts_2016, "DHSCampProximity", "NutritionPaper");
+Export.table.toDrive(pointdata_withbandcounts_2016, "DHSCampProximity_2", "NutritionPaper");
 
 
-
-print(pointdata_withbandcounts_2016.limit(1));
