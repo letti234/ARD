@@ -1,0 +1,56 @@
+var dhs = ee.FeatureCollection("users/salem043/ARD/COMBINED_DHS_GIS");
+var camps = ee.FeatureCollection('users/salem043/ARD/allCampWideV4');
+
+Map.addLayer(dhs);
+
+//Distance filter
+var spatialFilter = ee.Filter.withinDistance({
+  distance: 80000000000,
+  leftField: '.geo',
+  rightField: '.geo',
+  maxError: 10
+});
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//
+//N camps 1999
+//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//1999
+var joined_1999 = ee.Join.saveAll({
+  matchesKey: 'neighbors', 
+  measureKey: 'distance',
+  ordering: 'distance'
+}).apply({
+  primary: dhs, 
+  secondary: camps.filterMetadata('open_1999', 'equals', 1), 
+  condition: spatialFilter
+});
+
+
+var withNearestDist = joined_1999.map(function(f) {
+  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+      .get('distance');
+  return f.set('nearestDist', nearestDist);
+});
+
+var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
+  var neighs = ee.List(pt.get('neighbors'));
+  var filt = ee.Filter.lt('distance', 5000);
+  pt=pt.set('neighsSize05_1999', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 10000);
+  pt=pt.set('neighsSize10_1999', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 15000);
+  pt=pt.set('neighsSize15_1999', neighs.filter(filt).size());
+  filt = ee.Filter.lt('distance', 20000);
+  pt=pt.set('neighsSize20_1999', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 25000);
+  pt=pt.set('neighsSize25_1999', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+  pt=pt.set('neighsSize30_1999', neighs.filter(filt).size());
+  return(pt);
+});
+
