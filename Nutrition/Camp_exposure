@@ -683,5 +683,5 @@ var pointdata_withbandcounts_2016 = withNearestDist.map(function(pt) {
 
 
 Export.table.toDrive(pointdata_withbandcounts_2016, "DHSCampProximity_2", "NutritionPaper");
-
+print(pointdata_withbandcounts_2016.limit(2));
 
