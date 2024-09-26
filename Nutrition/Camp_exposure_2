@@ -1,6 +1,7 @@
 var dhs = ee.FeatureCollection("users/salem043/ARD/COMBINED_DHS_GIS");
 var camps = ee.FeatureCollection('users/salem043/ARD/allCampWideV4');
 
+print(camps.limit(1));
 Map.addLayer(dhs);
 
 //Distance filter
@@ -55,6 +56,8 @@ var pointdata_withbandcounts_2009 = withNearestDist.map(function(pt) {
   pt=pt.set('neighsSize30_2009', neighs.filter(filt).size());
   return(pt);
 });
+
+print(pointdata_withbandcounts_2009.limit(2));
 
 
 //2010
@@ -317,5 +320,4 @@ var pointdata_withbandcounts_2016 = withNearestDist.map(function(pt) {
 
 
 Export.table.toDrive(pointdata_withbandcounts_2016, "DHSCampProximity_2", "NutritionPaper");
-print(pointdata_withbandcounts_2016.limit(2));
 
