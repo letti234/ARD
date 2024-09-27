@@ -4,6 +4,7 @@ var camps = ee.FeatureCollection('users/salem043/ARD/Cleaned_camp_data_wide');
 var adm = ee.FeatureCollection("users/salem043/SSA_Geo/Africa_Districts").select(['ADM1', 'ADM2']);
 
 print(dhs.limit(2));
+print(camps.limit(1));
 
 Map.addLayer(dhs, { color: 'blue', pointSize: 0.1}, "DHS data cropped for within 100 km");
 Map.addLayer(camps, { color: 'red', pointSize: 0.1}, "Camp sample");
