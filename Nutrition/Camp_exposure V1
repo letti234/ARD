@@ -70,7 +70,7 @@ var calculateNearestDistance = function(feature) {
 };
 
 // Map the function over the dhs feature collection
-var dhsWithDistance = dhs.map(calculateNearestDistance);
+var dhsWithDistance = dhs_adm.map(calculateNearestDistance);
 
 print(dhsWithDistance.limit(2));
 
@@ -89,7 +89,7 @@ var joined_1999 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: dhsWithDistance, 
+  primary: dhs, 
   secondary: camps.filterMetadata('op_1999', 'equals', 1), 
   condition: spatialFilter
 });
