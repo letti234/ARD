@@ -46,7 +46,7 @@ var dhs_adm = joinAll.map(function(feature){
   return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
 });
 
-print(dhs_adm.limit(1));
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -522,7 +522,7 @@ var pointdata_withbandcounts_2010 = withNearestDist.map(function(pt) {
 });
 
 
-// print(pointdata_withbandcounts_2010.limit(1));
+print(pointdata_withbandcounts_2010.limit(1));
 
 
 //2011
@@ -746,8 +746,9 @@ var pointdata_withbandcounts_2016 = withNearestDist.map(function(pt) {
 
 
 
-// print(dtaFinal.limit(1));
+print(pointdata_withbandcounts_2016.limit(1));
 
-// Export.table.toDrive(dtaFinal, "DHSCampProximity", "NutritionPaper");
+Export.table.toDrive(pointdata_withbandcounts_2016, "DHSCampProximity", "NutritionPaper");
+Export.table.toDrive(dhs_adm, "DHSADM", "NutritionPaper");
 
 
