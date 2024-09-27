@@ -720,28 +720,34 @@ var pointdata_withbandcounts_2016 = withNearestDist.map(function(pt) {
 //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-// Function to find adm1 and adm2 for each point
-var findAdmProperties = function(point) {
-  // Reduce the adm feature collection to find properties for intersecting polygons
-  var properties = adm.filterBounds(point.geometry()).first();
-  
-  // Get adm1 and adm2 from the intersecting polygon
-  var adm1 = properties.get('adm1');
-  var adm2 = properties.get('adm2');
-  
-  // Return the point with added properties
-  return point.set({
-    'adm1': adm1,
-    'adm2': adm2
-  });
-};
+var adm = ee.FeatureCollection("users/salem043/SSA_Geo/Africa_Districts");
 
-// Map the function over the point data
-var pointDataWithAdm = pointdata_withbandcounts_2016.map(findAdmProperties);
+//print('ecoregions', ecodata.limit(10));
+
+var properties = ["ADM1", "ADM2", "system:index"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(pointdata_withbandcounts_2016, adm, spatialFilter);
 
 
-print(pointDataWithAdm.limit(1));
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var dtaFinal = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
 
-Export.table.toDrive(pointDataWithAdm, "DHSCampProximity", "NutritionPaper");
+
+
+print(dtaFinal.limit(1));
+
+Export.table.toDrive(dtaFinal, "DHSCampProximity", "NutritionPaper");
 
 
