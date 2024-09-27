@@ -72,7 +72,7 @@ var calculateNearestDistance = function(feature) {
 // Map the function over the dhs feature collection
 var dhsWithDistance = dhs.map(calculateNearestDistance);
 
-// print(dhsWithDistance.limit(2));
+print(dhsWithDistance.limit(2));
 
 
 
@@ -89,7 +89,7 @@ var joined_1999 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: dhs, 
+  primary: dhsWithDistance, 
   secondary: camps.filterMetadata('op_1999', 'equals', 1), 
   condition: spatialFilter
 });
@@ -119,6 +119,7 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
 });
 
 
+print(pointdata_withbandcounts_1999.limit(1));
 
 //2000
 var joined_2000 = ee.Join.saveAll({
@@ -522,7 +523,7 @@ var pointdata_withbandcounts_2010 = withNearestDist.map(function(pt) {
 });
 
 
-print(pointdata_withbandcounts_2010.limit(1));
+// print(pointdata_withbandcounts_2010.limit(1));
 
 
 //2011
@@ -746,7 +747,7 @@ var pointdata_withbandcounts_2016 = withNearestDist.map(function(pt) {
 
 
 
-print(pointdata_withbandcounts_2016.limit(1));
+// print(pointdata_withbandcounts_2016.limit(1));
 
 Export.table.toDrive(pointdata_withbandcounts_2016, "DHSCampProximity", "NutritionPaper");
 Export.table.toDrive(dhs_adm, "DHSADM", "NutritionPaper");
