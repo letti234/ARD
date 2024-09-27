@@ -89,7 +89,7 @@ var joined_1999 = ee.Join.saveAll({
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: dhsWithDistance, 
+  primary: dhs, 
   secondary: camps.filterMetadata('op_1999', 'equals', 1), 
   condition: spatialFilter
 });
