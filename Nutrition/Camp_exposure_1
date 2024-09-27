@@ -1,7 +1,10 @@
 var dhs = ee.FeatureCollection("users/salem043/ARD/COMBINED_DHS_GIS");
-var camps = ee.FeatureCollection('users/salem043/ARD/allCampWideV4');
+var camps = ee.FeatureCollection('users/salem043/ARD/Cleand_camp_data_wide');
+var adm = ee.FeatureCollection('FAO/GAUL/2015/level2').select(['ADM1_NAME', 'ADM2_NAME']);
 
-Map.addLayer(dhs);
+Map.addLayer(dhs, { color: 'blue', pointSize: 0.5}, "DHS data cropped for within 100 km");
+Map.addLayer(camps, { color: 'red', pointSize: 0.5}, "Camp sample");
+print(adm.limit(2));
 
 //Distance filter
 var spatialFilter = ee.Filter.withinDistance({
