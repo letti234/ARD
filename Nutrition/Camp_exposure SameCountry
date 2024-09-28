@@ -5,7 +5,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-
 var dhs = ee.FeatureCollection("users/salem043/ARD/DHS_COMBINED_GIS");
 var camps = ee.FeatureCollection('users/salem043/ARD/Cleaned_camp_data_wide');
 var country= ee.FeatureCollection('FAO/GAUL/2015/level0').select(["ADM0_CODE"]);
@@ -18,7 +17,8 @@ var country= ee.FeatureCollection('FAO/GAUL/2015/level0').select(["ADM0_CODE"]);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //
-//Add country ID from FAOGAUL to DHS
+//Add country ID from FAO GAUL to DHS - this will later be used to do camp proximity counts
+//conditional on the camp being in the same country as the dhs geopoint.
 //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,11 +30,9 @@ var spatialFilter = ee.Filter.intersects({
   rightField: '.geo'
 });
 
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+// Intersection of DHS and FAOGAUL data
 var joinAll = ee.Join.saveAll('matched').apply(dhs, country, spatialFilter);
 
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
 var dhs_adm0 = joinAll.map(function(feature) {
   var joinedFeat = ee.List(feature.get('matched'));
   var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
@@ -42,11 +40,9 @@ var dhs_adm0 = joinAll.map(function(feature) {
   return updatedFeature.copyProperties(feature);
 });
 
-// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+// Intersection of camps and FAOGAUL data
 var joinAll = ee.Join.saveAll('matched').apply(camps, country, spatialFilter);
 
-// Since the join adds intersecting polygons to a new property 'matched'
-// we need to extract required info from the polygons and copy it to the points
 var camps_adm0 = joinAll.map(function(feature) {
   var joinedFeat = ee.List(feature.get('matched'));
   var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
@@ -54,11 +50,8 @@ var camps_adm0 = joinAll.map(function(feature) {
   return updatedFeature.copyProperties(feature);
 });
 
-
 // print(dhs_adm0.limit(1), "DHS with ADM0 code");
 // print(camps_adm0.limit(1), "Camps with ADM0 code");
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //
