@@ -720,3 +720,134 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
   
   // print(pointdata_withbandcounts_2013.limit(1), "Camp count 2013");
   
+  
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//
+//N camps at distance cutoffs - 2014
+//
+//////////////////////////////////////////////////////////////////////////////////////////////
+  
+  var joined_2014 = ee.Join.saveAll({
+    matchesKey: 'neighbors', 
+    measureKey: 'distance',
+    ordering: 'distance'
+  }).apply({
+    primary: pointdata_withbandcounts_2013, 
+    secondary: camps_adm0.filterMetadata('op_2014', 'equals', 1), 
+    condition: combinedFilter
+  });
+  
+  var withNearestDist = joined_2014.map(function(f) {
+    var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+    .get('distance');
+    return f.set('nearestDist', nearestDist);
+  });
+  
+  var pointdata_withbandcounts_2014 = withNearestDist.map(function(pt) {
+    var neighs = ee.List(pt.get('neighbors'));
+    var filt = ee.Filter.lt('distance', 5000);
+    pt = pt.set('nSize05_2014_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 10000);
+    pt = pt.set('nSize10_2014_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 15000);
+    pt = pt.set('nSize15_2014_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 20140);
+    pt = pt.set('nSize20_2014_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 25000);
+    pt = pt.set('nSize25_2014_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+    pt = pt.set('nSize30_2014_wc', neighs.filter(filt).size());
+    return pt;
+  });
+  
+  // print(pointdata_withbandcounts_2014.limit(1), "Camp count 2014");
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//
+//N camps at distance cutoffs - 2015
+//
+//////////////////////////////////////////////////////////////////////////////////////////////
+  
+  var joined_2015 = ee.Join.saveAll({
+    matchesKey: 'neighbors', 
+    measureKey: 'distance',
+    ordering: 'distance'
+  }).apply({
+    primary: pointdata_withbandcounts_2014, 
+    secondary: camps_adm0.filterMetadata('op_2015', 'equals', 1), 
+    condition: combinedFilter
+  });
+  
+  var withNearestDist = joined_2015.map(function(f) {
+    var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+    .get('distance');
+    return f.set('nearestDist', nearestDist);
+  });
+  
+  var pointdata_withbandcounts_2015 = withNearestDist.map(function(pt) {
+    var neighs = ee.List(pt.get('neighbors'));
+    var filt = ee.Filter.lt('distance', 5000);
+    pt = pt.set('nSize05_2015_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 10000);
+    pt = pt.set('nSize10_2015_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 15000);
+    pt = pt.set('nSize15_2015_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 20150);
+    pt = pt.set('nSize20_2015_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 25000);
+    pt = pt.set('nSize25_2015_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+    pt = pt.set('nSize30_2015_wc', neighs.filter(filt).size());
+    return pt;
+  });
+  
+  // print(pointdata_withbandcounts_2015.limit(1), "Camp count 2015");
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//
+//N camps at distance cutoffs - 2016
+//
+//////////////////////////////////////////////////////////////////////////////////////////////
+  
+  var joined_2016 = ee.Join.saveAll({
+    matchesKey: 'neighbors', 
+    measureKey: 'distance',
+    ordering: 'distance'
+  }).apply({
+    primary: pointdata_withbandcounts_2015, 
+    secondary: camps_adm0.filterMetadata('op_2016', 'equals', 1), 
+    condition: combinedFilter
+  });
+  
+  var withNearestDist = joined_2016.map(function(f) {
+    var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
+    .get('distance');
+    return f.set('nearestDist', nearestDist);
+  });
+  
+  var pointdata_withbandcounts_2016 = withNearestDist.map(function(pt) {
+    var neighs = ee.List(pt.get('neighbors'));
+    var filt = ee.Filter.lt('distance', 5000);
+    pt = pt.set('nSize05_2016_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 10000);
+    pt = pt.set('nSize10_2016_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 15000);
+    pt = pt.set('nSize15_2016_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 20160);
+    pt = pt.set('nSize20_2016_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 25000);
+    pt = pt.set('nSize25_2016_wc', neighs.filter(filt).size());
+    filt = ee.Filter.lt('distance', 30000);
+    pt = pt.set('nSize30_2016_wc', neighs.filter(filt).size());
+    return pt;
+  });
+  
+  // print(pointdata_withbandcounts_2016.limit(1), "Camp count 2016");
+
+Export.table.toDrive(pointdata_withbandcounts_2016, "DHS_campCounts_sameC", "NutritionPaper");
+
+
+  
