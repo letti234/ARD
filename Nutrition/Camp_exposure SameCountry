@@ -51,53 +51,77 @@ var dhs_adm0 = joinAll.map(function(feature) {
   return updatedFeature.copyProperties(feature);
 });
 
-// Print the resulting features to check retained properties
-print('Buffer ID', dhs_adm0.limit(10));
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(camps, country, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var camps_adm0 = joinAll.map(function(feature) {
+  var joinedFeat = ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  var updatedFeature = feature.copyProperties(polygon, properties);
+  return updatedFeature.copyProperties(feature);
+});
+
+
+
+print(dhs_adm0.limit(1), "DHS with ADM0 code");
+print(camps_adm0.limit(1), "Camps with ADM0 code");
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //
-//N camps 
+//N camps in same country at different distance
 //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+// Create a filter for matching ADM0_CODE
+var adm0CodeFilter = ee.Filter.equals({
+  leftField: 'ADM0_CODE',  // ADM0_CODE in primary (dhs_adm0)
+  rightField: 'ADM0_CODE'   // ADM0_CODE in secondary (camps_adm0)
+});
 
-//1999
+// Apply the join with the combined condition
 var joined_1999 = ee.Join.saveAll({
   matchesKey: 'neighbors', 
   measureKey: 'distance',
   ordering: 'distance'
 }).apply({
-  primary: dhs, 
-  secondary: camps.filterMetadata('op_1999', 'equals', 1), 
-  condition: spatialFilter
+  primary: dhs_adm0, 
+  secondary: camps_adm0.filterMetadata('op_1999', 'equals', 1), 
+  condition: ee.Filter.and(
+    spatialFilter,     // Spatial filter
+    adm0CodeFilter     // ADM0_CODE equality filter
+  )
 });
 
-
+// Set up to extract nearest distances and counts
 var withNearestDist = joined_1999.map(function(f) {
-  var nearestDist = ee.Feature(ee.List(f.get('neighbors')).get(0))
-      .get('distance');
+  var neighbors = ee.List(f.get('neighbors'));
+  
+  // Get nearest distance if neighbors exist
+  var nearestDist = neighbors.size().gt(0) ? ee.Feature(neighbors.get(0)).get('distance') : null;
+  
   return f.set('nearestDist', nearestDist);
 });
 
+// Count neighbors within different distance thresholds
 var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
   var neighs = ee.List(pt.get('neighbors'));
-  var filt = ee.Filter.lt('distance', 5000);
-  pt=pt.set('neighsSize05_1999', neighs.filter(filt).size());
-  filt = ee.Filter.lt('distance', 10000);
-  pt=pt.set('neighsSize10_1999', neighs.filter(filt).size());
-  filt = ee.Filter.lt('distance', 15000);
-  pt=pt.set('neighsSize15_1999', neighs.filter(filt).size());
-  filt = ee.Filter.lt('distance', 20000);
-  pt=pt.set('neighsSize20_1999', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 25000);
-  pt=pt.set('neighsSize25_1999', neighs.filter(filt).size());
-    filt = ee.Filter.lt('distance', 30000);
-  pt=pt.set('neighsSize30_1999', neighs.filter(filt).size());
-  return(pt);
+  
+  var counts = {
+    'neighsSize05_1999': neighs.filter(ee.Filter.lt('distance', 5000)).size(),
+    'neighsSize10_1999': neighs.filter(ee.Filter.lt('distance', 10000)).size(),
+    'neighsSize15_1999': neighs.filter(ee.Filter.lt('distance', 15000)).size(),
+    'neighsSize20_1999': neighs.filter(ee.Filter.lt('distance', 20000)).size(),
+    'neighsSize25_1999': neighs.filter(ee.Filter.lt('distance', 25000)).size(),
+    'neighsSize30_1999': neighs.filter(ee.Filter.lt('distance', 30000)).size(),
+  };
+  
+  // Set all counts back into the feature
+  return ee.Feature(pt).set(counts);
 });
 
-
+// Print results
 print(pointdata_withbandcounts_1999.limit(1));
-
