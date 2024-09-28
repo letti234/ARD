@@ -688,15 +688,11 @@ var pointdata_withbandcounts_2016 = withNearestDist.map(function(pt) {
 });
 
 
-
-
-
-
-
-
 print(pointdata_withbandcounts_2016.limit(1));
 
-// Export.table.toDrive(pointdata_withbandcounts_2016, "DHSCampProximity", "NutritionPaper");
+
+
+Export.table.toDrive(pointdata_withbandcounts_2016, "DHSCampProximity", "NutritionPaper");
 // Export.table.toDrive(dhs_adm, "DHSADM", "NutritionPaper");
 
 
