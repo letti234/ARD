@@ -73,7 +73,7 @@ var calculateNearestDistance = function(feature) {
 // Map the function over the dhs feature collection
 var dhsWithDistance = dhs_adm.map(calculateNearestDistance);
 
-print(dhsWithDistance.limit(2));
+// print(dhsWithDistance.limit(2));
 
 
 
