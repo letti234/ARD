@@ -55,7 +55,7 @@ var camps_adm0 = joinAll.map(function(feature) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //
-//N camps in same country at different distances - spatial filters used throughout
+//N camps in same country at different distances - define spatial filters
 //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -68,7 +68,7 @@ var spatialFilter = ee.Filter.withinDistance({
   maxError: 10
 });
 
-// Additional filter to match on ADM0_CODE
+// Filter to match on ADM0_CODE
 var adm0Filter = ee.Filter.equals({
   leftField: 'ADM0_CODE',
   rightField: 'ADM0_CODE'
