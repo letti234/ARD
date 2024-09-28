@@ -32,6 +32,29 @@ var spatialFilter = ee.Filter.withinDistance({
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
+var properties = ["ADM0_CODE"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(dhs, country, spatialFilter);
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var bufferID = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+
+print('Buffer ID', bufferID.limit(10));
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
