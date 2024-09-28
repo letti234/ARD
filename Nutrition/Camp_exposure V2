@@ -1,3 +1,13 @@
+///////////////////////////////////////////////////////////////////////////////////////////////
+//
+//Camp nutritional effects
+//Code determines number of camps at different distances from DHS cluster over time
+//Code also uses a shapefile to assign ADM1 and ADM2, though shapefile does not
+//cover all DHS points (need to find better ADM2 shapefile)
+//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
 var dhs = ee.FeatureCollection("users/salem043/ARD/DHS_COMBINED_GIS");
 var camps = ee.FeatureCollection('users/salem043/ARD/Cleaned_camp_data_wide');
 
