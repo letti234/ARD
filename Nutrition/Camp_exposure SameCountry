@@ -27,10 +27,9 @@ var spatialFilter = ee.Filter.withinDistance({
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //
-//Add country ID from FAOGAUL to both dataframes
+//Add country ID from FAOGAUL to DHS
 //
 //////////////////////////////////////////////////////////////////////////////////////////////
-
 
 var properties = ["ADM0_CODE"];
 
@@ -45,15 +44,15 @@ var joinAll = ee.Join.saveAll('matched').apply(dhs, country, spatialFilter);
 
 // Since the join adds intersecting polygons to a new property 'matched'
 // we need to extract required info from the polygons and copy it to the points
-var bufferID = joinAll.map(function(feature){
-  var joinedFeat =  ee.List(feature.get('matched'));
+var dhs_adm0 = joinAll.map(function(feature) {
+  var joinedFeat = ee.List(feature.get('matched'));
   var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
-  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+  var updatedFeature = feature.copyProperties(polygon, properties);
+  return updatedFeature.copyProperties(feature);
 });
 
-
-print('Buffer ID', bufferID.limit(10));
-
+// Print the resulting features to check retained properties
+print('Buffer ID', dhs_adm0.limit(10));
 
 
 
