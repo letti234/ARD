@@ -691,8 +691,67 @@ var pointdata_withbandcounts_2016 = withNearestDist.map(function(pt) {
 print(pointdata_withbandcounts_2016.limit(1));
 
 
-
 Export.table.toDrive(pointdata_withbandcounts_2016, "DHSCampProximity", "NutritionPaper");
-// Export.table.toDrive(dhs_adm, "DHSADM", "NutritionPaper");
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//
+//ADM2 for SSA (source??)
+//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+var adm = ee.FeatureCollection("users/salem043/SSA_Geo/Africa_Districts");
+
+var properties = ["ADM1", "ADM2", "system:index"];
+
+// Define a spatial filter as geometries that intersect.
+var spatialFilter = ee.Filter.intersects({
+  leftField: '.geo',
+  rightField: '.geo'
+});
+
+// Join the points and polygons and apply the spatial filter to keep only intersecting ones
+var joinAll = ee.Join.saveAll('matched').apply(dhs, adm, spatialFilter);
+
+
+// Since the join adds intersecting polygons to a new property 'matched'
+// we need to extract required info from the polygons and copy it to the points
+var dhs_adm = joinAll.map(function(feature){
+  var joinedFeat =  ee.List(feature.get('matched'));
+  var polygon = ee.Feature(ee.FeatureCollection(joinedFeat).first());
+  return ee.Feature(feature.copyProperties(polygon, properties)).select(properties);
+});
+
+print(dhs_adm.limit(1), "ADM");
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//
+//Minimum distance to nearest camp - we use this to truncate the data 
+//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+// Function to calculate the nearest distance using the distance method properly
+var calculateNearestDistance = function(feature) {
+  // Find the nearest camp to the current dhs feature
+  var nearest = camps.sort('system:time_start').map(function(camp) {
+    var distance = feature.geometry().distance(camp.geometry());
+    return ee.Feature(null, {distance: distance});
+  });
+
+  // Get the minimum distance
+  var minDistance = nearest.reduceColumns(ee.Reducer.min(), ['distance']).get('min');
+
+  // Return the feature with the new distance property
+  return feature.set('nearest_distance', ee.Number(minDistance));
+};
+
+// Map the function over the dhs feature collection
+var dhsWithDistance = dhs_adm.map(calculateNearestDistance);
+
+print(dhsWithDistance.limit(2));
+
+
+Export.table.toDrive(dhs_adm, "DHSADM", "NutritionPaper");
 
 
