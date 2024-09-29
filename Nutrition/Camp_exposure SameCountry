@@ -740,7 +740,7 @@ Export.table.toDrive(pointdata_withbandcounts_2012, "DHSCount_sameC_2012", "Nutr
   });
   
   // print(pointdata_withbandcounts_2013.limit(1), "Camp count 2013");
-Export.table.toDrive(pointdata_withbandcounts_2012, "DHSCount_sameC_2013", "NutritionPaper");
+Export.table.toDrive(pointdata_withbandcounts_2013, "DHSCount_sameC_2013", "NutritionPaper");
 
 
   
