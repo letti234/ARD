@@ -117,6 +117,8 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
 });
 
 // print(pointdata_withbandcounts_1999.limit(1), "Camp count 1999");
+Export.table.toDrive(pointdata_withbandcounts_1999, "DHSCount_sameC_1999", "NutritionPaper");
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +132,7 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
     measureKey: 'distance',
     ordering: 'distance'
   }).apply({
-    primary: pointdata_withbandcounts_1999, 
+    primary: dhs_adm0, 
     secondary: camps_adm0.filterMetadata('op_2000', 'equals', 1), 
     condition: combinedFilter
   });
@@ -159,7 +161,10 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
   });
   
   // print(pointdata_withbandcounts_2000.limit(1), "Camp count 2000");
-  
+Export.table.toDrive(pointdata_withbandcounts_2000, "DHSCount_sameC_2000", "NutritionPaper");
+
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -172,7 +177,7 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
     measureKey: 'distance',
     ordering: 'distance'
   }).apply({
-    primary: pointdata_withbandcounts_2000, 
+    primary: dhs_adm0, 
     secondary: camps_adm0.filterMetadata('op_2001', 'equals', 1), 
     condition: combinedFilter
   });
@@ -201,7 +206,9 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
   });
   
   // print(pointdata_withbandcounts_2001.limit(1), "Camp count 2001");
-  
+Export.table.toDrive(pointdata_withbandcounts_2001, "DHSCount_sameC_2001", "NutritionPaper");
+
+
   
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -215,7 +222,7 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
     measureKey: 'distance',
     ordering: 'distance'
   }).apply({
-    primary: pointdata_withbandcounts_2001, 
+    primary: dhs_adm0, 
     secondary: camps_adm0.filterMetadata('op_2002', 'equals', 1), 
     condition: combinedFilter
   });
@@ -244,6 +251,8 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
   });
   
   // print(pointdata_withbandcounts_2002.limit(1), "Camp count 2002");
+Export.table.toDrive(pointdata_withbandcounts_2002, "DHSCount_sameC_2002", "NutritionPaper");
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -257,7 +266,7 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
     measureKey: 'distance',
     ordering: 'distance'
   }).apply({
-    primary: pointdata_withbandcounts_2002, 
+    primary: dhs_adm0, 
     secondary: camps_adm0.filterMetadata('op_2003', 'equals', 1), 
     condition: combinedFilter
   });
@@ -286,6 +295,8 @@ var pointdata_withbandcounts_1999 = withNearestDist.map(function(pt) {
   });
   
 // print(pointdata_withbandcounts_2003.limit(1), "Camp count 2003");
+Export.table.toDrive(pointdata_withbandcounts_2003, "DHSCount_sameC_2003", "NutritionPaper");
+
 
 
 
