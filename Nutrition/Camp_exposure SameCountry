@@ -489,7 +489,7 @@ Export.table.toDrive(pointdata_withbandcounts_2007, "DHSCount_sameC_2007", "Nutr
     measureKey: 'distance',
     ordering: 'distance'
   }).apply({
-    primary: pointdata_withbandcounts_2007, 
+    primary: dhs_adm0, 
     secondary: camps_adm0.filterMetadata('op_2008', 'equals', 1), 
     condition: combinedFilter
   });
@@ -518,7 +518,9 @@ Export.table.toDrive(pointdata_withbandcounts_2007, "DHSCount_sameC_2007", "Nutr
   });
   
   print(pointdata_withbandcounts_2008.limit(1), "Camp count 2008");
-  
+Export.table.toDrive(pointdata_withbandcounts_2008, "DHSCount_sameC_2008", "NutritionPaper");
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //
