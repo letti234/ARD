@@ -356,7 +356,7 @@ Export.table.toDrive(pointdata_withbandcounts_2004, "DHSCount_sameC_2004", "Nutr
     measureKey: 'distance',
     ordering: 'distance'
   }).apply({
-    primary: pointdata_withbandcounts_2004, 
+    primary: dhs_adm0, 
     secondary: camps_adm0.filterMetadata('op_2005', 'equals', 1), 
     condition: combinedFilter
   });
@@ -385,7 +385,9 @@ Export.table.toDrive(pointdata_withbandcounts_2004, "DHSCount_sameC_2004", "Nutr
   });
   
 // print(pointdata_withbandcounts_2005.limit(1), "Camp count 2005");
-  
+Export.table.toDrive(pointdata_withbandcounts_2005, "DHSCount_sameC_2005", "NutritionPaper");
+
+
   
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -399,7 +401,7 @@ Export.table.toDrive(pointdata_withbandcounts_2004, "DHSCount_sameC_2004", "Nutr
     measureKey: 'distance',
     ordering: 'distance'
   }).apply({
-    primary: pointdata_withbandcounts_2005, 
+    primary: dhs_adm0, 
     secondary: camps_adm0.filterMetadata('op_2006', 'equals', 1), 
     condition: combinedFilter
   });
@@ -427,7 +429,8 @@ Export.table.toDrive(pointdata_withbandcounts_2004, "DHSCount_sameC_2004", "Nutr
     return pt;
   });
   
-// print(pointdata_withbandcounts_2006.limit(1), "Camp count 2006");
+Export.table.toDrive(pointdata_withbandcounts_2006, "DHSCount_sameC_2006", "NutritionPaper");
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
