@@ -72,22 +72,19 @@ var zonalStats = buffers.map(function(buffer) {
   return buffer.set('pct_noAgCons', meanValue);
 });
 
-// Add the zonal statistics layer to the map, using 'pct_noAgCons' for visualization
-Map.addLayer(zonalStats, 
-  {
-    color: 'blue',  // Default color if you're using a simple style
-    pointRadius: 5, // Adjust point radius for better visibility
-    style: { 
-      width: 1, // Line width if you're visualizing lines
-      color: 'blue' // Use a consistent color for visualization
-    }
-  }, 
-  'Zonal Stats - pct_noAgCons'
-);
-
-// Center the map on the buffers
-Map.centerObject(zonalStats);
 
 // Print the results to see the zonal statistics
 print('Zonal Statistics:', zonalStats.limit(2));
+
+
+
+/////////////////////////////////////////////////////////////////////
+//
+// Map check
+//
+/////////////////////////////////////////////////////////////////////
+
+
+// Add the layer to the map using a single color for the features
+Map.addLayer(zonalStats.style({styleProperty: 'pct_noAgCons', color: 'blue'}), {}, 'Zonal Stats - pct_noAgCons');
 
