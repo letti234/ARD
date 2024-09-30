@@ -84,13 +84,21 @@ print('Zonal Statistics:', zonalStats.limit(2));
 //
 /////////////////////////////////////////////////////////////////////
 
+// Assume zonalStats is your feature collection
 
-// Limit to the first 100 features (or adjust as needed)
-var limitedZonalStats = zonalStats.limit(100);
+// Define visualization parameters for pct_noAgCons
+var visParams = {
+  min: 0,   // Minimum value for pct_noAgCons
+  max: 1,   // Maximum value for pct_noAgCons
+  palette: ['white', 'red']  // Color gradient from white to red
+};
 
-// Add the layer to the map using a single color for the limited features
-Map.addLayer(limitedZonalStats.style({styleProperty: 'pct_noAgCons', color: 'blue'}), {}, 'Limited Zonal Stats - pct_noAgCons');
+// Add the layer to the map using the style method
+Map.addLayer(
+  zonalStats.style({styleProperty: 'pct_noAgCons'}), 
+  visParams, 
+  'Zonal Stats - pct_noAgCons'
+);
 
-// Center the map on the limited zonal stats
-Map.centerObject(limitedZonalStats);
-
+// Center the map on the zonalStats feature collection
+Map.centerObject(zonalStats);
