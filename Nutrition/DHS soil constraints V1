@@ -85,6 +85,12 @@ print('Zonal Statistics:', zonalStats.limit(2));
 /////////////////////////////////////////////////////////////////////
 
 
-// Add the layer to the map using a single color for the features
-Map.addLayer(zonalStats.style({styleProperty: 'pct_noAgCons', color: 'blue'}), {}, 'Zonal Stats - pct_noAgCons');
+// Limit to the first 100 features (or adjust as needed)
+var limitedZonalStats = zonalStats.limit(100);
+
+// Add the layer to the map using a single color for the limited features
+Map.addLayer(limitedZonalStats.style({styleProperty: 'pct_noAgCons', color: 'blue'}), {}, 'Limited Zonal Stats - pct_noAgCons');
+
+// Center the map on the limited zonal stats
+Map.centerObject(limitedZonalStats);
 
