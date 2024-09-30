@@ -93,12 +93,14 @@ var visParams = {
   palette: ['white', 'red']  // Color gradient from white to red
 };
 
-// Add the layer to the map using the style method
-Map.addLayer(
-  zonalStats.style({styleProperty: 'pct_noAgCons'}), 
-  visParams, 
-  'Zonal Stats - pct_noAgCons'
-);
+// Style the features based on the pct_noAgCons property
+var styledZonalStats = zonalStats.style({
+  styleProperty: 'pct_noAgCons',
+  color: visParams.palette,
+});
+
+// Add the styled layer to the map
+Map.addLayer(styledZonalStats, {}, 'Zonal Stats - pct_noAgCons');
 
 // Center the map on the zonalStats feature collection
 Map.centerObject(zonalStats);
