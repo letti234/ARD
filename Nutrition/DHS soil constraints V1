@@ -1,0 +1,21 @@
+var raw = ee.Image("ISDASOIL/Africa/v1/fcc").select(0);
+
+var converted = ee.Image(raw.mod(3000).copyProperties(raw));
+
+Map.setCenter(25, -3, 2);
+
+Map.addLayer(converted, {}, "Fertility Capability Classification");
+
+print(converted);
+
+// Assuming 'converted' is your image or feature collection
+var reclassified = converted.where(converted.eq(0), 1).where(converted.neq(0), 0);
+
+// To visualize the result (if it's an image)
+Map.addLayer(reclassified, {min: 0, max: 1, palette: ['white', 'blue']}, 'Reclassified Layer');
+
+var camps = ee.FeatureCollection('users/salem043/ARD/Cleaned_camp_data_wide');
+Map.addLayer(camps);
+
+
+
