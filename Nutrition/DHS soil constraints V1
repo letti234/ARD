@@ -1,21 +1,93 @@
+/////////////////////////////////////////////////////////////////////
+//
+// REFUGEE CAMPS AND NUTRITION PAPER
+// PERCENT OF DHS AREA THAT FACES AN AG CONSTRAINT
+//
+/////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////
+//
+// Call on data
+//
+/////////////////////////////////////////////////////////////////////
+
 var raw = ee.Image("ISDASOIL/Africa/v1/fcc").select(0);
-
 var converted = ee.Image(raw.mod(3000).copyProperties(raw));
-
-Map.setCenter(25, -3, 2);
-
 Map.addLayer(converted, {}, "Fertility Capability Classification");
-
 print(converted);
 
-// Assuming 'converted' is your image or feature collection
-var reclassified = converted.where(converted.eq(0), 1).where(converted.neq(0), 0);
-
-// To visualize the result (if it's an image)
-Map.addLayer(reclassified, {min: 0, max: 1, palette: ['white', 'blue']}, 'Reclassified Layer');
-
-var camps = ee.FeatureCollection('users/salem043/ARD/Cleaned_camp_data_wide');
-Map.addLayer(camps);
+var dhs = ee.FeatureCollection("users/salem043/ARD/DHS_COMBINED_GIS");
 
 
+/////////////////////////////////////////////////////////////////////
+//
+// Reclassify soil fertility data
+//
+/////////////////////////////////////////////////////////////////////
+
+// Assuming 'converted' is an image
+var reclassified = converted.eq(0).multiply(1).add(converted.neq(0).multiply(0));
+
+// Print the reclassified image
+print('Reclassified image:', reclassified);
+
+Map.addLayer(reclassified,  {color: 'blue'}, 'Reclassified Features');
+
+/////////////////////////////////////////////////////////////////////
+//
+// Create 30 km buffers around each DHS point
+//
+/////////////////////////////////////////////////////////////////////
+
+
+// Create buffers of 30 km (30,000 meters) around each point and keep original properties
+var buffers = dhs.map(function(feature) {
+  var bufferGeometry = feature.geometry().buffer(30000); // Create the buffer
+  return feature.setGeometry(bufferGeometry); // Set the buffer geometry while keeping original properties
+});
+
+// Add the buffers to the map
+Map.addLayer(buffers, {color: 'red'}, '30 km Buffers');
+
+// Optionally, you can print the buffers to see the results
+print('Buffers Feature Collection:', buffers.limit(2));
+
+
+
+/////////////////////////////////////////////////////////////////////
+//
+// Find percent of buffer unconstrained for agriculture
+//
+/////////////////////////////////////////////////////////////////////
+
+
+var zonalStats = buffers.map(function(buffer) {
+  var meanValue = reclassified.reduceRegion({
+    reducer: ee.Reducer.mean(),
+    geometry: buffer.geometry(),
+    scale: 30, 
+    maxPixels: 1e15
+  }).get('fcc'); 
+  return buffer.set('pct_noAgCons', meanValue);
+});
+
+// Add the zonal statistics layer to the map, using 'pct_noAgCons' for visualization
+Map.addLayer(zonalStats, 
+  {
+    color: 'blue',  // Default color if you're using a simple style
+    pointRadius: 5, // Adjust point radius for better visibility
+    style: { 
+      width: 1, // Line width if you're visualizing lines
+      color: 'blue' // Use a consistent color for visualization
+    }
+  }, 
+  'Zonal Stats - pct_noAgCons'
+);
+
+// Center the map on the buffers
+Map.centerObject(zonalStats);
+
+// Print the results to see the zonal statistics
+print('Zonal Statistics:', zonalStats.limit(2));
 
