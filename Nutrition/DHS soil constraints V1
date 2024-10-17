@@ -17,7 +17,7 @@ var converted = ee.Image(raw.mod(3000).copyProperties(raw));
 Map.addLayer(converted, {}, "Fertility Capability Classification");
 print(converted);
 
-var dhs = ee.FeatureCollection("users/salem043/ARD/DHS_COMBINED_GIS");
+var dhs = ee.FeatureCollection("users/salem043/ARD/COMBINED_DHS_GIS");
 
 
 /////////////////////////////////////////////////////////////////////
